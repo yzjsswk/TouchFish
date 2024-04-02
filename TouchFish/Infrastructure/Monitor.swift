@@ -40,7 +40,7 @@ struct MonitorManager {
             }
         case .showOrHideMainWindowWhenKeyShortCutPressed:
             MonitorManager.addGlobalKeyboardEventListener(
-                keyboardShortcut: Config.it.appActiveKeyShortcut,
+                keyboardShortcut: Config.appActiveKeyShortcut,
                 actionOnEvent: { [] _ in
                     if TouchFishApp.mainWindow.isVisible {
                         TouchFishApp.deactivate()
@@ -51,7 +51,7 @@ struct MonitorManager {
             )
         case .openFishRepositoryWhenKeyShortCutPressed:
             MonitorManager.addGlobalKeyboardEventListener(
-                keyboardShortcut: Config.it.fishRepositoryActiveKeyShortcut,
+                keyboardShortcut: Config.fishRepositoryActiveKeyShortcut,
                 actionOnEvent: { [] _ in
                     if !TouchFishApp.mainWindow.isVisible {
                         NotificationCenter.default.post(name: .ShouldShowFishView, object: nil)

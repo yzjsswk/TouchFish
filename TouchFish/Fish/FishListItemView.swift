@@ -65,14 +65,16 @@ struct FishListItemView: View {
                     }
             }
         }
-        .frame(maxWidth: Config.it.mainWidth)
+        .frame(maxWidth: Config.mainWidth)
         .padding(5)
-        .background(isSelected ? Config.it.selectedItemBackgroundColor.color : Config.it.mainBackgroundColor.color)
+        .background(isSelected ? Config.selectedItemBackgroundColor.color : Config.mainBackgroundColor.color)
         .cornerRadius(5)
 //        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
         .onTapGesture(count: 1, perform: action)
         .onHover { isHovered in
+//            Log.info(" \(id) \(isHovered)")
             if isHovered {
+//                Log.info("selected fish id \(selectedFishId) -> \(id)")
                 selectedFishId = id
             }
         }

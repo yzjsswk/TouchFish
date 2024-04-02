@@ -73,7 +73,7 @@ struct Storage {
     }
     
     static func searchFileURLByIdentity(identity: String) -> URL? {
-        let resourcePath = CONFIG.workPath.appendingPathComponent("resource")
+        let resourcePath = Config.workPath.appendingPathComponent("resource")
         let resources = (try? FileManager.default.contentsOfDirectory(atPath: resourcePath.path)) ?? []
         for resource in resources {
             if resource.starts(with: identity) {
@@ -84,7 +84,7 @@ struct Storage {
     }
     
     static func searchFileURLByIdentityWithCheck(identity: String) -> URL? {
-        let resourcePath = CONFIG.workPath.appendingPathComponent("resource")
+        let resourcePath = Config.workPath.appendingPathComponent("resource")
         let resources = (try? FileManager.default.contentsOfDirectory(atPath: resourcePath.path)) ?? []
         for resource in resources {
             if !resource.starts(with: identity) {
@@ -102,11 +102,11 @@ struct Storage {
     static private var saveCount: Int = 0
     static private func fileSaveFrequencyControl() -> Bool {
         let curTs = Date().timeIntervalSince1970
-        if curTs - Storage.lastTs > CONFIG.fileSaveLimitInterval {
+        if curTs - Storage.lastTs > Config.fileSaveLimitInterval {
             Storage.lastTs = curTs
             Storage.saveCount = 0
         }
-        if Storage.saveCount > CONFIG.fileSaveLimitCount {
+        if Storage.saveCount > Config.fileSaveLimitCount {
             return false
         }
         Storage.saveCount += 1
@@ -122,7 +122,7 @@ struct Storage {
             Log.error("save data to file failed: too frequent")
             return nil
         }
-        let savePath = CONFIG.workPath.appendingPathComponent("resource/\(identity)_\(Int(Date().timeIntervalSince1970))")
+        let savePath = Config.workPath.appendingPathComponent("resource/\(identity)_\(Int(Date().timeIntervalSince1970))")
         do {
             try data.write(to: savePath)
             Cache.ImageCache.refresh()

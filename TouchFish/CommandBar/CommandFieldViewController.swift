@@ -41,7 +41,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
         //textField.placeholderAttributedString = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : textColor.withAlphaComponent(0.6), NSAttributedString.Key.baselineOffset : -(font.pointSize / 2)])
         
         // Configure the text field's text and colors.
-        textField.backgroundColor = NSColor(CONFIG.CommandBarBackgroundColor.color)
+        textField.backgroundColor = NSColor(Config.CommandBarBackgroundColor.color)
         textField.textColor = textColor
         textField.font = NSFont(name: "Menlo", size: 22)
         textField.isBordered = false
@@ -62,7 +62,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
         view.window?.makeFirstResponder(view)
         
         // Change the insertion point color.
-        fieldEditor.insertionPointColor = NSColor(CONFIG.CommandBarInsertionPointColor.color)
+        fieldEditor.insertionPointColor = NSColor(Config.CommandBarInsertionPointColor.color)
         
         // Select all characters so the user can start typing.
         textField.selectText(nil)

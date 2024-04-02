@@ -2,7 +2,7 @@ import SwiftUI
 
 // todo: file name and class name -> Configuration; global name -> Config
 
-let CONFIG = Config.it
+let Config = Configuration.it
 
 struct Configuration: Codable {
     
@@ -10,34 +10,34 @@ struct Configuration: Codable {
     
     static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
     
-    static func readFromFile() -> Config {
-        if FileManager.default.fileExists(atPath: Config.configPath.path) {
+    static func readFromFile() -> Configuration {
+        if FileManager.default.fileExists(atPath: Configuration.configPath.path) {
             do {
-                let configData = try Data(contentsOf: Config.configPath)
-                return try JSONDecoder().decode(Config.self, from: configData)
+                let configData = try Data(contentsOf: Configuration.configPath)
+                return try JSONDecoder().decode(Configuration.self, from: configData)
             } catch {
-                Log.error("Error when read config file, path=\(Config.configPath.path), error=\(error)")
+                Log.error("Error when read config file, path=\(Configuration.configPath.path), error=\(error)")
                 let alert = NSAlert()
                 alert.alertStyle = .warning
                 alert.messageText = "Configuration Error"
-                alert.informativeText = "Something is wrong with your configuration file at: \(Config.configPath.path).\n\n Use default configuration."
+                alert.informativeText = "Something is wrong with your configuration file at: \(Configuration.configPath.path).\n\n Use default configuration."
                 alert.runModal()
-                return Config()
+                return Configuration()
             }
         }
-        Log.warning("config file \(Config.configPath.path) not found, use default configuration.")
-        return Config()
+        Log.warning("config file \(Configuration.configPath.path) not found, use default configuration.")
+        return Configuration()
     }
     
     func save() {
         do {
-            try JSONEncoder().encode(self).write(to: Config.configPath)
+            try JSONEncoder().encode(self).write(to: Configuration.configPath)
         } catch {
             fatalError("Failed to write the configuration. Error: \n\(error)")
         }
     }
     
-    // configuration
+    // configurations
     
     var workPath: URL = TouchFishApp.appSupportPath
     var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 49), modifiers: [.option], events: [.keyDown])
@@ -59,4 +59,5 @@ struct Configuration: Codable {
     var fishItemPreviewLength: Int = 40
     var fileSaveLimitInterval: TimeInterval = 60
     var fileSaveLimitCount: Int = 5
+    
 }

@@ -8,7 +8,7 @@ class StatusBar {
     init() {
         self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem.button else { return }
-        button.image = NSImage(named: "fish")
+        button.image = NSImage(systemSymbolName: "fish.fill", accessibilityDescription: nil)
         
         self.menu = NSMenu()
         let menuItems = [

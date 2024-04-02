@@ -86,7 +86,7 @@ struct FishDetailView: View {
                         DetailItemView(itemName: "Update Time", itemValue: selectedFish.updateTime)
                     }
                 }
-                .frame(height: CONFIG.mainHeight * 0.2)
+                .frame(height: Config.mainHeight * 0.2)
                 
             }
         }

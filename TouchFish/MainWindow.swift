@@ -7,8 +7,8 @@ class MainWindow: NSPanel {
             contentRect: NSRect(
                 x: 0,
                 y: 0,
-                width: CONFIG.mainWidth,
-                height: CONFIG.mainHeight
+                width: Config.mainWidth,
+                height: Config.mainHeight
             ),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
@@ -37,15 +37,18 @@ class MainWindow: NSPanel {
     
     func show() {
         // Add the titled style mask, it will be removed later.
-        self.styleMask.insert(.titled)
+//        self.styleMask.insert(.titled)
         self.makeKeyAndOrderFront(nil)
         // The titled style mask needs to be removed after the window ordered the front; Otherwise, it will stay in the background.
-        self.styleMask.remove(.titled)
+//        self.styleMask.remove(.titled)
     }
     
     func hide() {
         self.close()
     }
     
+    override var canBecomeKey: Bool {
+        return true
+    }
     
 }

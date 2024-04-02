@@ -9,10 +9,10 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            Config.it.mainBackgroundColor.color
+            Config.mainBackgroundColor.color
 //                .blur(radius: 5)
 //                .shadow(color: .black, radius: 10)
-//                .colorMultiply(Config.it.mainBackgroundColor.color)
+//                .colorMultiply(Config.mainBackgroundColor.color)
             VStack {
                 CommandBarView(text: $text)
                 switch viewState {

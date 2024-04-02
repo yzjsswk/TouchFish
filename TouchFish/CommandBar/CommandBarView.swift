@@ -12,9 +12,9 @@ struct CommandBarView: View {
                     .padding([.leading, .trailing], 8)
                 Spacer()
             }
-            .frame(height: Config.it.promptBarHeight)
+            .frame(height: Config.promptBarHeight)
         }
-        .background(Config.it.promptBarBackgroundColor.color) // todo: change name
+        .background(Config.promptBarBackgroundColor.color) // todo: change name
         .cornerRadius(10)
         .padding(10)
     }

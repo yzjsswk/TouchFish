@@ -31,7 +31,7 @@ struct FishRepositoryView: View {
                 } else {
                     Text("No Fish")
                         .font(.title)
-                        .frame(width: (Config.it.mainWidth - 30)/2)
+                        .frame(width: (Config.mainWidth - 30)/2)
                 }
                 VStack {
                     HStack {
@@ -117,7 +117,7 @@ struct FilterButtonView: View {
         Image(systemName: "line.3.horizontal.decrease.circle")
             .resizable()
             .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? CONFIG.selectedItemBackgroundColor.color : .gray)
+            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
             .onHover { isHovered in
                 self.isHovered = isHovered
             }
@@ -133,7 +133,7 @@ struct AddButtonView: View {
         Image(systemName: "plus.circle")
             .resizable()
             .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? CONFIG.selectedItemBackgroundColor.color : .gray)
+            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
             .onHover { isHovered in
                 self.isHovered = isHovered
             }
@@ -149,7 +149,7 @@ struct EditButtonView: View {
         Image(systemName: "square.and.pencil")
             .resizable()
             .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? CONFIG.selectedItemBackgroundColor.color : .gray)
+            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
             .onHover { isHovered in
                 self.isHovered = isHovered
             }

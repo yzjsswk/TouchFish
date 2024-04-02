@@ -27,7 +27,7 @@
 		99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */; };
 		99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */; };
 		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
-		99AC05F22BB2BD720046E8C5 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Config.swift */; };
+		99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Configuration.swift */; };
 		99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CC2BB2BD720046E8C5 /* DataBase.swift */; };
 		99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Functions.swift */; };
 		99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CE2BB2BD720046E8C5 /* Log.swift */; };
@@ -73,7 +73,7 @@
 		99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEvent.swift; sourceTree = "<group>"; };
 		99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScriptRunner.swift; sourceTree = "<group>"; };
 		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
-		99AC05CB2BB2BD720046E8C5 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		99AC05CB2BB2BD720046E8C5 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		99AC05CC2BB2BD720046E8C5 /* DataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
 		99AC05CD2BB2BD720046E8C5 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		99AC05CE2BB2BD720046E8C5 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
@@ -187,7 +187,7 @@
 				99AC05C82BB2BD720046E8C5 /* Keyboard Shortcuts */,
 				99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */,
 				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
-				99AC05CB2BB2BD720046E8C5 /* Config.swift */,
+				99AC05CB2BB2BD720046E8C5 /* Configuration.swift */,
 				99AC05CC2BB2BD720046E8C5 /* DataBase.swift */,
 				99AC05CD2BB2BD720046E8C5 /* Functions.swift */,
 				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
@@ -348,7 +348,7 @@
 				99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */,
 				99AC05E12BB2BD720046E8C5 /* AbstractView.swift in Sources */,
 				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
-				99AC05F22BB2BD720046E8C5 /* Config.swift in Sources */,
+				99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */,
 				99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */,
 				99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */,
 			);
@@ -497,6 +497,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yzjsswk.TouchFish;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -527,6 +528,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yzjsswk.TouchFish;
 				PRODUCT_NAME = "$(TARGET_NAME)";

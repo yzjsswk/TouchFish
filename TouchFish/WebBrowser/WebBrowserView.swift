@@ -21,7 +21,7 @@ struct WebBrowserView: View {
                             TouchFishApp.deactivate()
                             AppleScriptRunner.openWebUrl(with: "Google Chrome", url: url)
                         }
-                        .frame(width: Config.it.mainWidth - 30, height: Config.it.webURLItemHeight)
+                        .frame(width: Config.mainWidth - 30, height: Config.webURLItemHeight)
                     }
                 }
             }

@@ -23,7 +23,7 @@ struct FishListView: View {
 //                            Log.info("paste fish \(fish.id)")
                         }
                         .id(fish.id)
-                        .frame(width: (Config.it.mainWidth - 30)/2, height: Config.it.fishItemHeight)
+                        .frame(width: (Config.mainWidth - 30)/2, height: Config.fishItemHeight)
                     }
                 }
                 .padding(.vertical)
@@ -35,7 +35,7 @@ struct FishListView: View {
                 Text("total count: \(Cache.FishCache.totalCount)")
                     .font(.footnote)
             }
-            .frame(width: (Config.it.mainWidth - 30)/2)
+            .frame(width: (Config.mainWidth - 30)/2)
 
         }
 
@@ -51,6 +51,8 @@ func pasteToFrontmostApp() {
         keyEvent?.flags = [.maskCommand]
         keyEvent?.post(tap: .cghidEventTap)
 //        AppleScriptRunner.doPaste()
+    } else {
+        Log.warning("front app is nil")
     }
 }
 

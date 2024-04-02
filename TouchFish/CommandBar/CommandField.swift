@@ -12,4 +12,5 @@ struct CommandField: NSViewControllerRepresentable {
         let textField = nsViewController.textField
         textField?.stringValue = text
     }
+    
 }

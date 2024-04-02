@@ -40,8 +40,8 @@ struct ProcessItemView: View {
             Spacer()
         }
         .padding(5)
-        .frame(width: Config.it.processItemWidth, height: Config.it.processItemHeight)
-        .background(Config.it.promptBarBackgroundColor.color)
+        .frame(width: Config.processItemWidth, height: Config.processItemHeight)
+        .background(Config.promptBarBackgroundColor.color)
         .cornerRadius(5)
         
     }

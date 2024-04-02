@@ -79,7 +79,7 @@ struct Cache {
         static func refresh() {
             var newImages: [URL:NSImage] = [:]
             var newTotalBytes = 0
-            let resourcePath = CONFIG.workPath.appendingPathComponent("resource")
+            let resourcePath = Config.workPath.appendingPathComponent("resource")
             let resources = (try? FileManager.default.contentsOfDirectory(atPath: resourcePath.path)) ?? []
             for resource in resources {
                 let curPath = resourcePath.appendingPathComponent(resource)

@@ -117,7 +117,7 @@ struct FishEditView: View {
 //                    .disabled(true)
                 }
             }
-            .frame(width: CONFIG.mainWidth - 30)
+            .frame(width: Config.mainWidth - 30)
             .padding(5)
         }
         .onChange(of: description) { _ in
@@ -135,7 +135,7 @@ struct BackButtonView: View {
         Image(systemName: "arrow.backward.square")
         .resizable()
         .frame(width: 25, height: 25)
-        .foregroundColor(isHovered ? CONFIG.selectedItemBackgroundColor.color : .gray)
+        .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
         .onHover { isHovered in
             self.isHovered = isHovered
         }
@@ -218,7 +218,7 @@ struct TagEditView: View {
             Image(systemName: "plus.circle")
             .resizable()
             .frame(width: 20, height: 20)
-            .foregroundColor(isHovered1 ? CONFIG.selectedItemBackgroundColor.color : .gray)
+            .foregroundColor(isHovered1 ? Config.selectedItemBackgroundColor.color : .gray)
             .onHover { isHovered in
                 self.isHovered1 = isHovered
             }
