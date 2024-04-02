@@ -8,18 +8,91 @@
 
 /* Begin PBXBuildFile section */
 		99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */; };
-		99AC05AB2BB2BCD90046E8C5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05AA2BB2BCD90046E8C5 /* ContentView.swift */; };
 		99AC05AD2BB2BCDA0046E8C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */; };
 		99AC05B02BB2BCDA0046E8C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AF2BB2BCDA0046E8C5 /* Preview Assets.xcassets */; };
+		99AC05E12BB2BD720046E8C5 /* AbstractView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05B82BB2BD710046E8C5 /* AbstractView.swift */; };
+		99AC05E22BB2BD720046E8C5 /* MainWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05B92BB2BD710046E8C5 /* MainWindow.swift */; };
+		99AC05E32BB2BD720046E8C5 /* Fish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BA2BB2BD720046E8C5 /* Fish.swift */; };
+		99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */; };
+		99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */; };
+		99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */; };
+		99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */; };
+		99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BF2BB2BD720046E8C5 /* FishListView.swift */; };
+		99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */; };
+		99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C22BB2BD720046E8C5 /* MainView.swift */; };
+		99AC05EB2BB2BD720046E8C5 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C32BB2BD720046E8C5 /* Key.swift */; };
+		99AC05EC2BB2BD720046E8C5 /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C42BB2BD720046E8C5 /* KeyboardShortcut.swift */; };
+		99AC05ED2BB2BD720046E8C5 /* KeyboardShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C52BB2BD720046E8C5 /* KeyboardShortcutManager.swift */; };
+		99AC05EE2BB2BD720046E8C5 /* KeyboardShortcutModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C62BB2BD720046E8C5 /* KeyboardShortcutModifier.swift */; };
+		99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */; };
+		99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */; };
+		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
+		99AC05F22BB2BD720046E8C5 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Config.swift */; };
+		99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CC2BB2BD720046E8C5 /* DataBase.swift */; };
+		99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Functions.swift */; };
+		99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CE2BB2BD720046E8C5 /* Log.swift */; };
+		99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CF2BB2BD720046E8C5 /* Monitor.swift */; };
+		99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D02BB2BD720046E8C5 /* Storage.swift */; };
+		99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */; };
+		99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D32BB2BD720046E8C5 /* CommandField.swift */; };
+		99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */; };
+		99AC05FB2BB2BD720046E8C5 /* PromptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D52BB2BD720046E8C5 /* PromptManager.swift */; };
+		99AC05FC2BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */; };
+		99AC05FD2BB2BD720046E8C5 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D82BB2BD720046E8C5 /* Process.swift */; };
+		99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */; };
+		99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */; };
+		99AC06002BB2BD720046E8C5 /* ProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */; };
+		99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DD2BB2BD720046E8C5 /* WebBrowserView.swift */; };
+		99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */; };
+		99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC06042BB2BE440046E8C5 /* AppDelegate.swift */; };
+		99AC06082BB2BE930046E8C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99AC06072BB2BE930046E8C5 /* Main.storyboard */; };
+		99AC060B2BB413AD0046E8C5 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */; };
+		99AC060E2BB413C20046E8C5 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060D2BB413C20046E8C5 /* SQLite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		99AC05A52BB2BCD90046E8C5 /* TouchFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchFishApp.swift; sourceTree = "<group>"; };
-		99AC05AA2BB2BCD90046E8C5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		99AC05AF2BB2BCDA0046E8C5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		99AC05B12BB2BCDA0046E8C5 /* TouchFish.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TouchFish.entitlements; sourceTree = "<group>"; };
+		99AC05B82BB2BD710046E8C5 /* AbstractView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractView.swift; sourceTree = "<group>"; };
+		99AC05B92BB2BD710046E8C5 /* MainWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainWindow.swift; sourceTree = "<group>"; };
+		99AC05BA2BB2BD720046E8C5 /* Fish.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fish.swift; sourceTree = "<group>"; };
+		99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishDetailView.swift; sourceTree = "<group>"; };
+		99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishEditView.swift; sourceTree = "<group>"; };
+		99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishFilterView.swift; sourceTree = "<group>"; };
+		99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishListItemView.swift; sourceTree = "<group>"; };
+		99AC05BF2BB2BD720046E8C5 /* FishListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishListView.swift; sourceTree = "<group>"; };
+		99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishRepositoryView.swift; sourceTree = "<group>"; };
+		99AC05C22BB2BD720046E8C5 /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		99AC05C32BB2BD720046E8C5 /* Key.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
+		99AC05C42BB2BD720046E8C5 /* KeyboardShortcut.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
+		99AC05C52BB2BD720046E8C5 /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
+		99AC05C62BB2BD720046E8C5 /* KeyboardShortcutModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutModifier.swift; sourceTree = "<group>"; };
+		99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEvent.swift; sourceTree = "<group>"; };
+		99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScriptRunner.swift; sourceTree = "<group>"; };
+		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		99AC05CB2BB2BD720046E8C5 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		99AC05CC2BB2BD720046E8C5 /* DataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
+		99AC05CD2BB2BD720046E8C5 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		99AC05CE2BB2BD720046E8C5 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		99AC05CF2BB2BD720046E8C5 /* Monitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Monitor.swift; sourceTree = "<group>"; };
+		99AC05D02BB2BD720046E8C5 /* Storage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandBarView.swift; sourceTree = "<group>"; };
+		99AC05D32BB2BD720046E8C5 /* CommandField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandField.swift; sourceTree = "<group>"; };
+		99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandFieldViewController.swift; sourceTree = "<group>"; };
+		99AC05D52BB2BD720046E8C5 /* PromptManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptManager.swift; sourceTree = "<group>"; };
+		99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerticallyCenteredTextFieldCell.swift; sourceTree = "<group>"; };
+		99AC05D82BB2BD720046E8C5 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
+		99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessItemView.swift; sourceTree = "<group>"; };
+		99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessListView.swift; sourceTree = "<group>"; };
+		99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessView.swift; sourceTree = "<group>"; };
+		99AC05DD2BB2BD720046E8C5 /* WebBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
+		99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
+		99AC06042BB2BE440046E8C5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		99AC06062BB2BE6F0046E8C5 /* data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = data.db; sourceTree = "<group>"; };
+		99AC06072BB2BE930046E8C5 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +100,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99AC060E2BB413C20046E8C5 /* SQLite in Frameworks */,
+				99AC060B2BB413AD0046E8C5 /* SwiftyBeaver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,9 +127,20 @@
 		99AC05A72BB2BCD90046E8C5 /* TouchFish */ = {
 			isa = PBXGroup;
 			children = (
+				99AC06032BB2BE100046E8C5 /* Assets */,
+				99AC05D72BB2BD720046E8C5 /* CommandBar */,
+				99AC05C12BB2BD720046E8C5 /* Fish */,
+				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
+				99AC05DC2BB2BD720046E8C5 /* Process */,
+				99AC05DE2BB2BD720046E8C5 /* WebBrowser */,
+				99AC05B82BB2BD710046E8C5 /* AbstractView.swift */,
+				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
+				99AC05B92BB2BD710046E8C5 /* MainWindow.swift */,
+				99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */,
 				99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */,
-				99AC05AA2BB2BCD90046E8C5 /* ContentView.swift */,
+				99AC06042BB2BE440046E8C5 /* AppDelegate.swift */,
 				99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */,
+				99AC06072BB2BE930046E8C5 /* Main.storyboard */,
 				99AC05B12BB2BCDA0046E8C5 /* TouchFish.entitlements */,
 				99AC05AE2BB2BCDA0046E8C5 /* Preview Content */,
 			);
@@ -67,6 +153,87 @@
 				99AC05AF2BB2BCDA0046E8C5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		99AC05C12BB2BD720046E8C5 /* Fish */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05BA2BB2BD720046E8C5 /* Fish.swift */,
+				99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */,
+				99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */,
+				99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */,
+				99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */,
+				99AC05BF2BB2BD720046E8C5 /* FishListView.swift */,
+				99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */,
+			);
+			path = Fish;
+			sourceTree = "<group>";
+		};
+		99AC05C82BB2BD720046E8C5 /* Keyboard Shortcuts */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05C32BB2BD720046E8C5 /* Key.swift */,
+				99AC05C42BB2BD720046E8C5 /* KeyboardShortcut.swift */,
+				99AC05C52BB2BD720046E8C5 /* KeyboardShortcutManager.swift */,
+				99AC05C62BB2BD720046E8C5 /* KeyboardShortcutModifier.swift */,
+				99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */,
+			);
+			path = "Keyboard Shortcuts";
+			sourceTree = "<group>";
+		};
+		99AC05D12BB2BD720046E8C5 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05C82BB2BD720046E8C5 /* Keyboard Shortcuts */,
+				99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */,
+				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
+				99AC05CB2BB2BD720046E8C5 /* Config.swift */,
+				99AC05CC2BB2BD720046E8C5 /* DataBase.swift */,
+				99AC05CD2BB2BD720046E8C5 /* Functions.swift */,
+				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
+				99AC05CF2BB2BD720046E8C5 /* Monitor.swift */,
+				99AC05D02BB2BD720046E8C5 /* Storage.swift */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		99AC05D72BB2BD720046E8C5 /* CommandBar */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */,
+				99AC05D32BB2BD720046E8C5 /* CommandField.swift */,
+				99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */,
+				99AC05D52BB2BD720046E8C5 /* PromptManager.swift */,
+				99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */,
+			);
+			path = CommandBar;
+			sourceTree = "<group>";
+		};
+		99AC05DC2BB2BD720046E8C5 /* Process */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05D82BB2BD720046E8C5 /* Process.swift */,
+				99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */,
+				99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */,
+				99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */,
+			);
+			path = Process;
+			sourceTree = "<group>";
+		};
+		99AC05DE2BB2BD720046E8C5 /* WebBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05DD2BB2BD720046E8C5 /* WebBrowserView.swift */,
+			);
+			path = WebBrowser;
+			sourceTree = "<group>";
+		};
+		99AC06032BB2BE100046E8C5 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				99AC06062BB2BE6F0046E8C5 /* data.db */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -85,6 +252,10 @@
 			dependencies = (
 			);
 			name = TouchFish;
+			packageProductDependencies = (
+				99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */,
+				99AC060D2BB413C20046E8C5 /* SQLite */,
+			);
 			productName = TouchFish;
 			productReference = 99AC05A52BB2BCD90046E8C5 /* TouchFish.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +284,10 @@
 				Base,
 			);
 			mainGroup = 99AC059C2BB2BCD90046E8C5;
+			packageReferences = (
+				99AC06092BB413AD0046E8C5 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
+				99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */,
+			);
 			productRefGroup = 99AC05A62BB2BCD90046E8C5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -127,6 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99AC06082BB2BE930046E8C5 /* Main.storyboard in Resources */,
 				99AC05B02BB2BCDA0046E8C5 /* Preview Assets.xcassets in Resources */,
 				99AC05AD2BB2BCDA0046E8C5 /* Assets.xcassets in Resources */,
 			);
@@ -139,8 +315,42 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				99AC05AB2BB2BCD90046E8C5 /* ContentView.swift in Sources */,
+				99AC05E32BB2BD720046E8C5 /* Fish.swift in Sources */,
+				99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */,
+				99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */,
+				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
+				99AC05FC2BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift in Sources */,
+				99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */,
+				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
+				99AC06002BB2BD720046E8C5 /* ProcessView.swift in Sources */,
+				99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */,
+				99AC05EB2BB2BD720046E8C5 /* Key.swift in Sources */,
+				99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */,
+				99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */,
+				99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */,
+				99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */,
+				99AC05ED2BB2BD720046E8C5 /* KeyboardShortcutManager.swift in Sources */,
+				99AC05EE2BB2BD720046E8C5 /* KeyboardShortcutModifier.swift in Sources */,
+				99AC05FD2BB2BD720046E8C5 /* Process.swift in Sources */,
+				99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */,
+				99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */,
+				99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */,
+				99AC05FB2BB2BD720046E8C5 /* PromptManager.swift in Sources */,
+				99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */,
+				99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */,
+				99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */,
+				99AC05E22BB2BD720046E8C5 /* MainWindow.swift in Sources */,
+				99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */,
+				99AC05EC2BB2BD720046E8C5 /* KeyboardShortcut.swift in Sources */,
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
+				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
+				99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */,
+				99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */,
+				99AC05E12BB2BD720046E8C5 /* AbstractView.swift in Sources */,
+				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
+				99AC05F22BB2BD720046E8C5 /* Config.swift in Sources */,
+				99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */,
+				99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +489,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -306,7 +519,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -341,6 +557,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		99AC06092BB413AD0046E8C5 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyBeaver/SwiftyBeaver";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 99AC06092BB413AD0046E8C5 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
+			productName = SwiftyBeaver;
+		};
+		99AC060D2BB413C20046E8C5 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 99AC059D2BB2BCD90046E8C5 /* Project object */;
 }
