@@ -1,7 +1,5 @@
 import SwiftUI
 
-// todo: file name and class name -> Configuration; global name -> Config
-
 let Config = Configuration.it
 
 struct Configuration: Codable {

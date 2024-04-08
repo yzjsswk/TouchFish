@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996FEE482BC3E2E50047EB82 /* DataService.swift */; };
 		99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */; };
 		99AC05AD2BB2BCDA0046E8C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */; };
 		99AC05B02BB2BCDA0046E8C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AF2BB2BCDA0046E8C5 /* Preview Assets.xcassets */; };
@@ -25,7 +26,7 @@
 		99AC05ED2BB2BD720046E8C5 /* KeyboardShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C52BB2BD720046E8C5 /* KeyboardShortcutManager.swift */; };
 		99AC05EE2BB2BD720046E8C5 /* KeyboardShortcutModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C62BB2BD720046E8C5 /* KeyboardShortcutModifier.swift */; };
 		99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */; };
-		99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */; };
+		99AC05F02BB2BD720046E8C5 /* AppleScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScript.swift */; };
 		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
 		99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Configuration.swift */; };
 		99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CC2BB2BD720046E8C5 /* DataBase.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		996FEE482BC3E2E50047EB82 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		99AC05A52BB2BCD90046E8C5 /* TouchFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchFishApp.swift; sourceTree = "<group>"; };
 		99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -71,7 +73,7 @@
 		99AC05C52BB2BD720046E8C5 /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
 		99AC05C62BB2BD720046E8C5 /* KeyboardShortcutModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutModifier.swift; sourceTree = "<group>"; };
 		99AC05C72BB2BD720046E8C5 /* KeyEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEvent.swift; sourceTree = "<group>"; };
-		99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScriptRunner.swift; sourceTree = "<group>"; };
+		99AC05C92BB2BD720046E8C5 /* AppleScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScript.swift; sourceTree = "<group>"; };
 		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		99AC05CB2BB2BD720046E8C5 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		99AC05CC2BB2BD720046E8C5 /* DataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
@@ -185,7 +187,7 @@
 			isa = PBXGroup;
 			children = (
 				99AC05C82BB2BD720046E8C5 /* Keyboard Shortcuts */,
-				99AC05C92BB2BD720046E8C5 /* AppleScriptRunner.swift */,
+				99AC05C92BB2BD720046E8C5 /* AppleScript.swift */,
 				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
 				99AC05CB2BB2BD720046E8C5 /* Configuration.swift */,
 				99AC05CC2BB2BD720046E8C5 /* DataBase.swift */,
@@ -193,6 +195,7 @@
 				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
 				99AC05CF2BB2BD720046E8C5 /* Monitor.swift */,
 				99AC05D02BB2BD720046E8C5 /* Storage.swift */,
+				996FEE482BC3E2E50047EB82 /* DataService.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */,
 				99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */,
 				99AC05FB2BB2BD720046E8C5 /* PromptManager.swift in Sources */,
+				996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */,
 				99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */,
 				99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */,
 				99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */,
@@ -350,7 +354,7 @@
 				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
 				99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */,
 				99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */,
-				99AC05F02BB2BD720046E8C5 /* AppleScriptRunner.swift in Sources */,
+				99AC05F02BB2BD720046E8C5 /* AppleScript.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

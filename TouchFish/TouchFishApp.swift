@@ -2,9 +2,16 @@ import SwiftUI
 import Carbon.HIToolbox.Events
 
 class TouchFishApp {
+    
+    /**
+        todo: 1. delete old file on github: Config.swift, AppleScript.swift
+            2. fix: paste not work
+            3. fix: command bar error log
+     
+     */
 
     /**
-        appSupportPath: /Users/bytedance/Library/Application Support/TouchFish/
+        appSupportPath: /Users/yzjsswk/Library/Application Support/TouchFish/
          - log/: record log
          - resource/: image file etc.
          - config.json: user configuration (to do)

@@ -1,7 +1,6 @@
 import AppKit
 import CryptoKit
 
-// todo: file name -> AppleScript
 struct AppleScriptRunner {
     
     static func openWebUrl(with browser: String, url: String) {
