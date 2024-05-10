@@ -3,6 +3,7 @@ import SwiftUI
 struct FishListItemView: View {
     
     var id: Int
+    var identity: String
     @Binding var selectedFishId: Int
     var isSelected: Bool {
         return id == selectedFishId
@@ -14,8 +15,9 @@ struct FishListItemView: View {
     var isMarked: Bool
     var action: () -> Void
     
-    init(id: Int, selectedFishId: Binding<Int>, name: String? = nil, desc: String? = nil,  icon: Image? = nil, isMarked: Bool = false, action: @escaping () -> Void) {
+    init(id: Int, identity: String, selectedFishId: Binding<Int>, name: String? = nil, desc: String? = nil,  icon: Image? = nil, isMarked: Bool = false, action: @escaping () -> Void) {
         self.id = id
+        self.identity = identity
         self._selectedFishId = selectedFishId
         self.name = name
         self.desc = desc
@@ -49,18 +51,22 @@ struct FishListItemView: View {
                 Image(systemName: "bookmark.fill")
                     .foregroundColor(.orange)
                     .onTapGesture {
-                        let ok = DB.markFish(of: id, isMarked: false)
-                        if !ok {
-                            Log.warning("cancel mark fish(id=\(id)) failed")
+                        Task {
+                            let res = await Storage.unMarkFish(identity)
+                            if res == .fail {
+                                Log.error("click button to unmark fish - fail: storage.unMarkFish return fail, identity = \(identity)")
+                            }
                         }
                     }
             } else if isSelected {
                 Image(systemName: "bookmark")
                     .foregroundColor(.orange)
                     .onTapGesture {
-                        let ok = DB.markFish(of: id, isMarked: true)
-                        if !ok {
-                            Log.warning("mark fish(id=\(id)) failed")
+                        Task {
+                            let res = await Storage.markFish(identity)
+                            if res == .fail {
+                                Log.error("click button to mark fish - fail: storage.markFish return fail, identity = \(identity)")
+                            }
                         }
                     }
             }

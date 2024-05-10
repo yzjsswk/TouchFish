@@ -10,7 +10,7 @@ struct LogManager {
     static let fileDst = FileDestination()
     
     static func prepare() {
-        consoleDst.minLevel = .info
+        consoleDst.minLevel = .verbose
         fileDst.minLevel = .verbose
         updateLogFile()
         SwiftyBeaver.addDestination(consoleDst)

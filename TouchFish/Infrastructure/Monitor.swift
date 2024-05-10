@@ -106,29 +106,23 @@ struct MonitorManager {
                                 return
                             }
                             var extraInfo = ExtraInfo()
-                            Log.debug("save source App icon start")
                             if let sourceAppIcon = NSWorkspace.shared.frontmostApplication?.icon,
                                let sourceAppIconData = sourceAppIcon.tiffRepresentation {
-                                let savedPath = Storage.saveDataToFile(data: sourceAppIconData)
-                                if savedPath == nil {
-                                    Log.warning("save source app icon to file failed")
-                                }
                                 extraInfo.sourceAppIconIdentity = Functions.getMD5(of: sourceAppIconData)
-                            }
-                            Log.debug("save source App icon end")
-                            switch clipboardData.0 {
-                            case .text:
-                                let textValue = clipboardData.2 as! String
-                                let ok = Storage.saveTextFish(value: textValue, source: .clipboard, extraInfo: extraInfo)
-                                if !ok {
-                                    Log.warning("save text fish from clipboard failed")
-                                    Log.verbose(textValue)
+                                Task {
+                                    // todo: icon does not need pin
+                                    let ok = await Storage.addOrPinFish(value: sourceAppIconData, type: .tiff)
+                                    if !ok {
+                                        Log.warning("save fish from clipboard - sourceAppIcon save failed: Storage.addOrPinFish return false")
+                                    }
                                 }
-                            case .image:
-                                let image = clipboardData.2 as! NSImage
-                                let ok = Storage.saveImageFish(image: image, source: .clipboard, extraInfo: extraInfo)
+                            }
+                            Task {
+                                let ok = await Storage.addOrPinFish(
+                                    value: clipboardData.1, type: clipboardData.0, extraInfo: extraInfo
+                                )
                                 if !ok {
-                                    Log.warning("save image fish from clipboard failed")
+                                    Log.error("save fish from clipboard - fail: Storage.addOrPinFish return false")
                                 }
                             }
                         }

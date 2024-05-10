@@ -3,6 +3,7 @@ import SwiftUI
 struct FishEditView: View {
     
     var id: Int
+    var identity: String
     @State var description: String
     @State var content: String
     @State var descriptionAreaHeight: Int = 100
@@ -15,7 +16,7 @@ struct FishEditView: View {
     
     @Binding var isEditing: Bool
     
-    let allowSaveTypes: [FishType] = [.text, .image]
+    let allowSaveTypes: [FishType] = [.txt, .tiff]
     
     var body: some View {
         VStack {
@@ -33,18 +34,23 @@ struct FishEditView: View {
                             alertMessage = "type \(type) is not allowed to save"
                             return
                         }
-                        // todo: use storage
-                        let res = DB.updateFish(of: id, description: description, tag: tags)
-                        if !res {
-                            showSaveAlert = true
-                            alertMessage = "save failed"
-                            return
+                        Task {
+                            let res = await Storage.modifyFish(identity, description: description, tags: tags)
+                            switch res {
+                            case .success:
+                                isEditing = false
+                            case .skip:
+                                showSaveAlert = true
+                                alertMessage = "save skipped"
+                            case .fail:
+                                showSaveAlert = true
+                                alertMessage = "save failed"
+                            }
                         }
-                        isEditing = false
                     }
                     .alert(isPresented: $showSaveAlert) {
                         Alert(
-                            title: Text("save failed"),
+                            title: Text("modify fish"),
                             message: Text(alertMessage),
                             dismissButton: .default(Text("ok"))
                         )
@@ -230,7 +236,9 @@ struct TagEditView: View {
                 TextField("Search", text: $tagSearchText)
                 .frame(width: 100, height: 20)
                 .onChange(of: tagSearchText, perform: { value in
-                    let allTags = Cache.TagCache.tagMap.keys
+                    // todo
+//                    let allTags = Cache.TagCache.tagMap.keys
+                    let allTags: [String] = ["todo"]
                     tagPreviewList = allTags.filter { tg in
                         return tg.lowercased().contains(tagSearchText.lowercased())
                     }

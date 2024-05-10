@@ -29,7 +29,7 @@ struct MainView: View {
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
         .onAppear {
-            fishList = Cache.FishCache.fishList
+            fishList = Storage.getFishOfSearchCondition()
         }
         .onChange(of: text) { _ in
             if viewState == 0 && text.starts(with: "bm ") {
@@ -39,7 +39,7 @@ struct MainView: View {
                 viewState = 0
             }
             if viewState == 1 {
-                Cache.FishCache.valueOrDesc = text
+                Cache.fuzzys = text
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .ShouldShowFishView)) { _ in
@@ -50,7 +50,7 @@ struct MainView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFishList)) { _ in
             withAnimation {
-                fishList = Cache.FishCache.fishList
+                fishList = Storage.getFishOfSearchCondition()
             }
         }
     }

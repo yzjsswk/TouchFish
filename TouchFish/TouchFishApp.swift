@@ -4,18 +4,17 @@ import Carbon.HIToolbox.Events
 class TouchFishApp {
     
     /**
-        todo: 1. delete old file on github: Config.swift, AppleScript.swift
+        todo: 1. delete old file on github: Config.swift, AppleScriptRunner.swift?
             2. fix: paste not work
             3. fix: command bar error log
-     
      */
 
     /**
         appSupportPath: /Users/yzjsswk/Library/Application Support/TouchFish/
          - log/: record log
-         - resource/: image file etc.
+         - preview/: preview of fishdata
+         - resource/: downloaded fishdata
          - config.json: user configuration (to do)
-         - data.db: fish data
      */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
     static let logPath = TouchFishApp.appSupportPath.appendingPathComponent("log")

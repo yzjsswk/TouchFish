@@ -1,9 +1,13 @@
 import AppKit
 import SwiftUI
 
+// todo: sub type ?
 enum FishType: String, CaseIterable {
-    case text
-    case image
+    case txt
+    case tiff
+    case png
+    case jpg
+    case pdf
 }
 
 extension FishType {
@@ -12,62 +16,65 @@ extension FishType {
     }
 }
 
-enum Source: String, CaseIterable {
-    case clipboard
-    case manual
-    case process
-    case system
-}
-
-extension Source {
-    var index: Int? {
-        return Source.allCases.firstIndex { $0 == self }
-    }
-}
-
 struct Fish {
     
     var id: Int
     var identity: String
     var type: FishType
-    var source: Source
-    var value: String
+    var byteCount: Int
     var description: String
-    var tag: [String]
+    var tags: [String]
     var isMarked: Bool
+    var isLocked: Bool
     var extraInfo: ExtraInfo
     var createTime: String
     var updateTime: String
     
+    var value: Data? {
+        return Storage.getDataOfFish(self.identity)
+    }
+    
+    var textValue: String? {
+        return Storage.getTextByIdentity(self.identity)
+    }
+    
+    var imageValue: NSImage? {
+        return Storage.getImageByIdentity(self.identity)
+    }
+    
     var itemPreview: String {
         switch type {
-        case .text:
-            return extraInfo.linePreview ?? "..."
-        case .image:
-            return "[image\(id)]"
+        case .txt:
+            return self.extraInfo.linePreview ?? "..."
+        case .tiff:
+            return "[image\(self.id)]"
+        default:
+            return "undefined item preview"
         }
     }
     
     var sourceAppIcon: Image {
-        if let sourceAppIconIdentity = extraInfo.sourceAppIconIdentity, let sourceAppIcon = Storage.getImageByIdentity(identity: sourceAppIconIdentity) {
+        if let sourceAppIconIdentity = self.extraInfo.sourceAppIconIdentity,
+           let sourceAppIcon = Storage.getImageByIdentity(sourceAppIconIdentity) {
             return Image(nsImage: sourceAppIcon)
         }
         return Image(systemName: "fish")
     }
     
     func copyToClipboard() {
+        guard let fishData = self.value else {
+            Log.warning("copy fishdata to clipboard - fail: fish.value return nil, fish.identity=\(self.identity)")
+            return
+        }
         switch self.type {
-        case .text:
-            NSPasteboard.general.declareTypes([.string], owner: nil)
-            NSPasteboard.general.setData(self.value.data(using: .utf8), forType: .string)
-        case .image:
-            if let image = Storage.getImageByIdentity(identity: self.identity) {
-                NSPasteboard.general.declareTypes([.tiff], owner: nil)
-                NSPasteboard.general.setData(image.tiffRepresentation, forType: .tiff)
-            } else {
+        case .txt:
                 NSPasteboard.general.declareTypes([.string], owner: nil)
-                NSPasteboard.general.setData(self.value.data(using: .utf8), forType: .string)
-            }
+                NSPasteboard.general.setData(fishData, forType: .string)
+        case .tiff:
+                NSPasteboard.general.declareTypes([.tiff], owner: nil)
+                NSPasteboard.general.setData(fishData, forType: .tiff)
+        default:
+            Log.warning("copy fishdata to clipboard - fail: unsupported fish type, fish.type=\(self.type), fish.identity=\(self.identity)")
         }
     }
     
@@ -133,5 +140,6 @@ struct ExtraInfo: Codable {
     var height: Int?
     var width: Int?
     var size: Int?
+    
 }
 

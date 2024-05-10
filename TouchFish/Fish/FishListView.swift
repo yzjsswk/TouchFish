@@ -12,6 +12,7 @@ struct FishListView: View {
                     ForEach(fishList, id: \.id) { fish in
                         FishListItemView(
                             id: fish.id,
+                            identity: fish.identity,
                             selectedFishId: $selectedFishId,
                             name: fish.itemPreview,
                             icon: fish.sourceAppIcon,
@@ -29,11 +30,11 @@ struct FishListView: View {
                 .padding(.vertical)
             }
             HStack {
-                Text("images: [\(Cache.ImageCache.images.count):\(Cache.ImageCache.totalBytes/1024/1024)MB]")
-                    .font(.footnote)
+//                Text("images: [\(Cache.images.count):\(Cache.ImageCache.totalBytes/1024/1024)MB]")
+//                    .font(.footnote)
                 Spacer()
-                Text("total count: \(Cache.FishCache.totalCount)")
-                    .font(.footnote)
+//                Text("total count: \(Cache.FishCache.totalCount)")
+//                    .font(.footnote)
             }
             .frame(width: (Config.mainWidth - 30)/2)
 

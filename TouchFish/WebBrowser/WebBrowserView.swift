@@ -33,17 +33,18 @@ struct WebBrowserView: View {
             if ws.count < 1 || ws[0] != "bm" || text == "bm" {
                 return
             }
-            let res = ws.count == 1 ? DB.searchFish(type: [.text], tag: ["weburl"], limitNum: 300) :
-            DB.searchFish(valueOrDesc: String(ws[1]), type: [.text], tag: ["weburl"], limitNum: 300)
+//            let res = ws.count == 1 ? DB.searchFish(type: [.text], tag: ["weburl"], limitNum: 300) :
+//            DB.searchFish(valueOrDesc: String(ws[1]), type: [.text], tag: ["weburl"], limitNum: 300)
+            let res = [Fish]()
             for r in res {
                 var detail = ""
-                for t in r.tag {
+                for t in r.tags {
                     if t == "weburl" {
                         continue
                     }
                     detail += "[\(t)]"
                 }
-                detail += r.value
+                detail += r.textValue!
                 newWebURLs.append((r.id, r.description, detail))
             }
 //            withAnimation {
@@ -56,17 +57,18 @@ struct WebBrowserView: View {
             if ws.count < 1 || ws[0] != "bm" || text == "bm" {
                 return
             }
-            let res = ws.count == 1 ? DB.searchFish(type: [.text], tag: ["weburl"], limitNum: 300) :
-            DB.searchFish(valueOrDesc: String(ws[1]), type: [.text], tag: ["weburl"], limitNum: 300)
+            let res = [Fish]()
+//            let res = ws.count == 1 ? DB.searchFish(type: [.text], tag: ["weburl"], limitNum: 300) :
+//            DB.searchFish(valueOrDesc: String(ws[1]), type: [.text], tag: ["weburl"], limitNum: 300)
             for r in res {
                 var detail = ""
-                for t in r.tag {
+                for t in r.tags {
                     if t == "weburl" {
                         continue
                     }
                     detail += "[\(t)]"
                 }
-                detail += r.value
+                detail += r.textValue!
                 newWebURLs.append((r.id, r.description, detail))
             }
 //            withAnimation {

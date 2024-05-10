@@ -38,6 +38,8 @@ struct Configuration: Codable {
     // configurations
     
     var workPath: URL = TouchFishApp.appSupportPath
+    var dataServiceHost = "127.0.0.1"
+    var dataServicePort = "2233"
     var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 49), modifiers: [.option], events: [.keyDown])
     var fishRepositoryActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 9), modifiers: [.command,.option], events: [.keyDown])
     var maximumWidth: CGFloat = 775
@@ -55,7 +57,10 @@ struct Configuration: Codable {
     var processItemHeight: CGFloat = 40
     var fishItemHeight: CGFloat = 24
     var fishItemPreviewLength: Int = 40
+    var cacheRefreshLimitInterval: TimeInterval = 1
     var fileSaveLimitInterval: TimeInterval = 60
     var fileSaveLimitCount: Int = 5
+    
+    var maxResourceSizeAutoFetch: Int = 1024 * 1024 * 50
     
 }

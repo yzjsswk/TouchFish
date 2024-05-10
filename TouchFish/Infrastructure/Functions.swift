@@ -8,11 +8,11 @@ struct Functions {
         if let types = NSPasteboard.general.types, types.count > 0 {
             if let str = NSPasteboard.general.string(forType: .string),
                let data = str.data(using: .utf8) {
-                return (.text, data, str)
+                return (.txt, data, str)
             }
             if let data = NSPasteboard.general.data(forType: types[0]) {
                 if let img = NSImage(data: data) {
-                    return (.image, data, img)
+                    return (.tiff, data, img)
                 }
             }
             Log.warning("data type not supported from clipboard")
@@ -56,6 +56,25 @@ struct Functions {
             return nil
         }
         return NSImage(data: compressedData)
+    }
+    
+    func getTextInfo(_ text: String) -> (Int, Int, Int) {
+        let charCount = text.count
+        let wordCount = text.split(separator: " ", omittingEmptySubsequences: false).count
+        let rowCount = text.split(separator: "\n").count
+        return (charCount, wordCount, rowCount)
+    }
+    
+    func getLinePreview(_ text: String) -> String {
+        let firstLine = text.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n", omittingEmptySubsequences: false).first ?? ""
+        let linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : firstLine.prefix(Config.fishItemPreviewLength - 3)+"..."
+        return linePreview
+    }
+    
+    func getImageInfo(_ image: NSImage) -> (Int, Int) {
+        let height = Int(image.size.height)
+        let width = Int(image.size.width)
+        return (height, width)
     }
     
 }

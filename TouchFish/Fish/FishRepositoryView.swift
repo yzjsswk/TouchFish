@@ -16,10 +16,11 @@ struct FishRepositoryView: View {
         if isEditing, let selectedFish = fishList.first(where: { $0.id == selectedFishId} ) {
             FishEditView(
                 id: selectedFish.id,
+                identity: selectedFish.identity,
                 description: selectedFish.description,
-                content: selectedFish.value,
+                content: selectedFish.textValue ?? "",
                 selectedTypeIndex: selectedFish.type.index!,
-                tags: selectedFish.tag,
+                tags: selectedFish.tags,
                 isEditing: $isEditing
             )
             .padding(.horizontal)
@@ -52,11 +53,17 @@ struct FishRepositoryView: View {
                             .onTapGesture {
                                 let idx = fishList.firstIndex(where: { $0.id == selectedFishId })
                                 let nextFishId = (idx == nil || fishList.count < 2) ? 0 : fishList[idx == 0 ? 1 : idx!-1].id
-                                let ok = DB.deleteFish(of: selectedFishId)
-                                if !ok {
-                                    Log.warning("delete fish(id=\(selectedFishId) failed")
+                                let toDeleteFishIdentity = fishList[idx!].identity
+                                Task {
+                                    let res = await Storage.removeFish(toDeleteFishIdentity)
+                                    if res == .fail {
+                                        Log.error("click button to delete fish - fail: Storage.removeFish return fail, identity=\(toDeleteFishIdentity)")
+                                    } else {
+//                                        withAnimation {
+                                        selectedFishId = nextFishId
+//                                        }
+                                    }
                                 }
-                                selectedFishId = nextFishId
                             }
                     }
                     .padding(.horizontal, 5)
@@ -89,7 +96,7 @@ struct BookmarkButtonView: View {
                 .frame(width: 15, height: 20)
                 .foregroundColor(.orange)
                 .onTapGesture {
-                    Cache.FishCache.isMarked = nil
+                    Cache.isMarked = nil
                     isFiltering = false
                 }
         } else {
@@ -98,7 +105,7 @@ struct BookmarkButtonView: View {
                 .frame(width: 15, height: 20)
                 .foregroundColor(isHovered ? .orange : .gray)
                 .onTapGesture {
-                    Cache.FishCache.isMarked = true
+                    Cache.isMarked = true
                     isFiltering = true
                 }
                 .onHover { isHovered in
