@@ -2,7 +2,6 @@ import SwiftUI
 import Carbon.HIToolbox.Events
 
 class TouchFishApp {
-    
     /**
         todo: 1. delete old file on github: Config.swift, AppleScriptRunner.swift?
             2. fix: paste not work
@@ -14,29 +13,27 @@ class TouchFishApp {
          - log/: record log
          - preview/: preview of fishdata
          - resource/: downloaded fishdata
-         - config.json: user configuration (to do)
+         - config.json: user configuration
      */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
     static let logPath = TouchFishApp.appSupportPath.appendingPathComponent("log")
     static let resourcePath = TouchFishApp.appSupportPath.appendingPathComponent("resource")
-    static let dbPath = TouchFishApp.appSupportPath.appendingPathComponent("data.db")
+    static let previewPath = TouchFishApp.appSupportPath.appendingPathComponent("preview")
+    static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
     
     static var statusBar: StatusBar! // todo: icon, preference action, menu keyshortcut
     static var mainWindow: MainWindow!
     
     static func start() {
-        if !FileManager.default.fileExists(atPath: TouchFishApp.appSupportPath.path) {
-            try! FileManager.default.createDirectory(at: TouchFishApp.appSupportPath, withIntermediateDirectories: false, attributes: nil)
-        }
-        if !FileManager.default.fileExists(atPath: TouchFishApp.logPath.path) {
-            try! FileManager.default.createDirectory(at: TouchFishApp.logPath, withIntermediateDirectories: false, attributes: nil)
-        }
-        if !FileManager.default.fileExists(atPath: TouchFishApp.resourcePath.path) {
-            try! FileManager.default.createDirectory(at: TouchFishApp.resourcePath, withIntermediateDirectories: false, attributes: nil)
-        }
-        if !FileManager.default.fileExists(atPath: TouchFishApp.dbPath.path) {
-            let DBFileTemplate = Bundle.main.url(forResource: "data", withExtension: "db")!
-            try! FileManager.default.copyItem(atPath: DBFileTemplate.path, toPath: TouchFishApp.dbPath.path)
+        for path in [
+            TouchFishApp.appSupportPath,
+            TouchFishApp.logPath,
+            TouchFishApp.resourcePath,
+            TouchFishApp.previewPath
+        ] {
+            if !FileManager.default.fileExists(atPath: path.path) {
+                try! FileManager.default.createDirectory(at: path, withIntermediateDirectories: false, attributes: nil)
+            }
         }
         LogManager.prepare()
         Cache.start()

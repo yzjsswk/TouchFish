@@ -14,7 +14,7 @@ struct MainView: View {
 //                .shadow(color: .black, radius: 10)
 //                .colorMultiply(Config.mainBackgroundColor.color)
             VStack {
-//                CommandBarView(text: $text)
+                CommandBarView(text: $text)
                 switch viewState {
                 case 1:
                     FishRepositoryView(fishList: fishList)

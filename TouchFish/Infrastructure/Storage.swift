@@ -36,7 +36,11 @@ struct Storage {
     }
     
     static func addFish(
-        value: Data, description: String?, type: FishType, tags: [String]?, extraInfo: ExtraInfo?
+        value: Data, 
+        description: String?,
+        type: FishType,
+        tags: [String]?,
+        extraInfo: ExtraInfo?
     ) async -> OperateResult {
         defer {
             Cache.refresh()
@@ -96,7 +100,7 @@ struct Storage {
         case .success(let resp):
             switch resp.status {
             case .success:
-                break
+                try? FileManager.default.removeItem(at: TouchFishApp.previewPath.appendingPathComponent(identity))
             case .skip:
                 Log.warning("Storage.removeFish - skip: resp.status = skip, msg=\(resp.msg)")
             case .fail:
@@ -224,7 +228,8 @@ struct Storage {
         type: FishType,
         description: String? = nil,
         tags: [String]? = nil,
-        extraInfo: ExtraInfo? = nil
+        extraInfo: ExtraInfo? = nil,
+        pin: Bool
     ) async -> Bool {
         let identity = Functions.getMD5(of: value)
         guard let sameFish = await Storage.searchFish(identity: identity) else {
@@ -239,6 +244,9 @@ struct Storage {
                 Log.error("Storage.addOrPinFish - fail: add fish fail")
                 return false
             }
+            return true
+        }
+        if !pin {
             return true
         }
         let pinResult = await Storage.pinFish(identity)
@@ -262,16 +270,16 @@ struct Storage {
         }
     }
     
-    static func getDataOfFish(_ identity: String) -> Data? {
-        return Cache.resourceCache[identity]
+    static func getPreviewOfFish(_ identity: String) -> Data? {
+        return Cache.previewDataCache[identity]
     }
     
-    static func getTextByIdentity(_ identity: String) -> String? {
-        return Cache.textValueCache[identity]
+    static func getTextPreviewByIdentity(_ identity: String) -> String? {
+        return Cache.textPreviewCache[identity]
     }
     
-    static func getImageByIdentity(_ identity: String) -> NSImage? {
-        return Cache.imageValueCache[identity]
+    static func getImagePreviewByIdentity(_ identity: String) -> NSImage? {
+        return Cache.imagePreviewCache[identity]
     }
     
 

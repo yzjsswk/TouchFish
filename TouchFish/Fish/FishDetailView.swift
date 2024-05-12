@@ -19,7 +19,7 @@ struct FishDetailView: View {
                     switch selectedFish.type {
                     case .txt:
                         VStack {
-                            if let textValue = selectedFish.textValue {
+                            if let textValue = selectedFish.textPreview {
                                 Text(textValue.prefix(1000))
                                     .font(.callout)
                                 if textValue.count > 1000 {
@@ -28,18 +28,21 @@ struct FishDetailView: View {
                                         .bold()
                                 }
                             } else {
-                                Text("Resource Not Found")
+                                Text("No Preview")
                                     .font(.callout)
                                     .foregroundStyle(Color.red)
                             }
                         }
-                    case .tiff:
-                        if let image = Storage.getImageByIdentity(selectedFish.identity) {
+                    case .tiff, .png, .jpg:
+                        if let image = selectedFish.imagePreview {
                             Image(nsImage: image)
                                 .resizable()
                                 .scaledToFit()
+//                                .aspectRatio(contentMode: .fit)
+//                                .frame(maxWidth: (Config.mainWidth - 30)/2)
+                                
                         } else {
-                            Text("Image File Not Found")
+                            Text("No Preview")
                                 .font(.callout)
                                 .foregroundColor(.red)
                         }
@@ -78,19 +81,21 @@ struct FishDetailView: View {
                         if selectedFish.description.count > 0 {
                             DetailItemView(itemName: "Description", itemValue: selectedFish.description)
                         }
-                        
+                        DetailItemView(itemName: "Identity", itemValue: selectedFish.identity)
                         DetailItemView(itemName: "Type", itemValue: selectedFish.type.rawValue)
-//                        DetailItemView(itemName: "Source", itemValue: selectedFish.source.rawValue)
-                        if selectedFish.type == .txt {
-                            DetailItemView(itemName: "Char Count", itemValue: String(selectedFish.extraInfo.charCount ?? 0))
-                            DetailItemView(itemName: "Word Count", itemValue: String(selectedFish.extraInfo.wordCount ?? 0))
-                            DetailItemView(itemName: "Row Count", itemValue: String(selectedFish.extraInfo.rowCount ?? 0))
+                        DetailItemView(itemName: "Source Application", itemValue: selectedFish.extraInfo.sourceAppName)
+                        switch selectedFish.type {
+                        case .txt:
+                            DetailItemView(itemName: "Char Count", itemValue: selectedFish.extraInfo.charCount)
+                            DetailItemView(itemName: "Word Count", itemValue: selectedFish.extraInfo.wordCount)
+                            DetailItemView(itemName: "Row Count", itemValue: selectedFish.extraInfo.rowCount)
+                        case .tiff, .png, .jpg:
+                            DetailItemView(itemName: "Width", itemValue: selectedFish.extraInfo.width)
+                            DetailItemView(itemName: "Height", itemValue: selectedFish.extraInfo.height)
+                        default:
+                            DetailItemView(itemName: "", itemValue: "")
                         }
-                        if selectedFish.type == .tiff {
-                            DetailItemView(itemName: "Width", itemValue: String(selectedFish.extraInfo.width ?? 0))
-                            DetailItemView(itemName: "Height", itemValue: String(selectedFish.extraInfo.height ?? 0))
-                        }
-                        DetailItemView(itemName: "Size", itemValue: String(selectedFish.byteCount / 1024 / 1024) + "MB")
+                        DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(selectedFish.byteCount))
                         DetailItemView(itemName: "Create Time", itemValue: selectedFish.createTime)
                         DetailItemView(itemName: "Update Time", itemValue: selectedFish.updateTime)
                     }
@@ -106,16 +111,31 @@ struct FishDetailView: View {
 struct DetailItemView: View {
     
     var itemName: String
-    var itemValue: String
+    var itemValue: String?
+    
+    init(itemName: String, itemValue: String? = nil) {
+        self.itemName = itemName
+        self.itemValue = itemValue
+    }
+    
+    init(itemName: String, itemValue: Int? = nil) {
+        self.itemName = itemName
+        if let itemValue = itemValue {
+            self.itemValue = String(itemValue)
+        }
+    }
     
     var body: some View {
         HStack {
-            Text(itemName)
-                .font(.system(.caption2, design: .monospaced))
-                .bold()
-            Spacer()
-            Text(itemValue)
-                .font(.system(.body, design: .monospaced))
+            if let itemValue = itemValue {
+                Text(itemName)
+                    .font(.system(.caption2, design: .monospaced))
+                    .bold()
+                Spacer()
+                Text(itemValue)
+                    .font(.system(.body, design: .monospaced))
+            }
+
         }
     }
     

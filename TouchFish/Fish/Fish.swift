@@ -30,49 +30,68 @@ struct Fish {
     var createTime: String
     var updateTime: String
     
-    var value: Data? {
-        return Storage.getDataOfFish(self.identity)
+    var preview: Data? {
+        return Storage.getPreviewOfFish(self.identity)
     }
     
-    var textValue: String? {
-        return Storage.getTextByIdentity(self.identity)
+    var textPreview: String? {
+        return Storage.getTextPreviewByIdentity(self.identity)
     }
     
-    var imageValue: NSImage? {
-        return Storage.getImageByIdentity(self.identity)
+    var imagePreview: NSImage? {
+        return Storage.getImagePreviewByIdentity(self.identity)
+    }
+    
+    var defaultLinePreview: String {
+        return "\(self.type.rawValue):\(self.identity)"
     }
     
     var itemPreview: String {
         switch type {
         case .txt:
-            return self.extraInfo.linePreview ?? "..."
-        case .tiff:
-            return "[image\(self.id)]"
+            if self.description.count > 0 {
+                return Functions.getLinePreview(self.description)
+            }
+            if let textPreview = self.textPreview {
+                return Functions.getLinePreview(textPreview)
+            }
+            return self.defaultLinePreview
+        case .tiff, .png, .jpg:
+            if self.description.count > 0 {
+                return Functions.getLinePreview(self.description)
+            }
+            return self.defaultLinePreview
         default:
-            return "undefined item preview"
+            if self.description.count > 0 {
+                return Functions.getLinePreview(self.description)
+            }
+            return self.defaultLinePreview
         }
     }
     
-    var sourceAppIcon: Image {
-        if let sourceAppIconIdentity = self.extraInfo.sourceAppIconIdentity,
-           let sourceAppIcon = Storage.getImageByIdentity(sourceAppIconIdentity) {
-            return Image(nsImage: sourceAppIcon)
+    var fishIcon: Image {
+        switch type {
+        case .txt:
+            return Image(systemName: "doc.plaintext")
+        case .tiff, .png, .jpg:
+            return Image(systemName: "photo")
+        default:
+            return Image(systemName: "fish")
         }
-        return Image(systemName: "fish")
     }
     
     func copyToClipboard() {
-        guard let fishData = self.value else {
+        guard let fishData = self.preview else {
             Log.warning("copy fishdata to clipboard - fail: fish.value return nil, fish.identity=\(self.identity)")
             return
         }
         switch self.type {
         case .txt:
-                NSPasteboard.general.declareTypes([.string], owner: nil)
-                NSPasteboard.general.setData(fishData, forType: .string)
-        case .tiff:
-                NSPasteboard.general.declareTypes([.tiff], owner: nil)
-                NSPasteboard.general.setData(fishData, forType: .tiff)
+            NSPasteboard.general.declareTypes([.string], owner: nil)
+            NSPasteboard.general.setData(fishData, forType: .string)
+        case .tiff, .png, .jpg: // todo: ok?
+            NSPasteboard.general.declareTypes([.tiff], owner: nil)
+            NSPasteboard.general.setData(fishData, forType: .tiff)
         default:
             Log.warning("copy fishdata to clipboard - fail: unsupported fish type, fish.type=\(self.type), fish.identity=\(self.identity)")
         }
@@ -92,7 +111,7 @@ struct ExtraInfo: Codable {
             do {
                 return try decoder.decode(ExtraInfo.self, from: data)
             } catch {
-                Log.error("extra info decode error: \(error)")
+                Log.error("parse extraInfo from json str - fail, err=\(error)")
             }
         }
         return nil;
@@ -105,41 +124,30 @@ struct ExtraInfo: Codable {
             let data = try encoder.encode(self)
             return String(data: data, encoding: .utf8)
         } catch {
-            Log.error("extra info encode error: \(error)")
+            Log.error("parse extraInfo to json str - fail, err=\(error)")
         }
         return nil
     }
     
-    mutating func fillTextInfo(_ value: String, _ description: String?) {
-        let linePreviewText = description ?? value
-        let firstLine = linePreviewText.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n", omittingEmptySubsequences: false).first ?? ""
-        linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : firstLine.prefix(Config.fishItemPreviewLength - 3)+"..."
-        charCount = value.count
-        wordCount = value.split(separator: " ", omittingEmptySubsequences: false).count
-        rowCount = value.split(separator: "\n").count
-    }
+    // extra info
     
-    mutating func fillImageInfo(_ image: NSImage) {
-        height = Int(image.size.height)
-        width = Int(image.size.width)
-        if let tiffRepresentation = image.tiffRepresentation,
-           let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) {
-            let properties = [NSBitmapImageRep.PropertyKey.compressionFactor: NSNumber(value: 1.0)]
-            if let imageData = bitmapImage.representation(using: .png, properties: properties) {
-                let imageSize = Double(imageData.count) / 1024.0 // 图片大小以 KB 为单位
-                size = Int(imageSize)
-            }
-        }
-    }
-    
+    var sourceAppName: String?
     var sourceAppIconIdentity: String?
-    var linePreview: String?
     var charCount: Int?
     var wordCount: Int?
     var rowCount: Int?
-    var height: Int?
     var width: Int?
-    var size: Int?
+    var height: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case sourceAppName = "source_app_name"
+        case sourceAppIconIdentity = "source_app_icon_identity"
+        case charCount = "char_count"
+        case wordCount = "word_count"
+        case rowCount = "row_count"
+        case width = "width"
+        case height = "height"
+    }
     
 }
 

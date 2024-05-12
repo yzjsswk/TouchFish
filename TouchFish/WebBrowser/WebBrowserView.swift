@@ -44,7 +44,7 @@ struct WebBrowserView: View {
                     }
                     detail += "[\(t)]"
                 }
-                detail += r.textValue!
+                detail += r.textPreview!
                 newWebURLs.append((r.id, r.description, detail))
             }
 //            withAnimation {
@@ -68,7 +68,7 @@ struct WebBrowserView: View {
                     }
                     detail += "[\(t)]"
                 }
-                detail += r.textValue!
+                detail += r.textPreview!
                 newWebURLs.append((r.id, r.description, detail))
             }
 //            withAnimation {

@@ -6,30 +6,28 @@ struct Configuration: Codable {
     
     static let it = readFromFile()
     
-    static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
-    
     static func readFromFile() -> Configuration {
-        if FileManager.default.fileExists(atPath: Configuration.configPath.path) {
-            do {
-                let configData = try Data(contentsOf: Configuration.configPath)
-                return try JSONDecoder().decode(Configuration.self, from: configData)
-            } catch {
-                Log.error("Error when read config file, path=\(Configuration.configPath.path), error=\(error)")
-                let alert = NSAlert()
-                alert.alertStyle = .warning
-                alert.messageText = "Configuration Error"
-                alert.informativeText = "Something is wrong with your configuration file at: \(Configuration.configPath.path).\n\n Use default configuration."
-                alert.runModal()
-                return Configuration()
-            }
+        if !FileManager.default.fileExists(atPath: TouchFishApp.configPath.path) {
+            Log.warning("read config - use default configuration: config file not exists, path=\(TouchFishApp.configPath.path)")
+            return Configuration()
         }
-        Log.warning("config file \(Configuration.configPath.path) not found, use default configuration.")
-        return Configuration()
+        do {
+            let configData = try Data(contentsOf: TouchFishApp.configPath)
+            return try JSONDecoder().decode(Configuration.self, from: configData)
+        } catch {
+            Log.warning("read config - use default configuration: read config file failed, path=\(TouchFishApp.configPath.path), err=\(error)")
+//            let alert = NSAlert()
+//            alert.alertStyle = .warning
+//            alert.messageText = "Configuration Error"
+//            alert.informativeText = "Something is wrong with your configuration file at: \(Configuration.configPath.path).\n\n Use default configuration."
+//            alert.runModal()
+            return Configuration()
+        }
     }
     
     func save() {
         do {
-            try JSONEncoder().encode(self).write(to: Configuration.configPath)
+            try JSONEncoder().encode(self).write(to: TouchFishApp.configPath)
         } catch {
             fatalError("Failed to write the configuration. Error: \n\(error)")
         }
@@ -37,7 +35,6 @@ struct Configuration: Codable {
     
     // configurations
     
-    var workPath: URL = TouchFishApp.appSupportPath
     var dataServiceHost = "127.0.0.1"
     var dataServicePort = "2233"
     var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 49), modifiers: [.option], events: [.keyDown])

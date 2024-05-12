@@ -18,7 +18,7 @@ struct FishRepositoryView: View {
                 id: selectedFish.id,
                 identity: selectedFish.identity,
                 description: selectedFish.description,
-                content: selectedFish.textValue ?? "",
+                content: selectedFish.textPreview ?? "",
                 selectedTypeIndex: selectedFish.type.index!,
                 tags: selectedFish.tags,
                 isEditing: $isEditing

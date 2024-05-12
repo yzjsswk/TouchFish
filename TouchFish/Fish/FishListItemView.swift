@@ -28,11 +28,13 @@ struct FishListItemView: View {
     
     var body: some View {
         HStack(spacing: 10) {
-            icon?
-            .resizable()
-            .scaledToFit()
-//            .font(.largeTitle)
-//            .foregroundColor(.red)
+            HStack {
+                icon?
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(isSelected ? Color.white: Color.black)
+            }
+            .frame(width: Config.fishItemHeight-4)
             VStack(alignment: .leading, spacing: 4) {
                 if let name = name {
                     Text(name)

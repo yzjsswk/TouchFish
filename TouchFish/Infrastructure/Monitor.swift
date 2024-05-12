@@ -106,20 +106,25 @@ struct MonitorManager {
                                 return
                             }
                             var extraInfo = ExtraInfo()
-                            if let sourceAppIcon = NSWorkspace.shared.frontmostApplication?.icon,
-                               let sourceAppIconData = sourceAppIcon.tiffRepresentation {
-                                extraInfo.sourceAppIconIdentity = Functions.getMD5(of: sourceAppIconData)
+                            if let sourceApp = NSWorkspace.shared.frontmostApplication,
+                               let sourceAppIcon = sourceApp.icon,
+                               let sourceAppName = sourceApp.localizedName,
+                               let sourceAppIconData = sourceAppIcon.tiffRepresentation,
+                               let pngData = NSBitmapImageRep(data: sourceAppIconData)?.representation(using: .png, properties: [:]) {
+                                extraInfo.sourceAppName = sourceAppName
+                                extraInfo.sourceAppIconIdentity = Functions.getMD5(of: pngData)
+                                let ex = extraInfo
                                 Task {
-                                    // todo: icon does not need pin
-                                    let ok = await Storage.addOrPinFish(value: sourceAppIconData, type: .tiff)
+                                    let ok = await Storage.addOrPinFish(value: pngData, type: .png, description: "Icon of \(sourceAppName)", extraInfo: ex, pin: false)
                                     if !ok {
                                         Log.warning("save fish from clipboard - sourceAppIcon save failed: Storage.addOrPinFish return false")
                                     }
                                 }
                             }
+                            let ex = extraInfo
                             Task {
                                 let ok = await Storage.addOrPinFish(
-                                    value: clipboardData.1, type: clipboardData.0, extraInfo: extraInfo
+                                    value: clipboardData.1, type: clipboardData.0, extraInfo: ex, pin: true
                                 )
                                 if !ok {
                                     Log.error("save fish from clipboard - fail: Storage.addOrPinFish return false")

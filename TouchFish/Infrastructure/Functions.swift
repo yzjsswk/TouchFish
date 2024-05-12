@@ -42,39 +42,26 @@ struct Functions {
         return hashString
     }
     
-    static func compressImageByPNG(_ image: NSImage, _ compressionFactor: CGFloat) -> NSImage? {
-        guard let imageData = image.tiffRepresentation else {
-            return nil
-        }
-        guard let imageRep = NSBitmapImageRep(data: imageData) else {
-            return nil
-        }
-        let properties: [NSBitmapImageRep.PropertyKey: Any] = [
-            .compressionFactor: compressionFactor
-        ]
-        guard let compressedData = imageRep.representation(using: .tiff, properties: properties) else {
-            return nil
-        }
-        return NSImage(data: compressedData)
-    }
-    
-    func getTextInfo(_ text: String) -> (Int, Int, Int) {
-        let charCount = text.count
-        let wordCount = text.split(separator: " ", omittingEmptySubsequences: false).count
-        let rowCount = text.split(separator: "\n").count
-        return (charCount, wordCount, rowCount)
-    }
-    
-    func getLinePreview(_ text: String) -> String {
+    static func getLinePreview(_ text: String) -> String {
         let firstLine = text.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n", omittingEmptySubsequences: false).first ?? ""
         let linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : firstLine.prefix(Config.fishItemPreviewLength - 3)+"..."
         return linePreview
     }
     
-    func getImageInfo(_ image: NSImage) -> (Int, Int) {
-        let height = Int(image.size.height)
-        let width = Int(image.size.width)
-        return (height, width)
+    static func descByteCount(_ byteCount: Int) -> String {
+        if byteCount < 1024 {
+            return "\(byteCount)B"
+        }
+        let KBCount = byteCount / 1024
+        if KBCount < 1024 {
+            return "\(KBCount)KB"
+        }
+        let MBCount = KBCount / 1024
+        if MBCount < 1024 {
+            return "\(MBCount)MB"
+        }
+        let GBCount = Double(MBCount) / 1024
+        return "\(GBCount)GB"
     }
     
 }

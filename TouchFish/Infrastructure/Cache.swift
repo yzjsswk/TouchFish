@@ -3,12 +3,17 @@ import AppKit
 struct Cache {
     
     static var fishCache: [String:Fish] = [:]
-    static var resourceCache: [String:Data] = [:]
-    static var textValueCache: [String:String] = [:]
-    static var imageValueCache: [String:NSImage] = [:]
+    static var previewDataCache: [String:Data] = [:]
+    static var textPreviewCache: [String:String] = [:]
+    static var imagePreviewCache: [String:NSImage] = [:]
     
     static var totalCount = 0
-    // todo: statistics
+    static var typeCount = [String:Int]()
+    static var tagCount = [String:Int]()
+    static var markCount = 0
+    static var unMarkCount = 0
+    static var lockCount = 0
+    static var unLockCount = 0
     
     static var fuzzys: String? = nil { didSet { refresh() } }
     static var value: String? = nil { didSet { refresh() } }
@@ -36,15 +41,38 @@ struct Cache {
     static func refresh() {
         refreshLock.wait()
         Task {
-            Log.debug("refresh cache - start")
+//            Log.debug("refresh cache - start")
+            refreshStats()
             await refreshFish()
-            await refreshResource()
-            refreshValueCache()
+            await refreshPreview()
+            refreshPreviewByType()
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .ShouldRefreshFishList, object: nil)
             }
-            Log.debug("refresh cache - end")
+//            Log.debug("refresh cache - end")
             refreshLock.signal()
+        }
+    }
+    
+    static func refreshStats() {
+        Task {
+            let result = await DataService.statistic()
+            guard case .success(let resp) = result else {
+                Log.warning("refresh statistic - fail: request data service fail")
+                Log.verbose(result)
+                return
+            }
+            guard let stats = resp.data else {
+                Log.warning("refresh statistic - fail: resp.data = nil")
+                return
+            }
+            totalCount = stats.totalCount
+            typeCount = stats.type
+            tagCount = stats.tag
+            markCount = stats.mark["marked", default: 0]
+            unMarkCount = stats.mark["unmarked", default: 0]
+            lockCount = stats.mark["locked", default: 0]
+            unLockCount = stats.mark["unlocked", default: 0]
         }
     }
     
@@ -73,29 +101,31 @@ struct Cache {
         fishCache = fishList.reduce(into: [:]) { $0[$1.identity] = $1 }
     }
     
-    static func refreshResource() async {
-        let resourcePath = Config.workPath.appendingPathComponent("resource")
-//        let resourceFileNames = (try? FileManager.default.contentsOfDirectory(atPath: resourcePath.path)) ?? []
+    static func refreshPreview() async {
+//        let existingPreviewIdentitys = (try? FileManager.default.contentsOfDirectory(atPath: TouchFishApp.previewPath.path)) ?? []
+//        for identity in existingPreviewIdentitys {
+//            if fishCache
+//        }
         await withTaskGroup(of: URL?.self) { taskgroup in
             for (identity, _) in fishCache {
-                if resourceCache.keys.contains(identity) {
+                if previewDataCache.keys.contains(identity) {
                     continue
                 }
-                let curPath = resourcePath.appendingPathComponent(identity)
+                let curPath = TouchFishApp.previewPath.appendingPathComponent(identity)
                 if let curData = FileManager.default.contents(atPath: curPath.path) {
-                    resourceCache[identity] = curData
+                    previewDataCache[identity] = curData
                     continue
                 }
                 // todo: max resource size auto fetch
                 taskgroup.addTask {
-                    let result = await DataService.fetchResource(identity: identity, savePath: curPath)
+                    let result = await DataService.fetchPreview(identity: identity, savePath: curPath)
                     switch result {
                     case .success(let url):
                         let curData = FileManager.default.contents(atPath: url.path)
-                        resourceCache[identity] = curData
+                        previewDataCache[identity] = curData
                         return url
                     case .failure(let err):
-                        Log.error("refresh resource cache - fetch fishdata failed: DataService.fetchResource return failure, err=\(err)")
+                        Log.error("refresh preview cache - fetch preview data failed: DataService.fetchPreview return failure, err=\(err)")
                         return nil
                     }
                 }
@@ -103,30 +133,34 @@ struct Cache {
         }
     }
     
-    static func refreshValueCache() {
+    static func refreshPreviewByType() {
         for (identity, fish) in fishCache {
-            guard let fishData = resourceCache[identity] else {
-                Log.warning("refresh value cache - value cache lose one: fishdata not found in resourceCache, identity=\(identity)")
+            guard let previewData = previewDataCache[identity] else {
+                Log.warning("refresh preview by type - ignore a preview: preview data not found in previewCache, identity=\(identity)")
+                continue
+            }
+            if previewData.isEmpty {
+                Log.warning("refresh preview by type - ignore a preview: preview data is empty, identity=\(identity)")
                 continue
             }
             switch fish.type {
             case .txt:
-                if textValueCache.keys.contains(identity) {
+                if textPreviewCache.keys.contains(identity) {
                     continue
                 }
-                if let value = String(data: fishData, encoding: .utf8) {
-                    textValueCache[identity] = value
+                if let value = String(data: previewData, encoding: .utf8) {
+                    textPreviewCache[identity] = value
                 } else {
-                    Log.warning("refresh value cache - value cache lose one: fishdata parse fail, identity=\(identity), type=\(fish.type)")
+                    Log.warning("refresh preview by type - ignore a preview: preview data parse fail, identity=\(identity), type=\(fish.type)")
                 }
-            case .tiff:
-                if imageValueCache.keys.contains(identity) {
+            case .tiff, .png, .jpg:
+                if imagePreviewCache.keys.contains(identity) {
                     continue
                 }
-                if let value = NSImage(data: fishData) {
-                    imageValueCache[identity] = value
+                if let value = NSImage(data: previewData) {
+                    imagePreviewCache[identity] = value
                 } else {
-                    Log.warning("refresh value cache - value cache lose one: fishdata parse fail, identity=\(identity), type=\(fish.type)")
+                    Log.warning("refresh preview by type - ignore a preview: preview data parse fail, identity=\(identity), type=\(fish.type)")
                 }
             default:
                 break
