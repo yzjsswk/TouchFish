@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct ProcessView: View {
+struct RecipeView: View {
     
     var body: some View {
-        ProcessListView()
+        RecipeListView()
     }
     
 }

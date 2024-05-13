@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProcessItemView: View {
+struct RecipeItemView: View {
     
     var name: String
     var desc: String?

@@ -38,10 +38,10 @@
 		99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D32BB2BD720046E8C5 /* CommandField.swift */; };
 		99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */; };
 		99AC05FB2BB2BD720046E8C5 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D52BB2BD720046E8C5 /* CommandManager.swift */; };
-		99AC05FD2BB2BD720046E8C5 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D82BB2BD720046E8C5 /* Process.swift */; };
-		99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */; };
-		99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */; };
-		99AC06002BB2BD720046E8C5 /* ProcessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */; };
+		99AC05FD2BB2BD720046E8C5 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D82BB2BD720046E8C5 /* Recipe.swift */; };
+		99AC05FE2BB2BD720046E8C5 /* RecipeItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D92BB2BD720046E8C5 /* RecipeItemView.swift */; };
+		99AC05FF2BB2BD720046E8C5 /* RecipeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DA2BB2BD720046E8C5 /* RecipeListView.swift */; };
+		99AC06002BB2BD720046E8C5 /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DB2BB2BD720046E8C5 /* RecipeView.swift */; };
 		99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DD2BB2BD720046E8C5 /* WebBrowserView.swift */; };
 		99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */; };
 		99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC06042BB2BE440046E8C5 /* AppDelegate.swift */; };
@@ -83,10 +83,10 @@
 		99AC05D32BB2BD720046E8C5 /* CommandField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandField.swift; sourceTree = "<group>"; };
 		99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandFieldViewController.swift; sourceTree = "<group>"; };
 		99AC05D52BB2BD720046E8C5 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
-		99AC05D82BB2BD720046E8C5 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
-		99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessItemView.swift; sourceTree = "<group>"; };
-		99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessListView.swift; sourceTree = "<group>"; };
-		99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessView.swift; sourceTree = "<group>"; };
+		99AC05D82BB2BD720046E8C5 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		99AC05D92BB2BD720046E8C5 /* RecipeItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeItemView.swift; sourceTree = "<group>"; };
+		99AC05DA2BB2BD720046E8C5 /* RecipeListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeListView.swift; sourceTree = "<group>"; };
+		99AC05DB2BB2BD720046E8C5 /* RecipeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
 		99AC05DD2BB2BD720046E8C5 /* WebBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		99AC06042BB2BE440046E8C5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 				99AC05D72BB2BD720046E8C5 /* CommandBar */,
 				99AC05C12BB2BD720046E8C5 /* Fish */,
 				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
-				99AC05DC2BB2BD720046E8C5 /* Process */,
+				99AC05DC2BB2BD720046E8C5 /* Recipe */,
 				99AC05DE2BB2BD720046E8C5 /* WebBrowser */,
 				99AC05B82BB2BD710046E8C5 /* AbstractView.swift */,
 				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
@@ -206,15 +206,15 @@
 			path = CommandBar;
 			sourceTree = "<group>";
 		};
-		99AC05DC2BB2BD720046E8C5 /* Process */ = {
+		99AC05DC2BB2BD720046E8C5 /* Recipe */ = {
 			isa = PBXGroup;
 			children = (
-				99AC05D82BB2BD720046E8C5 /* Process.swift */,
-				99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */,
-				99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */,
-				99AC05DB2BB2BD720046E8C5 /* ProcessView.swift */,
+				99AC05D82BB2BD720046E8C5 /* Recipe.swift */,
+				99AC05D92BB2BD720046E8C5 /* RecipeItemView.swift */,
+				99AC05DA2BB2BD720046E8C5 /* RecipeListView.swift */,
+				99AC05DB2BB2BD720046E8C5 /* RecipeView.swift */,
 			);
-			path = Process;
+			path = Recipe;
 			sourceTree = "<group>";
 		};
 		99AC05DE2BB2BD720046E8C5 /* WebBrowser */ = {
@@ -307,12 +307,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				99AC05E32BB2BD720046E8C5 /* Fish.swift in Sources */,
-				99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */,
+				99AC05FF2BB2BD720046E8C5 /* RecipeListView.swift in Sources */,
 				99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */,
 				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
 				99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */,
 				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
-				99AC06002BB2BD720046E8C5 /* ProcessView.swift in Sources */,
+				99AC06002BB2BD720046E8C5 /* RecipeView.swift in Sources */,
 				99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */,
 				99AC05EB2BB2BD720046E8C5 /* Key.swift in Sources */,
 				99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */,
@@ -320,7 +320,7 @@
 				99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */,
 				99AC05ED2BB2BD720046E8C5 /* KeyboardShortcutManager.swift in Sources */,
 				99AC05EE2BB2BD720046E8C5 /* KeyboardShortcutModifier.swift in Sources */,
-				99AC05FD2BB2BD720046E8C5 /* Process.swift in Sources */,
+				99AC05FD2BB2BD720046E8C5 /* Recipe.swift in Sources */,
 				99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */,
 				99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */,
 				99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */,
@@ -335,7 +335,7 @@
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
 				99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */,
-				99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */,
+				99AC05FE2BB2BD720046E8C5 /* RecipeItemView.swift in Sources */,
 				99AC05E12BB2BD720046E8C5 /* AbstractView.swift in Sources */,
 				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
 				99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */,

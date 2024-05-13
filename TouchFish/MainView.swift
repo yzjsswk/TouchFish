@@ -19,7 +19,7 @@ struct MainView: View {
                 case 2:
                     WebBrowserView(text: $commandText)
                 default:
-                    ProcessView()
+                    RecipeView()
                 }
                 Spacer()
             }
