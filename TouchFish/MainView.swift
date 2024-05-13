@@ -3,10 +3,10 @@ import Foundation
 
 struct MainView: View {
     
-    @State private var commandText = ""
-    @State private var commandCell: [String] = []
-    @State private var viewState = 0
-    @State private var fishList: [Fish] = []
+    @State var commandText = ""
+    @State var commandCell: [String] = []
+    @State var viewState = 0
+    @State var fishList: [Fish] = []
     
     var body: some View {
         ZStack {
@@ -19,7 +19,7 @@ struct MainView: View {
                 case 2:
                     WebBrowserView(text: $commandText)
                 default:
-                    ProcessView(processList: CommandManager.exec(prompt: commandText))
+                    ProcessView()
                 }
                 Spacer()
             }
@@ -29,30 +29,32 @@ struct MainView: View {
         .onAppear {
             fishList = Storage.getFishOfSearchCondition()
         }
-        .onChange(of: commandText) {
-            if viewState == 0 && commandText.starts(with: "bm ") {
-                viewState = 2
-            }
-            if viewState == 2 && !commandText.starts(with: "bm ") {
+        .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
+            let recipeId = RecipeManager.activeRecipeId
+            if let recipe = RecipeManager.Recipes[recipeId] {
+                viewState = recipeId
+                commandCell.removeAll()
+                commandCell.append(recipe.name)
+                for (k, v) in RecipeManager.activeRecipeArguments {
+                    commandCell.append("\(k):\(v)")
+                }
+            } else {
                 viewState = 0
-            }
-            if viewState == 1 {
-                Cache.fuzzys = commandText
+                commandCell.removeAll()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .ShouldSwitchProcess)) { notification in
-            guard let userInfo = notification.userInfo else {
-                return
-            }
-            if let target = userInfo["target"] as? String {
-                commandCell.append(target)
+        .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
+            if commandText.count == 0 {
+                CommandManager.removeCell()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .ShouldShowFishView)) { _ in
-            viewState = 1
+        .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
+            if let commandText = notification.userInfo?["commandText"] as? String {
+                self.commandText = commandText
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
-            viewState = 0
+            TouchFishApp.deactivate()
         }
         .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFishList)) { _ in
             withAnimation {

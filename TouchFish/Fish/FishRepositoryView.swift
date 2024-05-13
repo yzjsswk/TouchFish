@@ -76,8 +76,10 @@ struct FishRepositoryView: View {
                 }
             }
             .padding(.horizontal, 5)
-            .onAppear {
-    //            Log.info("fish repository view appear")
+            .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
+                if let commandText = notification.userInfo?["commandText"] as? String {
+                    Cache.fuzzys = commandText
+                }
             }
         }
     }

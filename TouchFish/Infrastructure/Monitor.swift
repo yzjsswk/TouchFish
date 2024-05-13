@@ -81,6 +81,10 @@ struct MonitorManager {
                     NotificationCenter.default.post(name: .SpaceKeyWasPressed, object: nil)
                     return event
                 }
+                if event.keyCode == kVK_Delete {
+                    NotificationCenter.default.post(name: .DeleteKeyWasPressed, object: nil)
+                    return event
+                }
                 let characters = event.charactersIgnoringModifiers ?? ""
                 if characters == "\r" {
                     NotificationCenter.default.post(name: .ReturnKeyWasPressed, object: nil)

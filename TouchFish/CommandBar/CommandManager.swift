@@ -4,33 +4,32 @@ import SwiftUI
 class CommandManager {
     
     static func update(_ commandText: String) -> String {
-        if commandText == "fish " {
-            NotificationCenter.default.post(name: .ShouldSwitchProcess, object: nil, userInfo: ["target":"Fish"])
+        if RecipeManager.activeRecipeId == 0 {
+            for recipe in RecipeManager.Recipes.values {
+                if let command = recipe.command, commandText == command + " " {
+                    RecipeManager.activeRecipeId = recipe.id
+                    NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+                    return ""
+                }
+            }
+        }
+        if let activeRecipe = RecipeManager.Recipes[RecipeManager.activeRecipeId],
+            activeRecipe.args.count < RecipeManager.activeRecipeArguments.count {
+            RecipeManager.activeRecipeArguments[activeRecipe.args[RecipeManager.activeRecipeArguments.count-1]] = commandText
             return ""
         }
         return commandText
     }
     
-    static func exec(prompt: String) -> [Process] {
-        var ret: [Process] = []
-        let fishRepositoryProcess = Process(
-            id: 1,
-            name: "Fish Repository",
-            desc: "master your information",
-            icon: Image(systemName: "fish")
-        ) {
-            NotificationCenter.default.post(name: .ShouldShowFishView, object: nil)
-//            Log.info("post should show fish view end")
+    static func removeCell() {
+        let recipeId = RecipeManager.activeRecipeId
+        let activeArgCount = RecipeManager.activeRecipeArguments.count
+        if activeArgCount > 0, let recipe = RecipeManager.Recipes[recipeId] {
+            RecipeManager.activeRecipeArguments.removeValue(forKey: recipe.args[activeArgCount-1])
+        } else {
+            RecipeManager.activeRecipeId = 0
         }
-        ret.append(fishRepositoryProcess)
-        let webBrowser = Process(
-            id: 2,
-            name: "Web BookMark",
-            icon: Image(systemName: "globe"),
-            command: "bm"
-        )
-        ret.append(webBrowser)
-        return ret
+        NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
     }
     
 }

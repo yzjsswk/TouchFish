@@ -29,7 +29,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
         textField.cell?.isScrollable = true
         textField.delegate = self
         textField.stringValue = text
-        textField.backgroundColor = NSColor(Config.CommandBarBackgroundColor.color)
+        textField.backgroundColor = NSColor(Config.commandFieldBackgroundColor.color)
         textField.textColor = textColor
         textField.font = NSFont(name: "Menlo", size: 22)
         textField.isBordered = false
@@ -43,7 +43,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
     
     override func viewDidAppear() {
         view.window?.makeFirstResponder(view)
-        fieldEditor.insertionPointColor = NSColor(Config.CommandBarInsertionPointColor.color)
+        fieldEditor.insertionPointColor = NSColor(Config.commandFieldInsertionPointColor.color)
         textField.selectText(nil)
     }
     

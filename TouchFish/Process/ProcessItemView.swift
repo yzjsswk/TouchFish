@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct ProcessItemView: View {
     
     var name: String
@@ -41,7 +40,7 @@ struct ProcessItemView: View {
         }
         .padding(5)
         .frame(width: Config.processItemWidth, height: Config.processItemHeight)
-        .background(Config.promptBarBackgroundColor.color)
+        .background(Config.commandBarBackgroundColor.color)
         .cornerRadius(5)
         
     }
