@@ -30,7 +30,6 @@
 		99AC05F02BB2BD720046E8C5 /* AppleScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScript.swift */; };
 		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
 		99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Configuration.swift */; };
-		99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CC2BB2BD720046E8C5 /* DataBase.swift */; };
 		99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Functions.swift */; };
 		99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CE2BB2BD720046E8C5 /* Log.swift */; };
 		99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CF2BB2BD720046E8C5 /* Monitor.swift */; };
@@ -38,8 +37,7 @@
 		99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */; };
 		99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D32BB2BD720046E8C5 /* CommandField.swift */; };
 		99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */; };
-		99AC05FB2BB2BD720046E8C5 /* PromptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D52BB2BD720046E8C5 /* PromptManager.swift */; };
-		99AC05FC2BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */; };
+		99AC05FB2BB2BD720046E8C5 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D52BB2BD720046E8C5 /* CommandManager.swift */; };
 		99AC05FD2BB2BD720046E8C5 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D82BB2BD720046E8C5 /* Process.swift */; };
 		99AC05FE2BB2BD720046E8C5 /* ProcessItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */; };
 		99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */; };
@@ -77,7 +75,6 @@
 		99AC05C92BB2BD720046E8C5 /* AppleScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScript.swift; sourceTree = "<group>"; };
 		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		99AC05CB2BB2BD720046E8C5 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
-		99AC05CC2BB2BD720046E8C5 /* DataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
 		99AC05CD2BB2BD720046E8C5 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		99AC05CE2BB2BD720046E8C5 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		99AC05CF2BB2BD720046E8C5 /* Monitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Monitor.swift; sourceTree = "<group>"; };
@@ -85,8 +82,7 @@
 		99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandBarView.swift; sourceTree = "<group>"; };
 		99AC05D32BB2BD720046E8C5 /* CommandField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandField.swift; sourceTree = "<group>"; };
 		99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandFieldViewController.swift; sourceTree = "<group>"; };
-		99AC05D52BB2BD720046E8C5 /* PromptManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptManager.swift; sourceTree = "<group>"; };
-		99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerticallyCenteredTextFieldCell.swift; sourceTree = "<group>"; };
+		99AC05D52BB2BD720046E8C5 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
 		99AC05D82BB2BD720046E8C5 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		99AC05D92BB2BD720046E8C5 /* ProcessItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessItemView.swift; sourceTree = "<group>"; };
 		99AC05DA2BB2BD720046E8C5 /* ProcessListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProcessListView.swift; sourceTree = "<group>"; };
@@ -190,7 +186,6 @@
 				99AC05C92BB2BD720046E8C5 /* AppleScript.swift */,
 				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
 				99AC05CB2BB2BD720046E8C5 /* Configuration.swift */,
-				99AC05CC2BB2BD720046E8C5 /* DataBase.swift */,
 				99AC05CD2BB2BD720046E8C5 /* Functions.swift */,
 				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
 				99AC05CF2BB2BD720046E8C5 /* Monitor.swift */,
@@ -206,8 +201,7 @@
 				99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */,
 				99AC05D32BB2BD720046E8C5 /* CommandField.swift */,
 				99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */,
-				99AC05D52BB2BD720046E8C5 /* PromptManager.swift */,
-				99AC05D62BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift */,
+				99AC05D52BB2BD720046E8C5 /* CommandManager.swift */,
 			);
 			path = CommandBar;
 			sourceTree = "<group>";
@@ -316,13 +310,11 @@
 				99AC05FF2BB2BD720046E8C5 /* ProcessListView.swift in Sources */,
 				99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */,
 				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
-				99AC05FC2BB2BD720046E8C5 /* VerticallyCenteredTextFieldCell.swift in Sources */,
 				99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */,
 				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
 				99AC06002BB2BD720046E8C5 /* ProcessView.swift in Sources */,
 				99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */,
 				99AC05EB2BB2BD720046E8C5 /* Key.swift in Sources */,
-				99AC05F32BB2BD720046E8C5 /* DataBase.swift in Sources */,
 				99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */,
 				99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */,
 				99AC05EF2BB2BD720046E8C5 /* KeyEvent.swift in Sources */,
@@ -332,7 +324,7 @@
 				99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */,
 				99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */,
 				99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */,
-				99AC05FB2BB2BD720046E8C5 /* PromptManager.swift in Sources */,
+				99AC05FB2BB2BD720046E8C5 /* CommandManager.swift in Sources */,
 				996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */,
 				99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */,
 				99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */,
@@ -495,7 +487,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yzjsswk.TouchFish;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -526,7 +518,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yzjsswk.TouchFish;
 				PRODUCT_NAME = "$(TARGET_NAME)";

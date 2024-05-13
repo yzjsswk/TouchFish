@@ -77,6 +77,10 @@ struct MonitorManager {
                     NotificationCenter.default.post(name: .EscapeKeyWasPressed, object: nil)
                     return nil
                 }
+                if event.keyCode == kVK_Space {
+                    NotificationCenter.default.post(name: .SpaceKeyWasPressed, object: nil)
+                    return event
+                }
                 let characters = event.charactersIgnoringModifiers ?? ""
                 if characters == "\r" {
                     NotificationCenter.default.post(name: .ReturnKeyWasPressed, object: nil)
@@ -94,7 +98,7 @@ struct MonitorManager {
                     DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
                         if let clipboardData = Functions.getDataFromClipboard(),
                                 clipboardData.1 != MonitorManager.lastClipboardData {
-                            Log.debug("clipboard changed")
+//                            Log.debug("clipboard changed")
                             MonitorManager.lastClipboardData = clipboardData.1
                             if MonitorManager.clipboardListenerState == .ready {
                                 MonitorManager.clipboardListenerState = .running

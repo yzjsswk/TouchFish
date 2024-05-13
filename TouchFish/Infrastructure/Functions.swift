@@ -104,6 +104,7 @@ extension Notification.Name {
     static let DownArrowKeyWasPressed = Notification.Name("DownArrowKeyWasPressed")
     static let TabKeyWasPressed = Notification.Name("TabKeyWasPressed")
     static let EscapeKeyWasPressed = Notification.Name("EscapeKeyWasPressed")
+    static let SpaceKeyWasPressed = Notification.Name("SpaceKeyWasPressed")
     static let CommandKeyWasPressed = Notification.Name("CommandKeyWasPressed")
     static let ApplicationShouldExit = Notification.Name("ApplicationShouldExit")
     static let ShouldPresentQuickLook = Notification.Name("ShouldPresentQuickLook")
@@ -111,5 +112,6 @@ extension Notification.Name {
     static let ShouldDeleteClipboardHistory = Notification.Name("ShouldDeleteClipboardHistory")
     static let ShouldShowFishView = Notification.Name("ShouldShowFishView")
     static let ShouldRefreshFishList = Notification.Name("ShouldRefreshFishList")
+    static let ShouldSwitchProcess = Notification.Name("ShouldSwitchProcess")
 }
 

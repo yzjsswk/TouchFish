@@ -30,7 +30,7 @@ struct FishDetailView: View {
                             } else {
                                 Text("No Preview")
                                     .font(.callout)
-                                    .foregroundStyle(Color.red)
+                                    .foregroundColor(Color.red)
                             }
                         }
                     case .tiff, .png, .jpg:

@@ -43,12 +43,14 @@ class MainWindow: NSPanel {
         return true
     }
     
-    //    func show() {
-             // Add the titled style mask, it will be removed later.
-    //        self.styleMask.insert(.titled)
-    //        self.makeKeyAndOrderFront(nil)
-             // The titled style mask needs to be removed after the window ordered the front; Otherwise, it will stay in the background.
-    //        self.styleMask.remove(.titled)
-    //    }
+//        func show() {
+////              Add the titled style mask, it will be removed later.
+//            self.styleMask.insert(.titled)
+//            self.makeKeyAndOrderFront(nil)
+////              The titled style mask needs to be removed after the window ordered the front; Otherwise, it will stay in the background.
+//            self.styleMask.remove(.titled)
+//        }
+    
+    
     
 }

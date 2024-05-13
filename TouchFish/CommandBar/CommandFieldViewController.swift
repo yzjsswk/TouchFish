@@ -21,56 +21,58 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
     }()
     
     override func loadView() {
-        // Set up the text field.
         textField = NSTextField()
-        
-        // Set up single line mode and scrolling.
-        textField.cell = VerticallyCenteredTextFieldCell()
+//        textField.cell = VerticallyCenteredTextFieldCell()
+        textField.cell = NSTextFieldCell()
         textField.isEditable = true
         textField.usesSingleLineMode = true
         textField.cell?.isScrollable = true
-
-        // Set the text field's delegate
         textField.delegate = self
-        
-        // Set an initial text value.
         textField.stringValue = text
-        
-        // Set the text field's placeholder.
-        // MARK: TODO: The placeholder string is not centered.
-        //textField.placeholderAttributedString = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : textColor.withAlphaComponent(0.6), NSAttributedString.Key.baselineOffset : -(font.pointSize / 2)])
-        
-        // Configure the text field's text and colors.
         textField.backgroundColor = NSColor(Config.CommandBarBackgroundColor.color)
         textField.textColor = textColor
         textField.font = NSFont(name: "Menlo", size: 22)
         textField.isBordered = false
         textField.focusRingType = .none
-        
-        // Set the view to the new text field.
         view = textField
     }
     
-    /// The field editor for the text field.
     lazy var fieldEditor: NSTextView = {
-        // Get the text field's field editor.
         return textField.window?.fieldEditor(true, for: textField) as! NSTextView
     }()
     
     override func viewDidAppear() {
-        // Make the view the first responder.
         view.window?.makeFirstResponder(view)
-        
-        // Change the insertion point color.
         fieldEditor.insertionPointColor = NSColor(Config.CommandBarInsertionPointColor.color)
-        
-        // Select all characters so the user can start typing.
         textField.selectText(nil)
     }
     
     func controlTextDidChange(_ obj: Notification) {
-        // Get the text field's current string.
         text = textField.stringValue
     }
     
 }
+
+// Reference: https://stackoverflow.com/a/45995951/14456607
+class VerticallyCenteredTextFieldCell: NSTextFieldCell {
+    func adjustedFrame(in rect: NSRect) -> NSRect {
+        var titleRect = super.titleRect(forBounds: rect)
+        let minimumHeight = self.cellSize(forBounds: rect).height
+        titleRect.origin.y += (titleRect.height - minimumHeight) / 2
+        titleRect.size.height = minimumHeight
+        return titleRect
+    }
+    override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, event: NSEvent?) {
+        super.edit(withFrame: adjustedFrame(in: rect), in: controlView, editor: textObj, delegate: delegate, event: event)
+    }
+    override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
+        super.select(withFrame: adjustedFrame(in: rect), in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
+    }
+    override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+        super.drawInterior(withFrame: adjustedFrame(in: cellFrame), in: controlView)
+    }
+    override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+        super.draw(withFrame: cellFrame, in: controlView)
+    }
+}
+

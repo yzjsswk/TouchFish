@@ -1,7 +1,15 @@
 import Foundation
 import SwiftUI
 
-class PromptManager {
+class CommandManager {
+    
+    static func update(_ commandText: String) -> String {
+        if commandText == "fish " {
+            NotificationCenter.default.post(name: .ShouldSwitchProcess, object: nil, userInfo: ["target":"Fish"])
+            return ""
+        }
+        return commandText
+    }
     
     static func exec(prompt: String) -> [Process] {
         var ret: [Process] = []
