@@ -126,10 +126,10 @@
 		99AC05A72BB2BCD90046E8C5 /* TouchFish */ = {
 			isa = PBXGroup;
 			children = (
-				99AC05D72BB2BD720046E8C5 /* CommandBar */,
 				99AC05C12BB2BD720046E8C5 /* Fish */,
-				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
 				99AC05DC2BB2BD720046E8C5 /* Recipe */,
+				99AC05D72BB2BD720046E8C5 /* CommandBar */,
+				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
 				99AC05DE2BB2BD720046E8C5 /* WebBrowser */,
 				99AC05B82BB2BD710046E8C5 /* AbstractView.swift */,
 				99AC05C22BB2BD720046E8C5 /* MainView.swift */,

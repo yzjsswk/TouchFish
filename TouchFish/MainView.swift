@@ -16,7 +16,7 @@ struct MainView: View {
                 switch viewState {
                 case 1:
                     FishRepositoryView(fishList: fishList)
-                case 2:
+                case 5:
                     WebBrowserView(text: $commandText)
                 default:
                     RecipeView()
@@ -31,7 +31,7 @@ struct MainView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             let recipeId = RecipeManager.activeRecipeId
-            if let recipe = RecipeManager.Recipes[recipeId] {
+            if let recipe = RecipeManager.recipes[recipeId] {
                 viewState = recipeId
                 commandCell.removeAll()
                 commandCell.append(recipe.name)

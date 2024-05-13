@@ -2,35 +2,32 @@ import SwiftUI
 
 struct RecipeItemView: View {
     
-    var name: String
-    var desc: String?
-    var icon: Image
-    var command: String
-    var isSelected: Bool
+    var recipe: Recipe
     
-    init(name: String, desc: String?, icon: Image?, command: String?) {
-        self.name = name
-        self.desc = desc
-        self.icon = icon ?? Image(systemName: "parkingsign.circle")
-        self.command = command ?? ""
-        self.isSelected = false
-    }
+    @State var isSelected: Bool = false
     
     var body: some View {
         HStack(spacing: 10) {
-            icon
-            .resizable()
-            .scaledToFit()
+            HStack {
+                recipe.icon
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(isSelected ? Color.white: Color.black)
+            }
+            .frame(width: Config.recipeItemHeight)
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(name)
+                    Text(recipe.name)
                         .font(.title3)
                         .foregroundColor(isSelected ? Color.white: Color.black)
-                    Text(command)
-                        .font(.footnote)
-                        .fontWeight(.bold)
+                    if let command = recipe.command {
+                        Text(command)
+                            .font(.footnote)
+                            .fontWeight(.bold)
+                            .foregroundColor(isSelected ? Color.white: Color.black)
+                    }
                 }
-                if let desc = desc {
+                if let desc = recipe.desc, isSelected {
                     Text(desc)
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -39,10 +36,18 @@ struct RecipeItemView: View {
             Spacer()
         }
         .padding(5)
-        .frame(width: Config.processItemWidth, height: Config.processItemHeight)
-        .background(Config.commandBarBackgroundColor.color)
+        .frame(width: Config.mainWidth-30, height: isSelected ? Config.recipeItemSelectedHeight : Config.recipeItemHeight)
+        .background(isSelected ? Config.selectedItemBackgroundColor.color : Config.commandBarBackgroundColor.color)
+        .saturation(1.0)
         .cornerRadius(5)
-        
+        .onHover { isHovered in
+            withAnimation(.spring(duration: 0.1)) {
+                isSelected = isHovered
+            }
+        }
+        .onTapGesture(count: 1) {
+            RecipeManager.goToRecipe(recipeId: recipe.id)
+        }
     }
     
 }

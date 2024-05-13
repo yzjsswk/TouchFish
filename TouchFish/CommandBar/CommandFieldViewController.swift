@@ -22,14 +22,13 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
     
     override func loadView() {
         textField = NSTextField()
-//        textField.cell = VerticallyCenteredTextFieldCell()
         textField.cell = NSTextFieldCell()
         textField.isEditable = true
         textField.usesSingleLineMode = true
         textField.cell?.isScrollable = true
         textField.delegate = self
         textField.stringValue = text
-        textField.backgroundColor = NSColor(Config.commandFieldBackgroundColor.color)
+        textField.backgroundColor = Config.commandFieldBackgroundColor.nsColor
         textField.textColor = textColor
         textField.font = NSFont(name: "Menlo", size: 22)
         textField.isBordered = false
@@ -43,7 +42,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
     
     override func viewDidAppear() {
         view.window?.makeFirstResponder(view)
-        fieldEditor.insertionPointColor = NSColor(Config.commandFieldInsertionPointColor.color)
+        fieldEditor.insertionPointColor = Config.commandFieldInsertionPointColor.nsColor
         textField.selectText(nil)
     }
     
@@ -51,28 +50,5 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
         text = textField.stringValue
     }
     
-}
-
-// Reference: https://stackoverflow.com/a/45995951/14456607
-class VerticallyCenteredTextFieldCell: NSTextFieldCell {
-    func adjustedFrame(in rect: NSRect) -> NSRect {
-        var titleRect = super.titleRect(forBounds: rect)
-        let minimumHeight = self.cellSize(forBounds: rect).height
-        titleRect.origin.y += (titleRect.height - minimumHeight) / 2
-        titleRect.size.height = minimumHeight
-        return titleRect
-    }
-    override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, event: NSEvent?) {
-        super.edit(withFrame: adjustedFrame(in: rect), in: controlView, editor: textObj, delegate: delegate, event: event)
-    }
-    override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText, delegate: Any?, start selStart: Int, length selLength: Int) {
-        super.select(withFrame: adjustedFrame(in: rect), in: controlView, editor: textObj, delegate: delegate, start: selStart, length: selLength)
-    }
-    override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
-        super.drawInterior(withFrame: adjustedFrame(in: cellFrame), in: controlView)
-    }
-    override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
-        super.draw(withFrame: cellFrame, in: controlView)
-    }
 }
 

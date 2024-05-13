@@ -5,17 +5,17 @@ class CommandManager {
     
     static func update(_ commandText: String) -> String {
         if RecipeManager.activeRecipeId == 0 {
-            for recipe in RecipeManager.Recipes.values {
+            for recipe in RecipeManager.recipes.values {
                 if let command = recipe.command, commandText == command + " " {
-                    RecipeManager.activeRecipeId = recipe.id
-                    NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+                    RecipeManager.goToRecipe(recipeId: recipe.id)
                     return ""
                 }
             }
         }
-        if let activeRecipe = RecipeManager.Recipes[RecipeManager.activeRecipeId],
+        if let activeRecipe = RecipeManager.recipes[RecipeManager.activeRecipeId],
             activeRecipe.args.count < RecipeManager.activeRecipeArguments.count {
             RecipeManager.activeRecipeArguments[activeRecipe.args[RecipeManager.activeRecipeArguments.count-1]] = commandText
+            NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
             return ""
         }
         return commandText
@@ -24,12 +24,12 @@ class CommandManager {
     static func removeCell() {
         let recipeId = RecipeManager.activeRecipeId
         let activeArgCount = RecipeManager.activeRecipeArguments.count
-        if activeArgCount > 0, let recipe = RecipeManager.Recipes[recipeId] {
+        if activeArgCount > 0, let recipe = RecipeManager.recipes[recipeId] {
             RecipeManager.activeRecipeArguments.removeValue(forKey: recipe.args[activeArgCount-1])
+            NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
         } else {
-            RecipeManager.activeRecipeId = 0
+            RecipeManager.goToRecipe(recipeId: 0)
         }
-        NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
     }
     
 }
