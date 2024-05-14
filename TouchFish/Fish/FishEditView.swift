@@ -126,7 +126,7 @@ struct FishEditView: View {
             .frame(width: Config.mainWidth - 30)
             .padding(5)
         }
-        .onChange(of: description) { _ in
+        .onChange(of: description) {
             descriptionAreaHeight = min(100, description.count / 30)
         }
     }
@@ -235,15 +235,13 @@ struct TagEditView: View {
             HStack {
                 TextField("Search", text: $tagSearchText)
                 .frame(width: 100, height: 20)
-                .onChange(of: tagSearchText, perform: { value in
-                    // todo
-//                    let allTags = Cache.TagCache.tagMap.keys
-                    let allTags: [String] = ["todo"]
+                .onChange(of: tagSearchText) {
+                    let allTags = Array(Cache.tagCount.keys)
                     tagPreviewList = allTags.filter { tg in
                         return tg.lowercased().contains(tagSearchText.lowercased())
                     }
                     isShowTagPreview = !tagPreviewList.isEmpty
-                })
+                }
                 .popover(isPresented: $isShowTagPreview, arrowEdge: .bottom) {
                     VStack {
                         ForEach(tagPreviewList, id: \.self) { item in

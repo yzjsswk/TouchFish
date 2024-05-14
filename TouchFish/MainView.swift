@@ -16,6 +16,12 @@ struct MainView: View {
                 switch viewState {
                 case 1:
                     FishRepositoryView(fishList: fishList)
+                case 2:
+                    EmptyView()
+                case 3:
+                    EmptyView()
+                case 4:
+                    StatsView()
                 case 5:
                     WebBrowserView(text: $commandText)
                 default:

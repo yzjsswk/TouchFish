@@ -51,7 +51,7 @@ struct WebBrowserView: View {
             webURLs = newWebURLs
 //            }
         }
-        .onChange(of: text) { _ in
+        .onChange(of: text) { 
             var newWebURLs: [(Int, String, String)] = []
             let ws = text.split(separator: " ")
             if ws.count < 1 || ws[0] != "bm" || text == "bm" {

@@ -48,6 +48,7 @@
 		99AC06082BB2BE930046E8C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99AC06072BB2BE930046E8C5 /* Main.storyboard */; };
 		99AC060B2BB413AD0046E8C5 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */; };
 		99AC060E2BB413C20046E8C5 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060D2BB413C20046E8C5 /* SQLite */; };
+		99EF7A282BF3C0EC00675CC2 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EF7A272BF3C0EC00675CC2 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +92,7 @@
 		99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		99AC06042BB2BE440046E8C5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		99AC06072BB2BE930046E8C5 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		99EF7A272BF3C0EC00675CC2 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		996FEE572BF2E80B0047EB82 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		996FEE582BF2E81A0047EB82 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				99EF7A272BF3C0EC00675CC2 /* StatsView.swift */,
+			);
+			path = Statistics;
+			sourceTree = "<group>";
+		};
 		99AC059C2BB2BCD90046E8C5 = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +147,8 @@
 				99AC05DC2BB2BD720046E8C5 /* Recipe */,
 				99AC05D72BB2BD720046E8C5 /* CommandBar */,
 				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
+				996FEE572BF2E80B0047EB82 /* Setting */,
+				996FEE582BF2E81A0047EB82 /* Statistics */,
 				99AC05DE2BB2BD720046E8C5 /* WebBrowser */,
 				99AC05B82BB2BD710046E8C5 /* AbstractView.swift */,
 				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
@@ -314,6 +333,7 @@
 				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
 				99AC06002BB2BD720046E8C5 /* RecipeView.swift in Sources */,
 				99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */,
+				99EF7A282BF3C0EC00675CC2 /* StatsView.swift in Sources */,
 				99AC05EB2BB2BD720046E8C5 /* Key.swift in Sources */,
 				99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */,
 				99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */,

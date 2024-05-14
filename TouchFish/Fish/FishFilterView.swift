@@ -3,7 +3,6 @@ import SwiftUI
 struct FishFilterView: View {
     
     @State private var typeFilterCheck: [Bool] = []
-//    @State private var sourceFilterCheck: [Bool] = []
     @State private var tagFilterCheck: [Bool] = []
     private var tagCheckIndexMap: [String:Int] = [:]
     
@@ -26,12 +25,11 @@ struct FishFilterView: View {
 //        }
 //        self._sourceFilterCheck = State(initialValue: sourceFilterCheck)
         
-//        var tagFilterCheck: [Bool] = []
-//        Cache.TagCache.refresh()
-//        for (tg, _) in Cache.TagCache.tagMap.sorted(by: { $0.key < $1.key }) {
-//            tagFilterCheck.append(Cache.FishCache.tag?.contains(tg) ?? false)
-//            tagCheckIndexMap[tg] = tagFilterCheck.count - 1
-//        }
+        var tagFilterCheck: [Bool] = []
+        for tg in Storage.getTagList() {
+            tagFilterCheck.append(Cache.tags?.contains(tg) ?? false)
+            tagCheckIndexMap[tg] = tagFilterCheck.count - 1
+        }
         self._tagFilterCheck = State(initialValue: tagFilterCheck)
     }
     
@@ -50,7 +48,7 @@ struct FishFilterView: View {
                         Toggle(isOn: $typeFilterCheck[idx]) {
                             Text(FishType.allCases[idx].rawValue)
                         }
-                        .onChange(of: typeFilterCheck[idx]) { _ in
+                        .onChange(of: typeFilterCheck[idx]) {
                             if typeFilterCheck.allSatisfy( {$0 == false} ) {
                                 Cache.type = nil
                             } else {
@@ -104,8 +102,7 @@ struct FishFilterView: View {
                         Toggle(isOn: $tagFilterCheck[idx]) {
                             Text(tg)
                         }
-                        .onChange(of: tagFilterCheck[idx]) { _ in
-                            
+                        .onChange(of: tagFilterCheck[idx]) {
                             if tagFilterCheck.allSatisfy( {$0 == false} ) {
                                 Cache.tags = nil
                             } else {
@@ -120,12 +117,7 @@ struct FishFilterView: View {
                         }
                     }
                 }
-                
             }
         }
-        .onAppear {
-
-        }
     }
-    
 }

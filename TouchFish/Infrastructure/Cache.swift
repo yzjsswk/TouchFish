@@ -86,8 +86,8 @@ struct Cache {
             tags: tags,
             isMarked: isMarked,
             isLocked: isLocked,
-            pageNum: pageNum,
-            pageSize: pageSize
+            pageNum: 1,
+            pageSize: 100
         )
         guard case .success(let resp) = result else {
             Log.warning("refresh fish cache - fail: request data service fail")
