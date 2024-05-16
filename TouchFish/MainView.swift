@@ -23,7 +23,8 @@ struct MainView: View {
                 case 4:
                     StatsView()
                 case 5:
-                    WebBrowserView(text: $commandText)
+//                    WebBrowserView(text: $commandText)
+                    EmptyView()
                 default:
                     RecipeView()
                 }

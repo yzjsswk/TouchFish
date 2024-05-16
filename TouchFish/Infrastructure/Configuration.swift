@@ -48,7 +48,9 @@ struct Configuration: Codable {
     var recipeItemHeight: CGFloat = 40
     var recipeItemSelectedHeight: CGFloat = 55
     var fishItemHeight: CGFloat = 24
+    var fishItemIconWidth: CGFloat = 20
     var fishItemPreviewLength: Int = 40
+    var fishDetailItemHeight: CGFloat = 10
     
     var mainBackgroundColor: String = "#ECEEF1"
     var commandBarBackgroundColor: String = "D8D8DB"

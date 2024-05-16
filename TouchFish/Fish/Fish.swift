@@ -23,7 +23,7 @@ struct Fish {
     var type: FishType
     var byteCount: Int
     var description: String
-    var tags: [String]
+    var tags: [[String]]
     var isMarked: Bool
     var isLocked: Bool
     var extraInfo: ExtraInfo
@@ -75,6 +75,8 @@ struct Fish {
             return Image(systemName: "doc.plaintext")
         case .tiff, .png, .jpg:
             return Image(systemName: "photo")
+        case .pdf:
+            return Image(systemName: "book.pages")
         default:
             return Image(systemName: "fish")
         }
@@ -85,16 +87,7 @@ struct Fish {
             Log.warning("copy fishdata to clipboard - fail: fish.value return nil, fish.identity=\(self.identity)")
             return
         }
-        switch self.type {
-        case .txt:
-            NSPasteboard.general.declareTypes([.string], owner: nil)
-            NSPasteboard.general.setData(fishData, forType: .string)
-        case .tiff, .png, .jpg: // todo: ok?
-            NSPasteboard.general.declareTypes([.tiff], owner: nil)
-            NSPasteboard.general.setData(fishData, forType: .tiff)
-        default:
-            Log.warning("copy fishdata to clipboard - fail: unsupported fish type, fish.type=\(self.type), fish.identity=\(self.identity)")
-        }
+        Functions.copyDataToClipboard(data: fishData, type: self.type)
     }
     
 }

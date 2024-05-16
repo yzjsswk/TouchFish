@@ -8,7 +8,7 @@ struct Storage {
         description: String? = nil,
         identity: String? = nil,
         type: [FishType]? = nil,
-        tags: [String]? = nil,
+        tags: [[String]]? = nil,
         isMarked: Bool? = nil,
         isLocked: Bool? = nil,
         pageNum: Int? = 1,
@@ -39,7 +39,7 @@ struct Storage {
         value: Data, 
         description: String?,
         type: FishType,
-        tags: [String]?,
+        tags: [[String]]?,
         extraInfo: ExtraInfo?
     ) async -> OperateResult {
         defer {
@@ -66,7 +66,7 @@ struct Storage {
     }
     
     static func modifyFish(
-        _ identity: String, description: String? = nil, tags: [String]? = nil, extraInfo: ExtraInfo? = nil
+        _ identity: String, description: String? = nil, tags: [[String]]? = nil, extraInfo: ExtraInfo? = nil
     ) async -> OperateResult {
         defer {
             Cache.refresh()
@@ -227,7 +227,7 @@ struct Storage {
         value: Data,
         type: FishType,
         description: String? = nil,
-        tags: [String]? = nil,
+        tags: [[String]]? = nil,
         extraInfo: ExtraInfo? = nil,
         pin: Bool
     ) async -> Bool {
@@ -263,10 +263,10 @@ struct Storage {
         //       totalCount = res.count
         //       fishList.sort { $0.updateTime > $1.updateTime }
         return fishList.sorted { (fish1, fish2) -> Bool in
-            if fish1.updateTime == fish2.updateTime {
+            if fish1.createTime == fish2.createTime {
                 return fish1.identity > fish2.identity
             }
-            return fish1.updateTime > fish2.updateTime
+            return fish1.createTime > fish2.createTime
         }
     }
     

@@ -3,7 +3,7 @@ import SwiftUI
 struct FishRepositoryView: View {
     
     var fishList: [Fish]
-    @State var selectedFishId: Int
+    @State var selectedFishId: Int?
     @State var isEditing: Bool = false
     @State var isFiltering: Bool = false
     
@@ -13,73 +13,24 @@ struct FishRepositoryView: View {
     }
     
     var body: some View {
-        if isEditing, let selectedFish = fishList.first(where: { $0.id == selectedFishId} ) {
-            FishEditView(
-                id: selectedFish.id,
-                identity: selectedFish.identity,
-                description: selectedFish.description,
-                content: selectedFish.textPreview ?? "",
-                selectedTypeIndex: selectedFish.type.index!,
-                tags: selectedFish.tags,
-                isEditing: $isEditing
-            )
-            .padding(.horizontal)
-            .padding(.vertical, 5)
-        } else {
-            HStack {
-                if fishList.count > 0 {
-                    FishListView(fishList: fishList, selectedFishId: $selectedFishId)
-                } else {
-                    Text("No Fish")
-                        .font(.title)
-                        .frame(width: (Config.mainWidth - 30)/2)
-                }
-                VStack {
-                    HStack {
-                        BookmarkButtonView()
-                        FilterButtonView()
-                            .onTapGesture {
-                                isFiltering.toggle()
-                            }
-                        Spacer()
-                        AddButtonView()
-                        EditButtonView()
-                            .onTapGesture {
-                                if fishList.first(where: { $0.id == selectedFishId}) != nil {
-                                    isEditing = true
-                                }
-                            }
-                        DeleteButtonView()
-                            .onTapGesture {
-                                let idx = fishList.firstIndex(where: { $0.id == selectedFishId })
-                                let nextFishId = (idx == nil || fishList.count < 2) ? 0 : fishList[idx == 0 ? 1 : idx!-1].id
-                                let toDeleteFishIdentity = fishList[idx!].identity
-                                Task {
-                                    let res = await Storage.removeFish(toDeleteFishIdentity)
-                                    if res == .fail {
-                                        Log.error("click button to delete fish - fail: Storage.removeFish return fail, identity=\(toDeleteFishIdentity)")
-                                    } else {
-//                                        withAnimation {
-                                        selectedFishId = nextFishId
-//                                        }
-                                    }
-                                }
-                            }
-                    }
-                    .padding(.horizontal, 5)
-                    if isFiltering {
-                        FishFilterView()
-                    } else {
-                        FishDetailView(fishList: fishList, selectedFishId: $selectedFishId)
-                    }
-                    Spacer()
-                }
+        HStack {
+            if fishList.count > 0 {
+                FishListView(fishList: fishList, selectedFishId: $selectedFishId)
+                    .frame(width: (Config.mainWidth - 30)/2)
+            } else {
+                Text("No Fish")
+                    .font(.title)
+                    .frame(width: (Config.mainWidth - 30)/2)
             }
-            .padding(.horizontal, 5)
-            .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
-                if let commandText = notification.userInfo?["commandText"] as? String {
-                    Cache.fuzzys = commandText
-                }
+            VStack {
+                FishDetailView(fishList: fishList, selectedFishId: $selectedFishId)
+                    .frame(width: (Config.mainWidth - 30)/2)
+            }
+        }
+        .padding(.horizontal, 5)
+        .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
+            if let commandText = notification.userInfo?["commandText"] as? String {
+                Cache.fuzzys = commandText
             }
         }
     }
@@ -166,19 +117,5 @@ struct EditButtonView: View {
     
 }
 
-struct DeleteButtonView: View {
-    
-    @State private var isHovered = false
-    
-    var body: some View {
-        Image(systemName: "trash.fill")
-            .resizable()
-            .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? .red : .gray)
-            .onHover { isHovered in
-                self.isHovered = isHovered
-            }
-    }
-    
-}
+
 

@@ -91,7 +91,7 @@ struct FishResp: Codable {
     let byteCount: Int
 //    let preview: Data?
     let description: String
-    let tags: [String]
+    let tags: [[String]]
     let isMarked: Bool
     let isLocked: Bool
     let extraInfo: String
@@ -149,7 +149,7 @@ struct DataService {
         description: String? = nil,
         identity: String? = nil,
         type: [FishType]? = nil,
-        tags: [String]? = nil,
+        tags: [[String]]? = nil,
         isMarked: Bool? = nil,
         isLocked: Bool? = nil,
         pageNum: Int? = 1,
@@ -162,7 +162,7 @@ struct DataService {
             "description": description,
             "identity": identity,
             "type": type?.map { $0.rawValue }.joined(separator: ","),
-            "tags": tags?.joined(separator: ","),
+            "tags": Functions.tagParseStr(tags),
             "is_marked": isMarked,
             "is_locked": isLocked,
             "page_num": pageNum,
@@ -176,13 +176,13 @@ struct DataService {
     
     // todo: support upload path version
     static func addFish(
-        value: Data, description: String?, type: FishType, tags: [String]?, extraInfo: ExtraInfo?
+        value: Data, description: String?, type: FishType, tags: [[String]]?, extraInfo: ExtraInfo?
     ) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
         let url = DataService.urlPrefix + "/fish/add"
         let para: [String:Any?] = [
             "description": description,
             "type": type.rawValue,
-            "tags": (tags ?? []).joined(separator: ","),
+            "tags": Functions.tagParseStr(tags),
             "extra_info": (extraInfo ?? ExtraInfo()).toJsonString()
         ]
         return await AF.upload(
@@ -199,13 +199,13 @@ struct DataService {
     }
     
     static func modifyFish(
-        identity: String, description: String? = nil, tags: [String]? = nil, extraInfo: ExtraInfo? = nil
+        identity: String, description: String? = nil, tags: [[String]]? = nil, extraInfo: ExtraInfo? = nil
     ) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
         let url = DataService.urlPrefix + "/fish/modify"
         let para: [String:Any?] = [
             "identity": identity,
             "description": description,
-            "tags": tags?.joined(separator: ","),
+            "tags": Functions.tagParseStr(tags),
             "extra_info": extraInfo?.toJsonString()
         ]
         return await AF.request(

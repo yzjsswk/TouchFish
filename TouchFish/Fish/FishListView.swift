@@ -3,57 +3,51 @@ import SwiftUI
 struct FishListView: View {
     
     var fishList: [Fish]
-    @Binding var selectedFishId: Int
+    
+    @Binding var selectedFishId: Int?
+    @State var hoveringFishId: Int?
+    
+    @State var lastHoverTs: TimeInterval = Date().timeIntervalSince1970
+    
     
     var body: some View {
         VStack {
             ScrollView(showsIndicators: false) {
                 VStack {
                     ForEach(fishList, id: \.id) { fish in
-                        FishListItemView(
-                            id: fish.id,
-                            identity: fish.identity,
-                            selectedFishId: $selectedFishId,
-                            name: fish.itemPreview,
-                            icon: fish.fishIcon,
-                            isMarked: fish.isMarked
-                        ) {
-                            fish.copyToClipboard()
-                            TouchFishApp.deactivate()
-                            pasteToFrontmostApp()
-//                            Log.info("paste fish \(fish.id)")
-                        }
-                        .id(fish.id)
-                        .frame(width: (Config.mainWidth - 30)/2, height: Config.fishItemHeight)
+                        FishListItemView(fish: fish, selectedFishId: $selectedFishId, hoveringFishId: $hoveringFishId)
+                            .onHover { isHovered in
+                                if isHovered {
+                                    selectedFishId = fish.id
+                                    if hoveringFishId != fish.id {
+                                        hoveringFishId = nil
+                                    }
+                                    lastHoverTs = Date().timeIntervalSince1970
+                                    let hoverTs = lastHoverTs
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        if isHovered && lastHoverTs == hoverTs {
+                                            withAnimation(.spring(duration: 0.4)) {
+                                                hoveringFishId = fish.id
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                     }
                 }
-                .padding(.vertical)
+                .padding(.vertical, 5)
             }
             HStack {
-//                Text("images: [\(Cache.images.count):\(Cache.ImageCache.totalBytes/1024/1024)MB]")
-//                    .font(.footnote)
-                Spacer()
-                Text("total count: \(Cache.totalCount)")
+                Text("total: \(fishList.count)")
                     .font(.footnote)
+                Spacer()
             }
-            .frame(width: (Config.mainWidth - 30)/2)
-
+            
         }
 
     }
     
 }
 
-func pasteToFrontmostApp() {
-    // 模拟粘贴操作 alfred运行时会失效
-    if let frontApp = NSWorkspace.shared.frontmostApplication {
-        frontApp.activate(options: .activateIgnoringOtherApps)
-        let keyEvent = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: true)
-        keyEvent?.flags = [.maskCommand]
-        keyEvent?.post(tap: .cghidEventTap)
-//        AppleScriptRunner.doPaste()
-    } else {
-        Log.warning("front app is nil")
-    }
-}
+
 

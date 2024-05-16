@@ -21,6 +21,19 @@ struct Functions {
         return nil
     }
     
+    static func copyDataToClipboard(data: Data, type: FishType) {
+        switch type {
+        case .txt:
+            NSPasteboard.general.declareTypes([.string], owner: nil)
+            NSPasteboard.general.setData(data, forType: .string)
+        case .tiff, .png, .jpg: // todo: ok?
+            NSPasteboard.general.declareTypes([.tiff], owner: nil)
+            NSPasteboard.general.setData(data, forType: .tiff)
+        default:
+            Log.warning("copy data to clipboard - fail: unsupported fish type, type=\(type)")
+        }
+    }
+    
     static func getMD5(of string: String) -> String {
         let data = Data(string.utf8)
         return Functions.getMD5(of: data)
@@ -44,8 +57,8 @@ struct Functions {
     
     static func getLinePreview(_ text: String) -> String {
         let firstLine = text.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n", omittingEmptySubsequences: false).first ?? ""
-        let linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : firstLine.prefix(Config.fishItemPreviewLength - 3)+"..."
-        return linePreview
+//        let linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : String(firstLine.prefix(Config.fishItemPreviewLength))
+        return String(firstLine)
     }
     
     static func descByteCount(_ byteCount: Int) -> String {
@@ -62,6 +75,17 @@ struct Functions {
         }
         let GBCount = Double(MBCount) / 1024
         return "\(GBCount)GB"
+    }
+    
+    static func tagParseStr(_ tags: [[String]]?) -> String? {
+        guard let tags = tags else {
+            return nil
+        }
+        var tagPara: [String] = []
+        for tagGroup in tags {
+            tagPara.append(tagGroup.joined(separator: ","))
+        }
+        return tagPara.joined(separator: "|")
     }
     
 }
