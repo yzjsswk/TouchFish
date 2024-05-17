@@ -2,39 +2,52 @@ import SwiftUI
 
 struct FishRepositoryView: View {
     
-    var fishList: [Fish]
-    @State var selectedFishId: Int?
-    @State var isEditing: Bool = false
-    @State var isFiltering: Bool = false
+    var fishs: [String:Fish]
     
-    init(fishList: [Fish]) {
-        self.fishList = fishList
-        self._selectedFishId = State(initialValue: fishList.first?.id ?? 0)
-    }
+    @State var selectedFishIdentity: String?
+    
+    @Binding var isEditing: Bool
     
     var body: some View {
         HStack {
-            if fishList.count > 0 {
-                FishListView(fishList: fishList, selectedFishId: $selectedFishId)
-                    .frame(width: (Config.mainWidth - 30)/2)
+            if isEditing, 
+                let identity = selectedFishIdentity,
+               let editingFish = fishs[identity] {
+                FishEditView(
+                    isEditing: $isEditing,
+                    identity: editingFish.identity,
+                    description: editingFish.description,
+                    tags: editingFish.tags
+                )
+                .frame(width: Config.mainWidth - 30)
             } else {
-                Text("No Fish")
-                    .font(.title)
+                if fishs.count > 0 {
+                    // todo: command
+                    FishListView(
+                        fishList: fishs.values.sorted(by: {$0.createTime > $1.createTime}),
+                        isEditing: $isEditing,
+                        selectedFishIdentity: $selectedFishIdentity
+                    )
                     .frame(width: (Config.mainWidth - 30)/2)
-            }
-            VStack {
-                FishDetailView(fishList: fishList, selectedFishId: $selectedFishId)
-                    .frame(width: (Config.mainWidth - 30)/2)
+                } else {
+                    Text("No Fish")
+                        .font(.title)
+                        .frame(width: (Config.mainWidth - 30)/2)
+                }
+                VStack {
+                    FishDetailView(fishs: fishs, selectedFishIdentity: $selectedFishIdentity)
+                        .frame(width: (Config.mainWidth - 30)/2)
+                }
             }
         }
         .padding(.horizontal, 5)
         .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
-            if let commandText = notification.userInfo?["commandText"] as? String {
+            if let commandText = notification.userInfo?["commandText"] as? String, !isEditing {
                 Cache.fuzzys = commandText
             }
         }
     }
-        
+
 }
 
 struct BookmarkButtonView: View {
@@ -100,22 +113,4 @@ struct AddButtonView: View {
     }
     
 }
-
-struct EditButtonView: View {
-    
-    @State private var isHovered = false
-    
-    var body: some View {
-        Image(systemName: "square.and.pencil")
-            .resizable()
-            .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
-            .onHover { isHovered in
-                self.isHovered = isHovered
-            }
-    }
-    
-}
-
-
 

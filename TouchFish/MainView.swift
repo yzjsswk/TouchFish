@@ -3,10 +3,14 @@ import Foundation
 
 struct MainView: View {
     
+    @State var fishs: [String:Fish] = [:]
+    
     @State var commandText = ""
     @State var commandCell: [String] = []
+    
     @State var viewState = 0
-    @State var fishList: [Fish] = []
+    
+    @State var isEditing: Bool = false
     
     var body: some View {
         ZStack {
@@ -15,7 +19,7 @@ struct MainView: View {
                 CommandBarView(commandText: $commandText, commandCell: $commandCell)
                 switch viewState {
                 case 1:
-                    FishRepositoryView(fishList: fishList)
+                    FishRepositoryView(fishs: fishs, isEditing: $isEditing)
                 case 2:
                     EmptyView()
                 case 3:
@@ -34,7 +38,7 @@ struct MainView: View {
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
         .onAppear {
-            fishList = Storage.getFishOfSearchCondition()
+            fishs = Storage.getFishOfSearchCondition()
         }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             let recipeId = RecipeManager.activeRecipeId
@@ -51,7 +55,7 @@ struct MainView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
-            if commandText.count == 0 {
+            if !isEditing && commandText.count == 0 {
                 CommandManager.removeCell()
             }
         }
@@ -65,7 +69,7 @@ struct MainView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFishList)) { _ in
             withAnimation {
-                fishList = Storage.getFishOfSearchCondition()
+                fishs = Storage.getFishOfSearchCondition()
             }
         }
     }

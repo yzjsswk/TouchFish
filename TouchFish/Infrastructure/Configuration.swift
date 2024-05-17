@@ -51,6 +51,7 @@ struct Configuration: Codable {
     var fishItemIconWidth: CGFloat = 20
     var fishItemPreviewLength: Int = 40
     var fishDetailItemHeight: CGFloat = 10
+    var textFishDetailPreviewLength: Int = 1500 // service limit: 2000
     
     var mainBackgroundColor: String = "#ECEEF1"
     var commandBarBackgroundColor: String = "D8D8DB"

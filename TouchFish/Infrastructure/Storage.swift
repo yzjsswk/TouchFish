@@ -257,17 +257,15 @@ struct Storage {
         return true
     }
     
-    static func getFishOfSearchCondition() -> [Fish] {
-        let fishList = Array(Cache.fishCache.values)
-        //       fishList = Array<Fish>(res.prefix(100))
-        //       totalCount = res.count
-        //       fishList.sort { $0.updateTime > $1.updateTime }
-        return fishList.sorted { (fish1, fish2) -> Bool in
-            if fish1.createTime == fish2.createTime {
-                return fish1.identity > fish2.identity
-            }
-            return fish1.createTime > fish2.createTime
-        }
+    static func getFishOfSearchCondition() -> [String:Fish] {
+//        let fishList = Array(Cache.fishCache.values)
+//        return fishList.sorted { (fish1, fish2) -> Bool in
+//            if fish1.createTime == fish2.createTime {
+//                return fish1.identity > fish2.identity
+//            }
+//            return fish1.createTime > fish2.createTime
+//        }
+        return Cache.fishCache
     }
     
     static func getPreviewOfFish(_ identity: String) -> Data? {

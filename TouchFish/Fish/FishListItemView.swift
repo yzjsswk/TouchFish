@@ -4,15 +4,16 @@ struct FishListItemView: View {
     
     var fish: Fish
     
-    @Binding var selectedFishId: Int?
-    @Binding var hoveringFishId: Int?
+    @Binding var isEditing: Bool
+    @Binding var selectedFishIdentity: String?
+    @Binding var hoveringFishIdentity: String?
     
     var isSelected: Bool {
-        selectedFishId == fish.id
+        selectedFishIdentity == fish.identity
     }
     
     var isHovering: Bool {
-        hoveringFishId == fish.id
+        hoveringFishIdentity == fish.identity
     }
     
     var body: some View {
@@ -47,6 +48,7 @@ struct FishListItemView: View {
                                 }
                             }
                         Spacer()
+                        // todo: icon move anima when lock
                         if fish.isLocked {
                             UnLockButtonView()
                                 .onTapGesture {
@@ -67,37 +69,41 @@ struct FishListItemView: View {
                                         }
                                     }
                                 }
-                        }
-                        if fish.isMarked {
-                            UnMarkButtonView()
+                            EditButtonView()
                                 .onTapGesture {
-                                    Task {
-                                        let res = await Storage.unMarkFish(fish.identity)
-                                        if res == .fail {
-                                            Log.error("click button to unmark fish - fail: storage.unMarkFish return fail, identity = \(fish.identity)")
+                                    isEditing = true
+                                }
+                            if fish.isMarked {
+                                UnMarkButtonView()
+                                    .onTapGesture {
+                                        Task {
+                                            let res = await Storage.unMarkFish(fish.identity)
+                                            if res == .fail {
+                                                Log.error("click button to unmark fish - fail: storage.unMarkFish return fail, identity = \(fish.identity)")
+                                            }
                                         }
                                     }
-                                }
-                        } else {
-                            MarkButtonView()
-                                .onTapGesture {
-                                    Task {
-                                        let res = await Storage.markFish(fish.identity)
-                                        if res == .fail {
-                                            Log.error("click button to mark fish - fail: storage.markFish return fail, identity = \(fish.identity)")
+                            } else {
+                                MarkButtonView()
+                                    .onTapGesture {
+                                        Task {
+                                            let res = await Storage.markFish(fish.identity)
+                                            if res == .fail {
+                                                Log.error("click button to mark fish - fail: storage.markFish return fail, identity = \(fish.identity)")
+                                            }
                                         }
                                     }
-                                }
-                        }
-                        DeleteButtonView()
-                            .onTapGesture {
-                                Task {
-                                    let res = await Storage.removeFish(fish.identity)
-                                    if res == .fail {
-                                        Log.error("click button to delete fish - fail: Storage.removeFish return fail, identity=\(fish.identity)")
-                                    }
-                                }
                             }
+                            DeleteButtonView()
+                                .onTapGesture {
+                                    Task {
+                                        let res = await Storage.removeFish(fish.identity)
+                                        if res == .fail {
+                                            Log.error("click button to delete fish - fail: Storage.removeFish return fail, identity=\(fish.identity)")
+                                        }
+                                    }
+                                }
+                        }
                     }
                 }
             }
@@ -133,6 +139,25 @@ struct CopyButtonView: View {
         }
         .frame(width: 20, height: 20)
     }
+}
+
+struct EditButtonView: View {
+    
+    @State private var isHovered = false
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "square.and.pencil")
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(isHovered ? .white : .green)
+                .onHover { isHovered in
+                    self.isHovered = isHovered
+                }
+        }
+        .frame(width: 20, height: 20)
+    }
+    
 }
 
 struct LockButtonView: View {

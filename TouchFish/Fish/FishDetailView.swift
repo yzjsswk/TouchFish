@@ -2,64 +2,71 @@ import SwiftUI
 
 struct FishDetailView: View {
     
-    var fishList: [Fish]
-    var fishMap: [Int: Fish]
+    var fishs: [String:Fish]
     
-    @Binding var selectedFishId: Int?
+    @Binding var selectedFishIdentity: String?
+    
+    var selectedFish: Fish? {
+        if let identity = selectedFishIdentity {
+            return fishs[identity]
+        }
+        return nil
+    }
     
     @State var showDetail: Bool = false
     @State var showDetailWithAnima: Bool = false
     
-    init(fishList: [Fish], selectedFishId: Binding<Int?>) {
-        self.fishList = fishList
-        self.fishMap = Dictionary(uniqueKeysWithValues: fishList.map { ($0.id, $0) })
-        self._selectedFishId = selectedFishId
-    }
-    
     var body: some View {
-        if let selectedFish = selectedFishId != nil ? fishMap[selectedFishId!] ?? fishList.first : fishList.first {
-            VStack {
+        VStack {
+            if let selectedFish = self.selectedFish, 
+                selectedFish.tags.count > 0 || selectedFish.description.count > 0 {
                 VStack {
-                    DetailTagView(fish: selectedFish)
-                    DetailDescView(fish: selectedFish)
+                    if selectedFish.tags.count > 0 {
+                        DetailTagView(fish: selectedFish)
+                    }
+                    if selectedFish.tags.count > 0 && selectedFish.description.count > 0 {
+                        Divider().background(Color.gray.opacity(0.2))
+                    }
+                    if selectedFish.description.count > 0 {
+                        DetailDescView(fish: selectedFish)
+                    }
                 }
                 .padding()
-                //                .background(.white)
                 .overlay(
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    //                        .padding()
                 )
-                //                Divider().background(Color.gray.opacity(0.2))
+            }
+            if let selectedFish = self.selectedFish {
                 ScrollView {
                     DetailValueView(fish: selectedFish)
                 }
-                Spacer()
-                VStack {
-                    Divider().background(Color.gray.opacity(0.2))
-                    ArrowView()
-                        .rotationEffect(.degrees(180))
-                        .onTapGesture {
-                            withAnimation {
-                                showDetailWithAnima = false
-                            }
-                            showDetail = false
-                        }
-                    DetailExtraInfoView(fish: selectedFish)
-                }
-                .offset(y: showDetailWithAnima ? 0 : 500)
+            }
+            Spacer()
+            if showDetail {
+                Divider().background(Color.gray.opacity(0.2))
+            }
+            ArrowView()
+                .rotationEffect(.degrees(180))
+                .offset(y: showDetailWithAnima ? 0 : Config.mainWidth*0.4)
                 .onTapGesture {
-                    Log.debug("clicked")
+                    withAnimation {
+                        showDetailWithAnima = false
+                    }
+                    showDetail = false
                 }
-                if !showDetail {
-                    ArrowView()
-                        .onTapGesture {
-                            withAnimation {
-                                showDetailWithAnima = true
-                            }
-                            showDetail = true
+            if let selectedFish = self.selectedFish {
+                DetailExtraInfoView(fish: selectedFish)
+                    .frame(height: showDetailWithAnima ? Config.mainHeight*0.3 : 0)
+            }
+            if !showDetail {
+                ArrowView()
+                    .onTapGesture {
+                        withAnimation(.spring) {
+                            showDetailWithAnima = true
                         }
-                }
+                        showDetail = true
+                    }
             }
         }
     }
@@ -68,50 +75,43 @@ struct FishDetailView: View {
 
 struct DetailTagView: View {
     
-    var fish: Fish?
+    var fish: Fish
     
     var body: some View {
-        if let fish = fish, fish.tags.count > 0 {
-            HStack {
-                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
-                    ForEach(tagGroup, id: \.self) { tg in
-                        Rectangle()
-                            .fill(String(Functions.getMD5(of: tg).prefix(6)).color)
-                            .overlay(
-                                Text(tg)
-                                    .foregroundColor(.white)
-                            )
-                            .frame(width: max(CGFloat(tg.count*10), 40), height: 20)
-                            .cornerRadius(10)
-                    }
-                    if idx < fish.tags.count-1 {
-                        Divider()
-                    }
+        HStack {
+            ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
+                ForEach(tagGroup, id: \.self) { tg in
+                    Rectangle()
+                        .fill(String(Functions.getMD5(of: tg).prefix(6)).color)
+                        .overlay(
+                            Text(tg)
+                                .foregroundColor(.white)
+                        )
+                        .frame(width: max(CGFloat(tg.count*10), 40), height: 20)
+                        .cornerRadius(10)
                 }
-                Spacer()
+                if idx < fish.tags.count-1 {
+                    Divider()
+                }
             }
-            .frame(height: 20)
-        } else {
-            EmptyView()
+            Spacer()
         }
+        .frame(height: 20)
     }
     
 }
     
 struct DetailDescView: View {
     
-    var fish: Fish?
+    var fish: Fish
     
     var body: some View {
-        if let fish = fish, fish.description.count > 0 {
-            HStack {
-                Text(fish.description)
-                    .font(.title3)
-                    .bold()
-                Spacer()
-            }
-        } else {
-            EmptyView()
+        HStack {
+            Text(fish.description)
+                .font(.title3)
+                .bold()
+                .padding(.top, 3)
+            Spacer()
         }
     }
     
@@ -119,80 +119,75 @@ struct DetailDescView: View {
 
 struct DetailValueView: View {
     
-    var fish: Fish?
+    var fish: Fish
     
     var body: some View {
-        if let fish = fish {
-            switch fish.type {
-            case .txt:
-                    VStack {
-                        if let textValue = fish.textPreview {
-                            Text(textValue.prefix(1000))
+        switch fish.type {
+        case .txt:
+                VStack {
+                    if let textValue = fish.textPreview {
+                        Text(textValue.prefix(Config.textFishDetailPreviewLength))
+                            .font(.callout)
+                        if textValue.count > Config.textFishDetailPreviewLength {
+                            Text("...")
                                 .font(.callout)
-                            if textValue.count > 1000 {
-                                Text("...")
-                                    .font(.callout)
-                                    .bold()
-                            }
-                        } else {
-                            Text("No Preview")
-                                .font(.callout)
-                                .foregroundColor(Color.red)
+                                .bold()
                         }
-                    }
-                case .tiff, .png, .jpg:
-                    if let image = fish.imagePreview {
-                        Image(nsImage: image)
-                            .resizable()
-                            .scaledToFit()
                     } else {
                         Text("No Preview")
                             .font(.callout)
-                            .foregroundColor(.red)
+                            .bold()
+                            .foregroundColor(Color.red)
                     }
-                default:
-                    Text("Not Supported To Preview")
+                }
+            case .tiff, .png, .jpg:
+                if let image = fish.imagePreview {
+                    Image(nsImage: image)
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    Text("No Preview")
                         .font(.callout)
+                        .bold()
                         .foregroundColor(.red)
                 }
-        } else {
-            EmptyView()
-        }
+            default:
+                Text("Not Supported To Preview")
+                    .font(.callout)
+                    .bold()
+                    .foregroundColor(.red)
+            }
     }
     
 }
 
 struct DetailExtraInfoView: View {
     
-    var fish: Fish?
+    var fish: Fish
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            if let fish = fish {
-                VStack(alignment: .leading) {
-                    DetailItemView(itemName: "Type", itemValue: fish.type.rawValue)
-                    DetailItemView(itemName: "Source Application", itemValue: fish.extraInfo.sourceAppName)
-                    switch fish.type {
-                    case .txt:
-                        DetailItemView(itemName: "Char Count", itemValue: fish.extraInfo.charCount)
-                        DetailItemView(itemName: "Word Count", itemValue: fish.extraInfo.wordCount)
-                        DetailItemView(itemName: "Row Count", itemValue: fish.extraInfo.rowCount)
-                    case .tiff, .png, .jpg:
-                        DetailItemView(itemName: "Width", itemValue: fish.extraInfo.width)
-                        DetailItemView(itemName: "Height", itemValue: fish.extraInfo.height)
-                    case .pdf:
-                        EmptyView()
-                    }
-                    DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(fish.byteCount))
-                    DetailItemView(itemName: "Create Time", itemValue: fish.createTime)
-                    DetailItemView(itemName: "Update Time", itemValue: fish.updateTime)
+            VStack(alignment: .leading) {
+                DetailItemView(itemName: "Type", itemValue: fish.type.rawValue)
+                DetailItemView(itemName: "Source Application", itemValue: fish.extraInfo.sourceAppName)
+                switch fish.type {
+                case .txt:
+                    DetailItemView(itemName: "Char Count", itemValue: fish.extraInfo.charCount)
+                    DetailItemView(itemName: "Word Count", itemValue: fish.extraInfo.wordCount)
+                    DetailItemView(itemName: "Row Count", itemValue: fish.extraInfo.rowCount)
+                case .tiff, .png, .jpg:
+                    DetailItemView(itemName: "Width", itemValue: fish.extraInfo.width)
+                    DetailItemView(itemName: "Height", itemValue: fish.extraInfo.height)
+                case .pdf:
+                    EmptyView()
                 }
-                .padding(.vertical, 5)
-            } else {
-                EmptyView()
+                DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(fish.byteCount))
+                DetailItemView(itemName: "Create Time", itemValue: fish.createTime)
+                DetailItemView(itemName: "Update Time", itemValue: fish.updateTime)
             }
+            .padding(.vertical, 5)
         }
-        .frame(height: Config.mainHeight*0.3)
+//        .frame(height: Config.mainHeight*0.3)
     }
     
 }
