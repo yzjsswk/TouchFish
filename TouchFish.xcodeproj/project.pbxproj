@@ -17,7 +17,6 @@
 		99AC05E32BB2BD720046E8C5 /* Fish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BA2BB2BD720046E8C5 /* Fish.swift */; };
 		99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */; };
 		99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */; };
-		99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */; };
 		99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */; };
 		99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05BF2BB2BD720046E8C5 /* FishListView.swift */; };
 		99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */; };
@@ -47,7 +46,6 @@
 		99AC06052BB2BE440046E8C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC06042BB2BE440046E8C5 /* AppDelegate.swift */; };
 		99AC06082BB2BE930046E8C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 99AC06072BB2BE930046E8C5 /* Main.storyboard */; };
 		99AC060B2BB413AD0046E8C5 /* SwiftyBeaver in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */; };
-		99AC060E2BB413C20046E8C5 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 99AC060D2BB413C20046E8C5 /* SQLite */; };
 		99EF7A282BF3C0EC00675CC2 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EF7A272BF3C0EC00675CC2 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,7 +61,6 @@
 		99AC05BA2BB2BD720046E8C5 /* Fish.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fish.swift; sourceTree = "<group>"; };
 		99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishDetailView.swift; sourceTree = "<group>"; };
 		99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishEditView.swift; sourceTree = "<group>"; };
-		99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishFilterView.swift; sourceTree = "<group>"; };
 		99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishListItemView.swift; sourceTree = "<group>"; };
 		99AC05BF2BB2BD720046E8C5 /* FishListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishListView.swift; sourceTree = "<group>"; };
 		99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FishRepositoryView.swift; sourceTree = "<group>"; };
@@ -101,7 +98,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				996FEE562BC917AE0047EB82 /* Alamofire in Frameworks */,
-				99AC060E2BB413C20046E8C5 /* SQLite in Frameworks */,
 				99AC060B2BB413AD0046E8C5 /* SwiftyBeaver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,7 +174,6 @@
 				99AC05BA2BB2BD720046E8C5 /* Fish.swift */,
 				99AC05BB2BB2BD720046E8C5 /* FishDetailView.swift */,
 				99AC05BC2BB2BD720046E8C5 /* FishEditView.swift */,
-				99AC05BD2BB2BD720046E8C5 /* FishFilterView.swift */,
 				99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */,
 				99AC05BF2BB2BD720046E8C5 /* FishListView.swift */,
 				99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */,
@@ -262,7 +257,6 @@
 			name = TouchFish;
 			packageProductDependencies = (
 				99AC060A2BB413AD0046E8C5 /* SwiftyBeaver */,
-				99AC060D2BB413C20046E8C5 /* SQLite */,
 				996FEE552BC917AE0047EB82 /* Alamofire */,
 			);
 			productName = TouchFish;
@@ -295,7 +289,6 @@
 			mainGroup = 99AC059C2BB2BCD90046E8C5;
 			packageReferences = (
 				99AC06092BB413AD0046E8C5 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */,
-				99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */,
 				996FEE542BC917AE0047EB82 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			productRefGroup = 99AC05A62BB2BCD90046E8C5 /* Products */;
@@ -343,7 +336,6 @@
 				99AC05FD2BB2BD720046E8C5 /* Recipe.swift in Sources */,
 				99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */,
 				99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */,
-				99AC05E62BB2BD720046E8C5 /* FishFilterView.swift in Sources */,
 				99AC05FB2BB2BD720046E8C5 /* CommandManager.swift in Sources */,
 				996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */,
 				99AC06012BB2BD720046E8C5 /* WebBrowserView.swift in Sources */,
@@ -587,14 +579,6 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.15.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -607,11 +591,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 99AC06092BB413AD0046E8C5 /* XCRemoteSwiftPackageReference "SwiftyBeaver" */;
 			productName = SwiftyBeaver;
-		};
-		99AC060D2BB413C20046E8C5 /* SQLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 99AC060C2BB413C20046E8C5 /* XCRemoteSwiftPackageReference "SQLite" */;
-			productName = SQLite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

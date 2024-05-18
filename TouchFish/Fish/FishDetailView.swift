@@ -78,25 +78,33 @@ struct DetailTagView: View {
     var fish: Fish
     
     var body: some View {
-        HStack {
-            ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
-                ForEach(tagGroup, id: \.self) { tg in
-                    Rectangle()
-                        .fill(String(Functions.getMD5(of: tg).prefix(6)).color)
-                        .overlay(
-                            Text(tg)
-                                .foregroundColor(.white)
-                        )
-                        .frame(width: max(CGFloat(tg.count*10), 40), height: 20)
-                        .cornerRadius(10)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
+                    ForEach(tagGroup, id: \.self) { tg in
+                        Text(tg)
+                            .frame(minWidth: 40)
+                            .background(
+                                GeometryReader { geometry in
+                                    Rectangle()
+                                        .cornerRadius(10)
+                                        .foregroundColor(String(Functions.getMD5(of: tg).prefix(6)).color)
+                                        .frame(width: geometry.size.width+5, height: geometry.size.height+8)
+                                        .offset(x: -2.5, y: -4)
+                                }
+                            )
+                            .foregroundColor(.white)
+                    }
+                    if idx < fish.tags.count-1 {
+                        Divider()
+                    }
                 }
-                if idx < fish.tags.count-1 {
-                    Divider()
-                }
+                Spacer()
             }
-            Spacer()
+            .frame(height: 20)
+            .padding(3)
         }
-        .frame(height: 20)
+        
     }
     
 }

@@ -43,7 +43,7 @@ class CommandFieldViewController: NSViewController, NSTextFieldDelegate {
     override func viewDidAppear() {
         view.window?.makeFirstResponder(view)
         fieldEditor.insertionPointColor = Config.commandFieldInsertionPointColor.nsColor
-        textField.selectText(nil)
+        textField.selectText(nil) // todo: do not select
     }
     
     func controlTextDidChange(_ obj: Notification) {

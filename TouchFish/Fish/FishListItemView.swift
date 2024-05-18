@@ -17,7 +17,7 @@ struct FishListItemView: View {
     }
     
     var body: some View {
-        HStack(spacing: 10) {
+        HStack() {
             HStack {
                 fish.fishIcon
                 .resizable()
@@ -35,7 +35,7 @@ struct FishListItemView: View {
                     Spacer()
                 }
                 if isHovering {
-                    HStack {
+                    HStack(spacing: 3) {
                         Text(fish.identity)
                             .font(.caption)
                             .foregroundColor(.gray)
@@ -150,7 +150,7 @@ struct EditButtonView: View {
             Image(systemName: "square.and.pencil")
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(isHovered ? .white : .green)
+                .foregroundColor(isHovered ? .brown : .brown)
                 .onHover { isHovered in
                     self.isHovered = isHovered
                 }
@@ -174,7 +174,7 @@ struct LockButtonView: View {
                     self.isHovered = isHovered
                 }
         }
-        .frame(width: 20, height: 20)
+        .frame(width: 25, height: 20)
     }
 }
 
@@ -192,7 +192,7 @@ struct UnLockButtonView: View {
                     self.isHovered = isHovered
                 }
         }
-        .frame(width: 20, height: 20)
+        .frame(width: 25, height: 20)
     }
 }
 

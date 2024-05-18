@@ -8,7 +8,7 @@ struct FishEditView: View {
     @State var description: String
     @State var tags: [[String]]
     
-    @State var descriptionAreaHeight: Int = 100
+    @State var tagsFlatten: [String] = []
     
     @State var showSaveAlert = false
     @State var alertMessage = ""
@@ -21,10 +21,18 @@ struct FishEditView: View {
                         isEditing = false
                     }
                 Spacer()
+                Text("Editing of \(identity)")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                Spacer()
                 SaveButtonView()
                     .onTapGesture {
                         Task {
-                            let res = await Storage.modifyFish(identity, description: description, tags: tags)
+                            let res = await Storage.modifyFish(
+                                identity,
+                                description: description,
+                                tags: tags.filter {!$0.isEmpty}
+                            )
                             switch res {
                             case .success:
                                 isEditing = false
@@ -45,27 +53,28 @@ struct FishEditView: View {
                         )
                     }
             }
-            Divider().background(Color.gray.opacity(0.2)) 
+            Divider().background(Color.gray.opacity(0.2))
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
-                    
-//                    HStack(spacing: 10) {
-//                        Text("tag")
-//                            .font(.title2)
-//                            .bold()
-//                        TagEditView(tags: $tags[0])
-//                    }
-//                    LazyVGrid(columns: [
-//                        GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()),
-//                        GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())
-//                    ], spacing: 16) {
-//                        ForEach(tags[0], id: \.self) { tg in
-//                            TagView(label: tg, tags: $tags[0])
-//                        }
-//                    }
-                        
-                        
-                    Text("description")
+                    HStack(spacing: 10) {
+                        Text("Tag")
+                            .font(.title2)
+                            .bold()
+                        AddTagGroupView(tags: $tags)
+                    }
+                    ForEach(Array(tags.enumerated()), id: \.0) { (idx, tagGroup) in
+                        HStack {
+                            Text("Group\(idx+1)")
+                                .font(.system(.body, design: .monospaced))
+                                .bold()
+                                .padding(.horizontal, 10)
+                            ForEach(tagGroup, id: \.self) { tg in
+                                TagView(label: tg, tags: $tags[idx])
+                            }
+                            TagEditView(tags: $tags[idx], allTags: $tagsFlatten)
+                        }
+                    }
+                    Text("Description")
                         .font(.title2)
                         .bold()
                     ZStack {
@@ -78,15 +87,21 @@ struct FishEditView: View {
                     }
                     .background(Color.white)
                     .cornerRadius(5)
-                    .frame(height: 100)
-
+                    .frame(height: Config.mainWidth*0.3)
+                    
                 }
             }
-            .frame(width: Config.mainWidth - 30)
-            .padding(5)
+            .padding()
         }
-        .onChange(of: description) {
-            descriptionAreaHeight = min(100, description.count / 30)
+        .onAppear() {
+            tagsFlatten = tags.reduce(into: []) { (res, cur) in
+                res.append(contentsOf: cur)
+            }
+        }
+        .onChange(of: tags) {
+            tagsFlatten = tags.reduce(into: []) { (res, cur) in
+                res.append(contentsOf: cur)
+            }
         }
     }
     
@@ -100,7 +115,7 @@ struct BackButtonView: View {
         Image(systemName: "arrow.backward.square")
         .resizable()
         .frame(width: 25, height: 25)
-        .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
+        .foregroundColor(isHovered ? .yellow : .gray)
         .onHover { isHovered in
             self.isHovered = isHovered
         }
@@ -133,35 +148,51 @@ struct TagView: View {
     @Binding var tags: [String]
     
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(String(Functions.getMD5(of: label).prefix(6)).color)
-            .overlay(
-                Text(label)
-                .foregroundColor(.white)
-            )
-            .frame(width: 100, height: 25)
-            .cornerRadius(10)
-            
-            if isHovered {
-                Image(systemName: "xmark.circle.fill")
-                .resizable()
-                .frame(width: 15, height: 15)
-                .offset(x: 40)
-                .foregroundColor(.orange)
-                .onTapGesture {
-                    tags.removeAll(where: { $0 == label } )
+        Text(label)
+            .frame(minWidth: 40)
+            .background(
+                GeometryReader { geometry in
+                    Rectangle()
+                        .cornerRadius(10)
+                        .foregroundColor(String(Functions.getMD5(of: label).prefix(6)).color)
+                        .frame(width: geometry.size.width+5, height: geometry.size.height+8)
+                        .offset(x: -2.5, y: -4)
                 }
-            }
-        }
-        .onHover { isHovered in
-            withAnimation {
+            )
+            .foregroundColor(.white)
+            .strikethrough(isHovered, color: .red)
+            .onHover { isHovered in
                 self.isHovered = isHovered
             }
-        }
+            .onTapGesture {
+                tags.removeAll(where: { $0 == label } )
+            }
     }
     
 }
+
+struct AddTagGroupView: View {
+    
+    @State private var isHovered = false
+    
+    @Binding var tags: [[String]]
+    
+    var body: some View {
+        Image(systemName: "plus.circle")
+        .resizable()
+        .frame(width: 20, height: 20)
+        .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
+        .onHover { isHovered in
+            self.isHovered = isHovered
+        }
+        .onTapGesture {
+            withAnimation {
+                tags.append([])
+            }
+        }
+    }
+}
+
 
 struct TagEditView: View {
     
@@ -176,6 +207,7 @@ struct TagEditView: View {
     @State private var tagPreviewList: [String] = []
     
     @Binding var tags: [String]
+    @Binding var allTags: [String]
     
     var body: some View {
         
@@ -216,7 +248,7 @@ struct TagEditView: View {
                     self.isHovered2 = isHovered
                 }
                 .onTapGesture {
-                    if !tags.contains(tagSearchText) {
+                    if !allTags.contains(tagSearchText) {
                         tags.append(tagSearchText)
                     }
                     isOpening = false

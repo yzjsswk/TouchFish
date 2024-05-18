@@ -10,7 +10,7 @@ struct MainView: View {
     
     @State var viewState = 0
     
-    @State var isEditing: Bool = false
+    @State var isEditing: Bool = false // todo: remove
     
     var body: some View {
         ZStack {
@@ -52,11 +52,6 @@ struct MainView: View {
             } else {
                 viewState = 0
                 commandCell.removeAll()
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
-            if !isEditing && commandText.count == 0 {
-                CommandManager.removeCell()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
