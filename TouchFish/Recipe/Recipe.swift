@@ -1,65 +1,221 @@
 import SwiftUI
 
 struct Recipe {
-    var id: Int
+    var bundleId: String
+    var author: String
+    var version: Int
     var name: String
     var commandCellName: String
-    var desc: String?
-    var icon: Image = Image(systemName: "frying.pan")
-    var args: [String] = []
+    var description: String?
+    var icon: Image
     var command: String?
-    var action: () -> Void = {}
+    var arguments: [RecipeArgument] = []
+    var order: Int
+}
+
+struct RecipeScript: Codable {
+    
+    var bundleId: String
+    var author: String
+    var version: Int
+    var name: String
+    var commandCellName: String?
+    var description: String?
+    var icon: String // system:xxx fish:xxx
+    var command: String?
+    var arguments: [RecipeArgument] = []
+    var order: Int?
+    
+    static func parseRecipe(recipeScriptText: String) -> Recipe? {
+        guard let recipeScriptData = recipeScriptText.data(using: .utf8) else {
+            Log.error("parse recipt script - fail: get script data error ")
+            return nil
+        }
+        guard let recipeScript = try? JSONDecoder().decode(RecipeScript.self, from: recipeScriptData) else {
+            Log.error("parse recipt script - fail: json decode error")
+            Log.verbose(recipeScriptText)
+            return nil
+        }
+        var icon: Image = Image(systemName: "frying.pan")
+        if recipeScript.icon.hasPrefix("system:") {
+            let systemIconName = String(recipeScript.icon.dropFirst(7))
+            icon = Image(systemName: systemIconName)
+        }
+        if recipeScript.icon.hasPrefix("fish:") {
+            let fishIdentity = String(recipeScript.icon.dropFirst(5))
+            if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
+                icon = Image(nsImage: fishImage)
+            }
+        }
+        return Recipe(
+            bundleId: recipeScript.bundleId,
+            author: recipeScript.author,
+            version: recipeScript.version,
+            name: recipeScript.name,
+            commandCellName: recipeScript.commandCellName ?? recipeScript.name,
+            description: recipeScript.description,
+            icon: icon,
+            command: recipeScript.command,
+            arguments: recipeScript.arguments,
+            order: recipeScript.order ?? 0
+        )
+    }
+    
+}
+
+struct RecipeArgument: Codable {
+    var name: String
+    var separator: String?
 }
 
 struct RecipeManager {
     
-    static var activeRecipeId = 0
-    static var activeRecipeArguments: [String:String] = [:]
+    static var recipes: [String:Recipe] = [:]
     
-    static var recipes: [Int:Recipe] = [
-        1: Recipe(
-            id: 1,
+    static func start() {
+        recipes.removeAll()
+        for recipe in internalRecipeList {
+            recipes[recipe.bundleId] = recipe
+        }
+        // todo: load recipes from fish
+    }
+    
+    static var orderedRecipeList: [Recipe] {
+        return recipes.values.sorted(by: {
+            if $0.order == $1.order {
+                return $0.bundleId < $1.bundleId
+            }
+            return $0.order < $1.order
+        })
+    }
+    
+    static private var activeRecipeId: String? = nil
+    static private var activeRecipeArguments: [String:String] = [:]
+    static private var activeRecipeArgumentsOrder: [String] = []
+    
+    
+    static var activeRecipe: Recipe? {
+        guard let activeRecipeId = activeRecipeId else {
+            return nil
+        }
+        return recipes[activeRecipeId]
+    }
+    
+    static var activeRecipeArg: [String:[String]] {
+        var ret: [String:[String]] = [:]
+        guard let args = activeRecipe?.arguments else {
+            return ret
+        }
+        for arg in args {
+            if let value = activeRecipeArguments[arg.name] {
+                if let separator = arg.separator {
+                    ret[arg.name] = value.split(separator: separator).map{ String($0) }
+                } else {
+                    ret[arg.name] = [value]
+                }
+            }
+        }
+        return ret
+    }
+    
+    static var activeRecipeOrderedArg: [(String, String)] {
+        var ret: [(String, String)] = []
+        for k in activeRecipeArgumentsOrder {
+            if let v = activeRecipeArguments[k] {
+                ret.append((k, v))
+            }
+        }
+        return ret
+    }
+ 
+    static func goToRecipe(recipeId: String?) {
+        activeRecipeId = recipeId
+        activeRecipeArguments.removeAll()
+        activeRecipeArgumentsOrder.removeAll()
+        NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+    }
+    
+    static func addArg(key: String, value: String) {
+        if let validArgs = activeRecipe?.arguments.map({$0.name}),
+           validArgs.contains(key),
+           !activeRecipeArguments.keys.contains(key) {
+            activeRecipeArguments[key] = value
+            activeRecipeArgumentsOrder.append(key)
+            NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+        }
+    }
+    
+    static func delArg(key: String) {
+        activeRecipeArguments.removeValue(forKey: key)
+        activeRecipeArgumentsOrder.removeAll {$0 == key}
+        NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+    }
+    
+    static func delLastArg() {
+        if let lastKey = activeRecipeArgumentsOrder.last {
+            activeRecipeArguments.removeValue(forKey: lastKey)
+            activeRecipeArgumentsOrder.removeLast()
+            NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
+        }
+    }
+    
+    static private var internalRecipeList = [
+        Recipe(
+            bundleId: "com.touchfish.FishRepository",
+            author: "yzjsswk",
+            version: 0,
             name: "Fish Repository",
             commandCellName: "Fish Repository",
-            desc: "master your information",
+            description: "master your information",
             icon: Image(systemName: "fish"),
-            command: "fish"
+            command: "fish",
+            arguments: [
+                RecipeArgument(name: "type", separator: ","),
+                RecipeArgument(name: "tag", separator: ","),
+                RecipeArgument(name: "marked"),
+                RecipeArgument(name: "locked"),
+                RecipeArgument(name: "sort")
+            ],
+            order: -400
         ),
-        2: Recipe(
-            id: 2,
+        Recipe(
+            bundleId: "com.touchfish.Setting",
+            author: "yzjsswk",
+            version: 0,
             name: "Setting",
             commandCellName: "Setting",
             icon: Image(systemName: "gearshape"),
-            command: "set"
+            command: "set",
+            order: -300
         ),
-        3: Recipe(
-            id: 3,
+        Recipe(
+            bundleId: "com.touchfish.RecipeStore",
+            author: "yzjsswk",
+            version: 0,
             name: "Recipe Store",
             commandCellName: "Recipe Store",
             icon: Image(systemName: "books.vertical"),
-            command: "store"
+            command: "store",
+            order: -200
         ),
-        4: Recipe(
-            id: 4,
+        Recipe(
+            bundleId: "com.touchfish.Statistics",
+            author: "yzjsswk",
+            version: 0,
             name: "Statistics",
             commandCellName: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
-            command: "stats"
-        ),
-        5: Recipe(
-            id: 5,
-            name: "Web BookMark",
-            commandCellName: "Web BookMark",
-            icon: Image(systemName: "globe"),
-            command: "bm"
+            command: "stats",
+            order: -100
         )
+//        Recipe(
+//            id: 5,
+//            name: "Web BookMark",
+//            commandCellName: "Web BookMark",
+//            icon: Image(systemName: "globe"),
+//            command: "bm"
+//        )
     ]
-    
-    static func goToRecipe(recipeId: Int) {
-        activeRecipeId = recipeId
-        activeRecipeArguments.removeAll()
-        NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
-    }
     
 }
 

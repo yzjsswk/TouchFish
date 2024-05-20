@@ -22,15 +22,19 @@ struct FishListItemView: View {
                 fish.fishIcon
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(isSelected ? Color.white: Color.black)
+                .foregroundColor(isSelected ? Color.white: fish.fishIconColor)
             }
             .frame(width: Config.fishItemIconWidth)
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    if fish.itemPreview.count > 0 {
-                        Text(fish.itemPreview)
+                    if fish.linePreview.1 {
+                        Text(fish.linePreview.0)
                             .font(.title2)
                             .foregroundColor(isSelected ? Color.white: Color.black)
+                    } else {
+                        Text(fish.linePreview.0)
+                            .font(.title3)
+                            .foregroundColor(isSelected ? Color.white: Color.gray)
                     }
                     Spacer()
                 }

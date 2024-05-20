@@ -42,28 +42,28 @@ struct Fish {
         return Storage.getImagePreviewByIdentity(self.identity)
     }
     
-    var defaultLinePreview: String {
-        return "\(self.type.rawValue):\(self.identity)"
+    var defaultLinePreview: (String, Bool) {
+        return ("\(self.type.rawValue):\(self.identity)", false)
     }
     
-    var itemPreview: String {
+    var linePreview: (String, Bool) {
         switch type {
         case .txt:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                return (Functions.getLinePreview(self.description), true)
             }
             if let textPreview = self.textPreview {
-                return Functions.getLinePreview(textPreview)
+                return (Functions.getLinePreview(textPreview), false)
             }
             return self.defaultLinePreview
         case .tiff, .png, .jpg:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                return (Functions.getLinePreview(self.description), true)
             }
             return self.defaultLinePreview
         default:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                return (Functions.getLinePreview(self.description), true)
             }
             return self.defaultLinePreview
         }
@@ -79,6 +79,19 @@ struct Fish {
             return Image(systemName: "book.pages")
         default:
             return Image(systemName: "fish")
+        }
+    }
+    
+    var fishIconColor: Color {
+        switch type {
+        case .txt:
+            return .black
+        case .tiff, .png, .jpg:
+            return .blue
+        case .pdf:
+            return .red
+        default:
+            return .black
         }
     }
     

@@ -29,6 +29,7 @@ struct FishDetailView: View {
                     }
                     if selectedFish.description.count > 0 {
                         DetailDescView(fish: selectedFish)
+//                            .frame(minHeight: 50, maxHeight: Config.mainHeight*0.2)
                     }
                 }
                 .padding()

@@ -12,7 +12,6 @@ struct FishListView: View {
     
     @State var lastHoverTs: TimeInterval = Date().timeIntervalSince1970
     
-    
     var body: some View {
         VStack {
             ScrollView(showsIndicators: false) {

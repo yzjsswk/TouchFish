@@ -27,7 +27,7 @@ struct RecipeItemView: View {
                             .foregroundColor(isSelected ? Color.white: Color.black)
                     }
                 }
-                if let desc = recipe.desc, isSelected {
+                if let desc = recipe.description, isSelected {
                     Text(desc)
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -46,7 +46,7 @@ struct RecipeItemView: View {
             }
         }
         .onTapGesture(count: 1) {
-            RecipeManager.goToRecipe(recipeId: recipe.id)
+            RecipeManager.goToRecipe(recipeId: recipe.bundleId)
         }
     }
     

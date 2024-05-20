@@ -5,7 +5,6 @@ class TouchFishApp {
     /**
         todo: 1. delete old file on github: Config.swift, AppleScriptRunner.swift?
             2. fix: paste not work
-            3. fix: command bar error log
      */
 
     /**
@@ -37,6 +36,7 @@ class TouchFishApp {
         }
         LogManager.prepare()
         Cache.start()
+        RecipeManager.start()
         TouchFishApp.statusBar = StatusBar() // need init here because static member will not be compute before it been used
         TouchFishApp.mainWindow = MainWindow()
         Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)

@@ -7,6 +7,8 @@ struct CommandBarView: View {
     
     @FocusState var isFocused: Bool
     
+    @State var lastEditTs: TimeInterval = Date().timeIntervalSince1970
+    
     var body: some View {
         ZStack {
             HStack {
@@ -39,6 +41,17 @@ struct CommandBarView: View {
         .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
             if isFocused && commandText.count == 0 {
                 CommandManager.removeCell()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
+            if let commandText = notification.userInfo?["commandText"] as? String {
+                let curEditTs = Date().timeIntervalSince1970
+                lastEditTs = curEditTs
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if lastEditTs == curEditTs {
+                        NotificationCenter.default.post(name: .CommandBarEndEditing, object: nil, userInfo: ["commandText":commandText])
+                    }
+                }
             }
         }
     }

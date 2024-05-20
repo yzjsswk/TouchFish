@@ -103,6 +103,15 @@ extension String {
         return capitalizedFirstCharacter + stringWithoutFirstCharacter
     }
     
+    func splitOnce(separator: Character) -> (String, String)? {
+        if let index = self.firstIndex(of: separator) {
+            let before = self[..<index]
+            let after = self[self.index(after: index)...]
+            return (String(before), String(after))
+        }
+        return nil
+    }
+    
     var nsColor: NSColor {
         let hexString = self.replacingOccurrences(of: "#", with: "").replacingOccurrences(of: "0x", with: "")
         let scanner = Scanner(string: hexString)
@@ -137,5 +146,6 @@ extension Notification.Name {
     static let ShouldRefreshFishList = Notification.Name("ShouldRefreshFishList")
     static let RecipeStatusChanged = Notification.Name("RecipeStatusChanged")
     static let CommandTextChanged = Notification.Name("CommandTextChanged")
+    static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")
 }
 

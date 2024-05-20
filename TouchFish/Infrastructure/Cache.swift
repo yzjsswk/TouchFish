@@ -28,11 +28,14 @@ struct Cache {
     
     static func start() {
         refresh()
-//        refreshByTime()
-//        func refreshByTime() {
-//            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 60) {
-//                refresh()
-//                refreshByTime()
+//        refreshIfNeed()
+//        func refreshIfNeed() {
+//            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
+//                if needRefresh {
+//                    needRefresh = false
+//                    doRefresh()
+//                }
+//                refreshIfNeed()
 //            }
 //        }
     }

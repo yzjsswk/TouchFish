@@ -8,7 +8,7 @@ struct MainView: View {
     @State var commandText = ""
     @State var commandCell: [String] = []
     
-    @State var viewState = 0
+    @State var activeRecipeBundleId: String?
     
     @State var isEditing: Bool = false // todo: remove
     
@@ -17,19 +17,16 @@ struct MainView: View {
             Config.mainBackgroundColor.color
             VStack {
                 CommandBarView(commandText: $commandText, commandCell: $commandCell)
-                switch viewState {
-                case 1:
-                    FishRepositoryView(fishs: fishs, isEditing: $isEditing)
-                case 2:
-                    EmptyView()
-                case 3:
-                    EmptyView()
-                case 4:
-                    StatsView()
-                case 5:
-//                    WebBrowserView(text: $commandText)
-                    EmptyView()
-                default:
+                if let activeRecipeBundleId = activeRecipeBundleId {
+                    switch activeRecipeBundleId {
+                    case "com.touchfish.FishRepository":
+                        FishRepositoryView(fishs: $fishs, isEditing: $isEditing)
+                    case "com.touchfish.Statistics":
+                        StatsView()
+                    default:
+                        EmptyView()
+                    }
+                } else {
                     RecipeView()
                 }
                 Spacer()
@@ -41,16 +38,15 @@ struct MainView: View {
             fishs = Storage.getFishOfSearchCondition()
         }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
-            let recipeId = RecipeManager.activeRecipeId
-            if let recipe = RecipeManager.recipes[recipeId] {
-                viewState = recipeId
+            if let recipe = RecipeManager.activeRecipe {
+                activeRecipeBundleId = recipe.bundleId
                 commandCell.removeAll()
                 commandCell.append(recipe.name)
-                for (k, v) in RecipeManager.activeRecipeArguments {
+                for (k, v) in RecipeManager.activeRecipeOrderedArg {
                     commandCell.append("\(k):\(v)")
                 }
             } else {
-                viewState = 0
+                activeRecipeBundleId = nil
                 commandCell.removeAll()
             }
         }
