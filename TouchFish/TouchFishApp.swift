@@ -35,8 +35,7 @@ class TouchFishApp {
             }
         }
         LogManager.prepare()
-        Cache.start()
-        RecipeManager.start()
+        Cache.refresh()
         TouchFishApp.statusBar = StatusBar() // need init here because static member will not be compute before it been used
         TouchFishApp.mainWindow = MainWindow()
         Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)

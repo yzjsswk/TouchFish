@@ -154,7 +154,7 @@ struct TagView: View {
                 GeometryReader { geometry in
                     Rectangle()
                         .cornerRadius(10)
-                        .foregroundColor(String(Functions.getMD5(of: label).prefix(6)).color)
+                        .foregroundColor(String(Functions.getMD5(of: label).suffix(6)).color)
                         .frame(width: geometry.size.width+5, height: geometry.size.height+8)
                         .offset(x: -2.5, y: -4)
                 }

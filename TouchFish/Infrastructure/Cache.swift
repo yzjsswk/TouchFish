@@ -26,8 +26,8 @@ struct Cache {
     static var pageNum: Int? = nil { didSet { refresh() } }
     static var pageSize: Int? = nil { didSet { refresh() } }
     
-    static func start() {
-        refresh()
+//    static func start() {
+//        refresh()
 //        refreshIfNeed()
 //        func refreshIfNeed() {
 //            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
@@ -38,7 +38,7 @@ struct Cache {
 //                refreshIfNeed()
 //            }
 //        }
-    }
+//    }
     
     static private var refreshLock = DispatchSemaphore(value: 1)
     static func refresh() {
@@ -49,8 +49,9 @@ struct Cache {
             await refreshFish()
             await refreshPreview()
             refreshPreviewByType()
+            await RecipeManager.refresh()
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .ShouldRefreshFishList, object: nil)
+                NotificationCenter.default.post(name: .CacheRefreshed, object: nil)
             }
 //            Log.debug("refresh cache - end")
             refreshLock.signal()

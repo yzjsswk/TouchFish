@@ -46,7 +46,7 @@ struct FishListView: View {
             }
             HStack {
                 Text("total: \(fishList.count)")
-                    .font(.footnote)
+                    .font(.system(.footnote, design: .monospaced))
                 Spacer()
             }
             

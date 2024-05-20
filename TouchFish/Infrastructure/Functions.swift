@@ -143,7 +143,7 @@ extension Notification.Name {
     static let ShouldDeleteClipboardHistoryItem = Notification.Name("ShouldDeleteClipboardHistoryItem")
     static let ShouldDeleteClipboardHistory = Notification.Name("ShouldDeleteClipboardHistory")
     static let ShouldShowFishView = Notification.Name("ShouldShowFishView")
-    static let ShouldRefreshFishList = Notification.Name("ShouldRefreshFishList")
+    static let CacheRefreshed = Notification.Name("CacheRefreshed")
     static let RecipeStatusChanged = Notification.Name("RecipeStatusChanged")
     static let CommandTextChanged = Notification.Name("CommandTextChanged")
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")

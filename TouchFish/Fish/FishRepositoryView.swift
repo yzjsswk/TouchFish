@@ -23,30 +23,23 @@ struct FishRepositoryView: View {
                 )
                 .frame(width: Config.mainWidth - 30)
             } else {
-                if fishs.count > 0 {
-                    // todo: command
-                    FishListView(
-                        fishList: fishs.values.sorted(by: {
-                            if sortField.lowercased() == "updatetime" {
-                                return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
-                            }
-                            if sortField.lowercased() == "type" {
-                                return $0.type == $1.type ? $0.identity > $1.identity : $0.type.rawValue > $1.type.rawValue
-                            }
-                            if sortField.lowercased() == "size" {
-                                return $0.byteCount == $1.byteCount ? $0.identity > $1.identity : $0.byteCount > $1.byteCount
-                            }
-                            return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
-                        }),
-                        isEditing: $isEditing,
-                        selectedFishIdentity: $selectedFishIdentity
-                    )
-                    .frame(width: (Config.mainWidth - 30)/2)
-                } else {
-                    Text("No Fish")
-                        .font(.title)
-                        .frame(width: (Config.mainWidth - 30)/2)
-                }
+                FishListView(
+                    fishList: fishs.values.sorted(by: {
+                        if sortField.lowercased() == "updatetime" {
+                            return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
+                        }
+                        if sortField.lowercased() == "type" {
+                            return $0.type == $1.type ? $0.identity > $1.identity : $0.type.rawValue > $1.type.rawValue
+                        }
+                        if sortField.lowercased() == "size" {
+                            return $0.byteCount == $1.byteCount ? $0.identity > $1.identity : $0.byteCount > $1.byteCount
+                        }
+                        return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
+                    }),
+                    isEditing: $isEditing,
+                    selectedFishIdentity: $selectedFishIdentity
+                )
+                .frame(width: (Config.mainWidth - 30)/2)
                 VStack {
                     FishDetailView(fishs: fishs, selectedFishIdentity: $selectedFishIdentity)
                         .frame(width: (Config.mainWidth - 30)/2)

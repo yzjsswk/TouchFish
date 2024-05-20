@@ -21,9 +21,9 @@ struct RecipeScript: Codable {
     var name: String
     var commandCellName: String?
     var description: String?
-    var icon: String // system:xxx fish:xxx
+    var icon: String? // system:xxx fish:xxx
     var command: String?
-    var arguments: [RecipeArgument] = []
+    var arguments: [RecipeArgument]?
     var order: Int?
     
     static func parseRecipe(recipeScriptText: String) -> Recipe? {
@@ -37,14 +37,16 @@ struct RecipeScript: Codable {
             return nil
         }
         var icon: Image = Image(systemName: "frying.pan")
-        if recipeScript.icon.hasPrefix("system:") {
-            let systemIconName = String(recipeScript.icon.dropFirst(7))
-            icon = Image(systemName: systemIconName)
-        }
-        if recipeScript.icon.hasPrefix("fish:") {
-            let fishIdentity = String(recipeScript.icon.dropFirst(5))
-            if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
-                icon = Image(nsImage: fishImage)
+        if let recipeIcon = recipeScript.icon {
+            if recipeIcon.hasPrefix("system:") {
+                let systemIconName = String(recipeIcon.dropFirst(7))
+                icon = Image(systemName: systemIconName)
+            }
+            if recipeIcon.hasPrefix("fish:") {
+                let fishIdentity = String(recipeIcon.dropFirst(5))
+                if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
+                    icon = Image(nsImage: fishImage)
+                }
             }
         }
         return Recipe(
@@ -56,7 +58,7 @@ struct RecipeScript: Codable {
             description: recipeScript.description,
             icon: icon,
             command: recipeScript.command,
-            arguments: recipeScript.arguments,
+            arguments: recipeScript.arguments ?? [],
             order: recipeScript.order ?? 0
         )
     }
@@ -72,12 +74,41 @@ struct RecipeManager {
     
     static var recipes: [String:Recipe] = [:]
     
-    static func start() {
+    static func refresh() async {
         recipes.removeAll()
         for recipe in internalRecipeList {
             recipes[recipe.bundleId] = recipe
         }
-        // todo: load recipes from fish
+        let res = await Storage.searchFish(tags:[["Recipe"]])
+        if let recipeFishList = res {
+            for recipeFish in recipeFishList {
+                // todo: user resource
+                guard let recipeScriptText = Storage.getTextPreviewByIdentity(recipeFish.identity) else {
+                    Log.warning("load recipe from fish - skip a recipe: Storage.getTextPreviewByIdentity return nil, fish.identity=\(recipeFish.identity)")
+                    continue
+                }
+                guard let recipe = RecipeScript.parseRecipe(recipeScriptText: recipeScriptText) else {
+                    Log.warning("load recipe from fish - skip a recipe: RecipeScript.parseRecipe return nil, fish.identity=\(recipeFish.identity)")
+                    continue
+                }
+                if internalRecipeList.map({$0.bundleId}).contains(recipe.bundleId) {
+                    Log.warning("load recipe from fish - skip a recipe: bundledId conflicts with internal recipes, bundleId=\(recipe.bundleId), fish.identity=\(recipeFish.identity)")
+                    continue
+                }
+                if let existsRecipe = recipes[recipe.bundleId] {
+                    if existsRecipe.version == recipe.version {
+                        Log.warning("load recipe from fish - randomly select version: duplicate version number, bundleId=\(recipe.bundleId), fish.identity=\(recipeFish.identity)")
+                    }
+                    if existsRecipe.version < recipe.version {
+                        recipes[recipe.bundleId] = recipe
+                    }
+                } else {
+                    recipes[recipe.bundleId] = recipe
+                }
+            }
+        } else {
+            Log.warning("load recipe from fish - fail: storage.searchFish return nil")
+        }
     }
     
     static var orderedRecipeList: [Recipe] {
@@ -176,7 +207,7 @@ struct RecipeManager {
                 RecipeArgument(name: "locked"),
                 RecipeArgument(name: "sort")
             ],
-            order: -400
+            order: -500
         ),
         Recipe(
             bundleId: "com.touchfish.Setting",
@@ -186,17 +217,17 @@ struct RecipeManager {
             commandCellName: "Setting",
             icon: Image(systemName: "gearshape"),
             command: "set",
-            order: -300
+            order: -400
         ),
         Recipe(
-            bundleId: "com.touchfish.RecipeStore",
+            bundleId: "com.touchfish.MessageCenter",
             author: "yzjsswk",
             version: 0,
-            name: "Recipe Store",
-            commandCellName: "Recipe Store",
-            icon: Image(systemName: "books.vertical"),
-            command: "store",
-            order: -200
+            name: "Message Center",
+            commandCellName: "Message Center",
+            icon: Image(systemName: "ellipsis.message"),
+            command: "msg",
+            order: -300
         ),
         Recipe(
             bundleId: "com.touchfish.Statistics",
@@ -206,8 +237,19 @@ struct RecipeManager {
             commandCellName: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
             command: "stats",
+            order: -200
+        ),
+        Recipe(
+            bundleId: "com.touchfish.RecipeStore",
+            author: "yzjsswk",
+            version: 0,
+            name: "Recipe Store",
+            commandCellName: "Recipe Store",
+            icon: Image(systemName: "books.vertical"),
+            command: "store",
             order: -100
-        )
+        ),
+
 //        Recipe(
 //            id: 5,
 //            name: "Web BookMark",

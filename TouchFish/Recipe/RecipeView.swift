@@ -2,8 +2,10 @@ import SwiftUI
 
 struct RecipeView: View {
     
+    @Binding var recipeList: [Recipe]
+    
     var body: some View {
-        RecipeListView()
+        RecipeListView(recipeList: $recipeList)
     }
     
 }

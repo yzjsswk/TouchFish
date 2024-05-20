@@ -4,6 +4,7 @@ import Foundation
 struct MainView: View {
     
     @State var fishs: [String:Fish] = [:]
+    @State var recipeList: [Recipe] = []
     
     @State var commandText = ""
     @State var commandCell: [String] = []
@@ -27,7 +28,7 @@ struct MainView: View {
                         EmptyView()
                     }
                 } else {
-                    RecipeView()
+                    RecipeView(recipeList: $recipeList)
                 }
                 Spacer()
             }
@@ -58,9 +59,10 @@ struct MainView: View {
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
             TouchFishApp.deactivate()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFishList)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .CacheRefreshed)) { _ in
             withAnimation {
                 fishs = Storage.getFishOfSearchCondition()
+                recipeList = RecipeManager.orderedRecipeList
             }
         }
     }

@@ -2,12 +2,14 @@ import SwiftUI
 
 struct RecipeListView: View {
     
+    @Binding var recipeList: [Recipe]
+    
     var body: some View {
 
         VStack {
             ScrollView(showsIndicators: false) {
                 VStack {
-                    ForEach(RecipeManager.orderedRecipeList, id: \.bundleId) { recipe in
+                    ForEach(recipeList, id: \.bundleId) { recipe in
                         RecipeItemView(recipe: recipe)
                     }
                 }
