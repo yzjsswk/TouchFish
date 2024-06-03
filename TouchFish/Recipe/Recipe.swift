@@ -9,8 +9,37 @@ struct Recipe {
     var description: String?
     var icon: Image
     var command: String?
-    var arguments: [RecipeArgument] = []
+    var arguments: [RecipeScript.Argument] = []
+    var script: RecipeScript.Script?
+    var menuListItemColor: Color
     var order: Int
+    
+    func execute() -> RecipeExecuteResult {
+        guard let script = script else {
+            return RecipeExecuteResult(errorMessage: "Not Executable")
+        }
+        // todo: use resource
+        let scriptPath = TouchFishApp.previewPath.appendingPathComponent(script.identity)
+        if !FileManager.default.fileExists(atPath: scriptPath.path) {
+            Log.warning("")
+            return RecipeExecuteResult(errorMessage: "Script Resource Not Found")
+        }
+        var argments: [String] = []
+        argments.append(scriptPath.path)
+        argments.append(CommandManager.commandText)
+        argments.append(contentsOf: RecipeManager.activeRecipeOrderedValue)
+        let startTime = Date()
+        let executeResultText = Functions.runCommand(cmd: script.executor, args: argments)
+        let endTime = Date()
+        let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
+        guard let executeResultText = executeResultText else {
+            return RecipeExecuteResult(errorMessage: "Execute Failed", timeCost: timeCost)
+        }
+        var ret = RecipeExecuteResult.parseResultText(executeResultText: executeResultText)
+        ret.timeCost = timeCost
+        return ret
+    }
+    
 }
 
 struct RecipeScript: Codable {
@@ -23,8 +52,20 @@ struct RecipeScript: Codable {
     var description: String?
     var icon: String? // system:xxx fish:xxx
     var command: String?
-    var arguments: [RecipeArgument]?
+    var arguments: [Argument]?
+    var script: Script?
+    var menuListItemColor: String?
     var order: Int?
+    
+    struct Argument: Codable {
+        var name: String
+        var separator: String?
+    }
+
+    struct Script: Codable {
+        var identity: String
+        var executor: String
+    }
     
     static func parseRecipe(recipeScriptText: String) -> Recipe? {
         guard let recipeScriptData = recipeScriptText.data(using: .utf8) else {
@@ -36,19 +77,6 @@ struct RecipeScript: Codable {
             Log.verbose(recipeScriptText)
             return nil
         }
-        var icon: Image = Image(systemName: "frying.pan")
-        if let recipeIcon = recipeScript.icon {
-            if recipeIcon.hasPrefix("system:") {
-                let systemIconName = String(recipeIcon.dropFirst(7))
-                icon = Image(systemName: systemIconName)
-            }
-            if recipeIcon.hasPrefix("fish:") {
-                let fishIdentity = String(recipeIcon.dropFirst(5))
-                if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
-                    icon = Image(nsImage: fishImage)
-                }
-            }
-        }
         return Recipe(
             bundleId: recipeScript.bundleId,
             author: recipeScript.author,
@@ -56,18 +84,57 @@ struct RecipeScript: Codable {
             name: recipeScript.name,
             commandCellName: recipeScript.commandCellName ?? recipeScript.name,
             description: recipeScript.description,
-            icon: icon,
+            icon: recipeScript.icon?.icon ?? Image(systemName: "frying.pan"),
             command: recipeScript.command,
             arguments: recipeScript.arguments ?? [],
+            script: recipeScript.script,
+            menuListItemColor: (recipeScript.menuListItemColor ?? Config.userDefinedRecipeDefaultIemColor).color,
             order: recipeScript.order ?? 0
         )
     }
     
 }
 
-struct RecipeArgument: Codable {
-    var name: String
-    var separator: String?
+struct RecipeExecuteResult: Codable {
+    
+    var errorMessage: String?
+    var timeCost: Int?
+    
+    enum resultType: String, Codable {
+        case text
+        case list
+    }
+    
+    enum actionType: String, Codable {
+        case copy
+        case open
+        case script
+    }
+    
+    struct resultItem: Codable {
+        var title: String
+        var description: String?
+        var icon: String?
+        var tags: [String]?
+        var parameters: [String]?
+        var action: [String]?
+    }
+    
+    var type: resultType?
+    var items: [resultItem] = []
+    
+    static func parseResultText(executeResultText: String) -> RecipeExecuteResult {
+        guard let executeResultData = executeResultText.data(using: .utf8) else {
+            Log.error("parse recipt result - fail: got result text data = nil ")
+            return RecipeExecuteResult(errorMessage: "Execute Result Decoded Error")
+        }
+        guard let result = try? JSONDecoder().decode(RecipeExecuteResult.self, from: executeResultData) else {
+            Log.error("parse recipt result - fail: json decoded error")
+            Log.verbose(executeResultText)
+            return RecipeExecuteResult(errorMessage: "Execute Result Decoded Error")
+        }
+        return result
+    }
 }
 
 struct RecipeManager {
@@ -122,8 +189,7 @@ struct RecipeManager {
     
     static private var activeRecipeId: String? = nil
     static private var activeRecipeArguments: [String:String] = [:]
-    static private var activeRecipeArgumentsOrder: [String] = []
-    
+    static private var activeRecipeArgumentsAddOrder: [String] = []
     
     static var activeRecipe: Recipe? {
         guard let activeRecipeId = activeRecipeId else {
@@ -149,20 +215,27 @@ struct RecipeManager {
         return ret
     }
     
-    static var activeRecipeOrderedArg: [(String, String)] {
+    static var activeRecipeAddOrderArg: [(String, String)] {
         var ret: [(String, String)] = []
-        for k in activeRecipeArgumentsOrder {
+        for k in activeRecipeArgumentsAddOrder {
             if let v = activeRecipeArguments[k] {
                 ret.append((k, v))
             }
         }
         return ret
     }
+    
+    static var activeRecipeOrderedValue: [String] {
+        if let activeRecipe = activeRecipe {
+            return activeRecipe.arguments.map {activeRecipeArguments[$0.name, default: ""] }
+        }
+        return []
+    }
  
     static func goToRecipe(recipeId: String?) {
         activeRecipeId = recipeId
         activeRecipeArguments.removeAll()
-        activeRecipeArgumentsOrder.removeAll()
+        activeRecipeArgumentsAddOrder.removeAll()
         NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
     }
     
@@ -171,21 +244,21 @@ struct RecipeManager {
            validArgs.contains(key),
            !activeRecipeArguments.keys.contains(key) {
             activeRecipeArguments[key] = value
-            activeRecipeArgumentsOrder.append(key)
+            activeRecipeArgumentsAddOrder.append(key)
             NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
         }
     }
     
     static func delArg(key: String) {
         activeRecipeArguments.removeValue(forKey: key)
-        activeRecipeArgumentsOrder.removeAll {$0 == key}
+        activeRecipeArgumentsAddOrder.removeAll {$0 == key}
         NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
     }
     
     static func delLastArg() {
-        if let lastKey = activeRecipeArgumentsOrder.last {
+        if let lastKey = activeRecipeArgumentsAddOrder.last {
             activeRecipeArguments.removeValue(forKey: lastKey)
-            activeRecipeArgumentsOrder.removeLast()
+            activeRecipeArgumentsAddOrder.removeLast()
             NotificationCenter.default.post(name: .RecipeStatusChanged, object: nil)
         }
     }
@@ -201,12 +274,24 @@ struct RecipeManager {
             icon: Image(systemName: "fish"),
             command: "fish",
             arguments: [
-                RecipeArgument(name: "type", separator: ","),
-                RecipeArgument(name: "tag", separator: ","),
-                RecipeArgument(name: "marked"),
-                RecipeArgument(name: "locked"),
-                RecipeArgument(name: "sort")
+                RecipeScript.Argument(name: "type", separator: ","),
+                RecipeScript.Argument(name: "tag", separator: ","),
+                RecipeScript.Argument(name: "marked"),
+                RecipeScript.Argument(name: "locked"),
+                RecipeScript.Argument(name: "sort")
             ],
+            menuListItemColor: Config.internalRecipeItemColor.color,
+            order: -600
+        ),
+        Recipe(
+            bundleId: "com.touchfish.AddFish",
+            author: "yzjsswk",
+            version: 0,
+            name: "Add Fish",
+            commandCellName: "Add Fish",
+            icon: Image(systemName: "plus.square"),
+            command: "add",
+            menuListItemColor: Config.internalRecipeItemColor.color,
             order: -500
         ),
         Recipe(
@@ -217,6 +302,7 @@ struct RecipeManager {
             commandCellName: "Setting",
             icon: Image(systemName: "gearshape"),
             command: "set",
+            menuListItemColor: Config.internalRecipeItemColor.color,
             order: -400
         ),
         Recipe(
@@ -227,6 +313,7 @@ struct RecipeManager {
             commandCellName: "Message Center",
             icon: Image(systemName: "ellipsis.message"),
             command: "msg",
+            menuListItemColor: Config.internalRecipeItemColor.color,
             order: -300
         ),
         Recipe(
@@ -237,6 +324,7 @@ struct RecipeManager {
             commandCellName: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
             command: "stats",
+            menuListItemColor: Config.internalRecipeItemColor.color,
             order: -200
         ),
         Recipe(
@@ -247,6 +335,7 @@ struct RecipeManager {
             commandCellName: "Recipe Store",
             icon: Image(systemName: "books.vertical"),
             command: "store",
+            menuListItemColor: Config.internalRecipeItemColor.color,
             order: -100
         ),
 

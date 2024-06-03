@@ -26,13 +26,14 @@ struct MonitorManager {
     }
     
     static var localKeyBoardPressedAsyncEventMonitor: Any?
+    static var hideMainWindowWhenClickOutsideMonitor: Any?
     static var clipboardListenerState: ClipboardListenerState = .unStarted
     static var lastClipboardData = UUID().uuidString.data(using: .utf8)
     
     static func start(type: MonitorType) {
         switch type {
         case .hideMainWindowWhenClickOutside:
-            NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) {
+            MonitorManager.hideMainWindowWhenClickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) {
                 [] event in
                 if TouchFishApp.mainWindow.isVisible {
                     TouchFishApp.deactivate()
@@ -115,24 +116,13 @@ struct MonitorManager {
                             }
                             var extraInfo = ExtraInfo()
                             if let sourceApp = NSWorkspace.shared.frontmostApplication,
-                               let sourceAppIcon = sourceApp.icon,
-                               let sourceAppName = sourceApp.localizedName,
-                               let sourceAppIconData = sourceAppIcon.tiffRepresentation,
-                               let pngData = NSBitmapImageRep(data: sourceAppIconData)?.representation(using: .png, properties: [:]) {
+                               let sourceAppName = sourceApp.localizedName {
                                 extraInfo.sourceAppName = sourceAppName
-                                extraInfo.sourceAppIconIdentity = Functions.getMD5(of: pngData)
-                                let ex = extraInfo
-                                Task {
-                                    let ok = await Storage.addOrPinFish(value: pngData, type: .png, description: "Icon of \(sourceAppName)", extraInfo: ex, pin: false)
-                                    if !ok {
-                                        Log.warning("save fish from clipboard - sourceAppIcon save failed: Storage.addOrPinFish return false")
-                                    }
-                                }
                             }
                             let ex = extraInfo
                             Task {
                                 let ok = await Storage.addOrPinFish(
-                                    value: clipboardData.1, type: clipboardData.0, extraInfo: ex, pin: true
+                                    value: clipboardData.1, type: clipboardData.0, tags: [["Clipboard"]], extraInfo: ex, pin: true
                                 )
                                 if !ok {
                                     Log.error("save fish from clipboard - fail: Storage.addOrPinFish return false")
@@ -151,6 +141,10 @@ struct MonitorManager {
             guard let monitor = MonitorManager.localKeyBoardPressedAsyncEventMonitor else { return }
             NSEvent.removeMonitor(monitor)
             MonitorManager.localKeyBoardPressedAsyncEventMonitor = nil
+        case .hideMainWindowWhenClickOutside:
+            guard let monitor = MonitorManager.hideMainWindowWhenClickOutsideMonitor else { return }
+            NSEvent.removeMonitor(monitor)
+            MonitorManager.hideMainWindowWhenClickOutsideMonitor = nil
         case .saveFishWhenClipboardChanges:
             if MonitorManager.clipboardListenerState != .unStarted {
                 MonitorManager.clipboardListenerState = .stop

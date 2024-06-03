@@ -88,7 +88,44 @@ struct Functions {
         return tagPara.joined(separator: "|")
     }
     
+    static func runCommand(cmd: String, args: [String] = []) -> String? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: cmd)
+        process.arguments = args
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+
+        do {
+            try process.run()
+        } catch {
+            Log.error("runCommand - fail: \(error.localizedDescription)")
+            return nil
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        return String(data: data, encoding: .utf8)
+    }
+    
+    static func getFileSize(atPath path: String) -> UInt64? {
+        let fileManager = FileManager.default
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: path)
+            if let fileSize = attributes[.size] as? UInt64 {
+                return fileSize
+            } else {
+                return nil
+            }
+        } catch {
+            Log.error("Functions.getFileSize - fail: \(error)")
+            return nil
+        }
+    }
+    
 }
+
+
 
 extension String {
     // This lets you subscript a String.
@@ -125,6 +162,21 @@ extension String {
     
     var color: Color {
         return Color(nsColor)
+    }
+    
+    var icon: Image? {
+        if self.hasPrefix("system:") {
+            let systemIconName = String(self.dropFirst(7))
+            return Image(systemName: systemIconName)
+        }
+        if self.hasPrefix("fish:") {
+            let fishIdentity = String(self.dropFirst(5))
+            // todo: use resource
+            if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
+                return Image(nsImage: fishImage)
+            }
+        }
+        return nil
     }
     
 }

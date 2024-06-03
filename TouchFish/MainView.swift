@@ -22,10 +22,12 @@ struct MainView: View {
                     switch activeRecipeBundleId {
                     case "com.touchfish.FishRepository":
                         FishRepositoryView(fishs: $fishs, isEditing: $isEditing)
+                    case "com.touchfish.AddFish":
+                        FishAddView()
                     case "com.touchfish.Statistics":
                         StatsView()
                     default:
-                        EmptyView()
+                        RecipeView(recipeList: $recipeList, activeRecipeBundleId: activeRecipeBundleId)
                     }
                 } else {
                     RecipeView(recipeList: $recipeList)
@@ -43,7 +45,7 @@ struct MainView: View {
                 activeRecipeBundleId = recipe.bundleId
                 commandCell.removeAll()
                 commandCell.append(recipe.name)
-                for (k, v) in RecipeManager.activeRecipeOrderedArg {
+                for (k, v) in RecipeManager.activeRecipeAddOrderArg {
                     commandCell.append("\(k):\(v)")
                 }
             } else {

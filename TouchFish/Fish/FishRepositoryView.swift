@@ -25,7 +25,7 @@ struct FishRepositoryView: View {
             } else {
                 FishListView(
                     fishList: fishs.values.sorted(by: {
-                        if sortField.lowercased() == "updatetime" {
+                        if sortField.lowercased() == "update" {
                             return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
                         }
                         if sortField.lowercased() == "type" {
@@ -60,6 +60,7 @@ struct FishRepositoryView: View {
             Cache.tags = nil
             Cache.isMarked = nil
             Cache.isLocked = nil
+            sortField = ""
             for (argName, argValue) in RecipeManager.activeRecipeArg {
                 if argName == "type" {
                     Cache.type = argValue.compactMap {FishType(rawValue: $0)}
@@ -92,68 +93,3 @@ struct FishRepositoryView: View {
     }
 
 }
-
-struct BookmarkButtonView: View {
-    
-    @State private var isFiltering = false
-    @State private var isHovered = false
-    
-    var body: some View {
-        if isFiltering {
-            Image(systemName: "bookmark.fill")
-                .resizable()
-                .frame(width: 15, height: 20)
-                .foregroundColor(.orange)
-                .onTapGesture {
-                    Cache.isMarked = nil
-                    isFiltering = false
-                }
-        } else {
-            Image(systemName: "bookmark")
-                .resizable()
-                .frame(width: 15, height: 20)
-                .foregroundColor(isHovered ? .orange : .gray)
-                .onTapGesture {
-                    Cache.isMarked = true
-                    isFiltering = true
-                }
-                .onHover { isHovered in
-                    self.isHovered = isHovered
-                }
-        }
-    }
-    
-}
-
-struct FilterButtonView: View {
-    
-    @State private var isHovered = false
-    
-    var body: some View {
-        Image(systemName: "line.3.horizontal.decrease.circle")
-            .resizable()
-            .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
-            .onHover { isHovered in
-                self.isHovered = isHovered
-            }
-    }
-    
-}
-
-struct AddButtonView: View {
-    
-    @State private var isHovered = false
-    
-    var body: some View {
-        Image(systemName: "plus.circle")
-            .resizable()
-            .frame(width: 20, height: 20)
-            .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
-            .onHover { isHovered in
-                self.isHovered = isHovered
-            }
-    }
-    
-}
-

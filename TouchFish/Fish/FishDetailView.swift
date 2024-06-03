@@ -149,7 +149,7 @@ struct DetailValueView: View {
                             .foregroundColor(Color.red)
                     }
                 }
-            case .tiff, .png, .jpg:
+        case .tiff, .png, .jpg, .pdf:
                 if let image = fish.imagePreview {
                     Image(nsImage: image)
                         .resizable()
@@ -160,11 +160,11 @@ struct DetailValueView: View {
                         .bold()
                         .foregroundColor(.red)
                 }
-            default:
-                Text("Not Supported To Preview")
-                    .font(.callout)
-                    .bold()
-                    .foregroundColor(.red)
+        default:
+            Text("Not Supported To Preview")
+                .font(.callout)
+                .bold()
+                .foregroundColor(.red)
             }
     }
     
@@ -188,6 +188,8 @@ struct DetailExtraInfoView: View {
                     DetailItemView(itemName: "Width", itemValue: fish.extraInfo.width)
                     DetailItemView(itemName: "Height", itemValue: fish.extraInfo.height)
                 case .pdf:
+                    DetailItemView(itemName: "Page Count", itemValue: fish.extraInfo.pageCount)
+                default:
                     EmptyView()
                 }
                 DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(fish.byteCount))

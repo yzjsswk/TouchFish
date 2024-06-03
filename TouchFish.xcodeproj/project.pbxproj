@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996FEE482BC3E2E50047EB82 /* DataService.swift */; };
 		996FEE562BC917AE0047EB82 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 996FEE552BC917AE0047EB82 /* Alamofire */; };
+		9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9991B00B2C0C88B000EFE02C /* FishAddView.swift */; };
 		99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */; };
 		99AC05AD2BB2BCDA0046E8C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */; };
 		99AC05B02BB2BCDA0046E8C5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99AC05AF2BB2BCDA0046E8C5 /* Preview Assets.xcassets */; };
@@ -51,6 +52,7 @@
 
 /* Begin PBXFileReference section */
 		996FEE482BC3E2E50047EB82 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		9991B00B2C0C88B000EFE02C /* FishAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishAddView.swift; sourceTree = "<group>"; };
 		99AC05A52BB2BCD90046E8C5 /* TouchFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchFishApp.swift; sourceTree = "<group>"; };
 		99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				99AC05BE2BB2BD720046E8C5 /* FishListItemView.swift */,
 				99AC05BF2BB2BD720046E8C5 /* FishListView.swift */,
 				99AC05C02BB2BD720046E8C5 /* FishRepositoryView.swift */,
+				9991B00B2C0C88B000EFE02C /* FishAddView.swift */,
 			);
 			path = Fish;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 				99AC05E22BB2BD720046E8C5 /* MainWindow.swift in Sources */,
 				99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */,
 				99AC05EC2BB2BD720046E8C5 /* KeyboardShortcut.swift in Sources */,
+				9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */,
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
 				99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */,

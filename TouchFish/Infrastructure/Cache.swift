@@ -157,7 +157,7 @@ struct Cache {
                 } else {
                     Log.warning("refresh preview by type - ignore a preview: preview data parse fail, identity=\(identity), type=\(fish.type)")
                 }
-            case .tiff, .png, .jpg:
+            case .tiff, .png, .jpg, .pdf:
                 if imagePreviewCache.keys.contains(identity) {
                     continue
                 }

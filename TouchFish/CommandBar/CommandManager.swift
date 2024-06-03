@@ -5,6 +5,8 @@ class CommandManager {
     
     static private let commandCommitFlag = Character(" ")
     
+    static var commandText = ""
+    
     static func update(_ commandBarText: String) -> String {
         guard let (commandPart, suffixPart) =  commandBarText.splitOnce(separator: commandCommitFlag) else {
             return commandBarText

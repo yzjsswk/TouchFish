@@ -14,6 +14,7 @@ struct CommandField: NSViewControllerRepresentable {
             return
         }
         textField.stringValue = CommandManager.update(commandText)
+        CommandManager.commandText = textField.stringValue
         NotificationCenter.default.post(name: .CommandTextChanged, object: nil, userInfo: ["commandText":textField.stringValue])
     }
     

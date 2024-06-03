@@ -44,7 +44,7 @@ struct Configuration: Codable {
     var mainHeight: CGFloat = 600
     var commandBarHeight: CGFloat = 40
     var commandFieldHeight: CGFloat = 28
-    var webURLItemHeight: CGFloat = 50
+    var userDefinedRecipeItemHeight: CGFloat = 50
     var recipeItemHeight: CGFloat = 40
     var recipeItemSelectedHeight: CGFloat = 55
     var fishItemHeight: CGFloat = 24
@@ -53,19 +53,22 @@ struct Configuration: Codable {
     var fishDetailItemHeight: CGFloat = 10
     var textFishDetailPreviewLength: Int = 1500 // service limit: 2000
     
-    var mainBackgroundColor: String = "#ECEEF1"
+    var pythonPath = "/usr/local/bin/python3"
+    
+    var mainBackgroundColor: String = "ECEEF1"
     var commandBarBackgroundColor: String = "D8D8DB"
-    var selectedItemBackgroundColor: String = "#502A70"
-    var commandFieldBackgroundColor: String = "#282A36"
-    var commandFieldInsertionPointColor: String = "#F8F8F2"
-    
-    
-
+    var selectedItemBackgroundColor: String = "502A70"
+    var commandFieldBackgroundColor: String = "282A36"
+    var commandFieldInsertionPointColor: String = "F8F8F2"
+    var internalRecipeItemColor: String = "D8D8DB"
+    var userDefinedRecipeDefaultIemColor: String = "D8D8DB"
 
     var cacheRefreshLimitInterval: TimeInterval = 1
     var fileSaveLimitInterval: TimeInterval = 60
     var fileSaveLimitCount: Int = 5
     
-    var maxResourceSizeAutoFetch: Int = 1024 * 1024 * 50
+    var maxResourceSizeAutoFetch: Int = 1024 * 1024 * 50 // 50MB
+    
+    var maxDataSizeAddFish: Int = 1024 * 1024 * 1024 // 1GB
     
 }

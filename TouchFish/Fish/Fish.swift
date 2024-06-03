@@ -8,12 +8,7 @@ enum FishType: String, CaseIterable {
     case png
     case jpg
     case pdf
-}
-
-extension FishType {
-    var index: Int? {
-        return FishType.allCases.firstIndex { $0 == self }
-    }
+    case other
 }
 
 struct Fish {
@@ -138,21 +133,21 @@ struct ExtraInfo: Codable {
     // extra info
     
     var sourceAppName: String?
-    var sourceAppIconIdentity: String?
     var charCount: Int?
     var wordCount: Int?
     var rowCount: Int?
     var width: Int?
     var height: Int?
+    var pageCount: Int?
 
     enum CodingKeys: String, CodingKey {
         case sourceAppName = "source_app_name"
-        case sourceAppIconIdentity = "source_app_icon_identity"
         case charCount = "char_count"
         case wordCount = "word_count"
         case rowCount = "row_count"
         case width = "width"
         case height = "height"
+        case pageCount = "page_count"
     }
     
 }
