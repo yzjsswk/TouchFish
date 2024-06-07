@@ -17,6 +17,13 @@ struct RecipeView: View {
                        Text(err)
                    } else {
                        if let type = executeResult.type {
+                           if type == .none {
+                               {
+                                   TouchFishApp.deactivate()
+                                   RecipeManager.goToRecipe(recipeId: nil)
+                                   return EmptyView()
+                               }()
+                           }
                            if type == .text {
                                VStack {
                                    ForEach(executeResult.items, id: \.title) { item in
@@ -90,7 +97,7 @@ struct UserDefinedRecipeListItemView: View {
     var body: some View {
         HStack(spacing: 10) {
             HStack {
-                (item.icon?.icon ?? Image(systemName: "link"))
+                (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
                     .resizable()
                     .scaledToFit()
             }.frame(width: Config.userDefinedRecipeItemHeight)
@@ -113,6 +120,33 @@ struct UserDefinedRecipeListItemView: View {
         .cornerRadius(5)
         .onHover { isHovered in
             isSelected = isHovered
+        }
+        .onTapGesture {
+            if let actions = item.action {
+                for (idx, action) in actions.enumerated() {
+                    if action == .back {
+                        RecipeManager.goToRecipe(recipeId: nil)
+                    }
+                    if action == .hide {
+                        TouchFishApp.deactivate()
+                    }
+                    if action == .copy {
+                        if let para = item.getParameter(idx), para.count > 0 {
+                            if let data = para[0].data(using: .utf8) {
+                                Functions.copyDataToClipboard(data: data, type: .txt)
+                            } else {
+                                Log.warning("run recipe action: skip copy action: to copy data=nil, recipe=\(RecipeManager.activeRecipe?.bundleId ?? "nil"), item.title=\(item.title)")
+                            }
+                        }
+                    }
+                    if action == .open {
+                        if let para = item.getParameter(idx), para.count > 0 {
+                            AppleScriptRunner.openWebUrl(with: "Google Chrome", url: para[0])
+                        }
+                    }
+                }
+            }
+
         }
 //        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
 //        .onTapGesture(count: 1, perform: action)

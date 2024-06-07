@@ -10,6 +10,7 @@ enum MonitorType {
     case openFishRepositoryWhenKeyShortCutPressed
     case localKeyBoardPressedAsyncEvent
     case saveFishWhenClipboardChanges
+//    case openTerminalWhenKeyShortCutPressed
 }
 
 enum ClipboardListenerState {
@@ -60,6 +61,14 @@ struct MonitorManager {
                     }
                 }
             )
+//        case .openTerminalWhenKeyShortCutPressed:
+//            MonitorManager.addGlobalKeyboardEventListener(
+//                keyboardShortcut: KeyboardShortcut(key: Key(keyCode: 57), modifiers: [.control], events: [.keyDown]),
+//                actionOnEvent: { [] _ in
+//                    Log.debug("here")
+//                    AppleScriptRunner.openTerminal()
+//                }
+//            )
         case .localKeyBoardPressedAsyncEvent:
             MonitorManager.localKeyBoardPressedAsyncEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [] event in
                 if event.keyCode == kVK_UpArrow {

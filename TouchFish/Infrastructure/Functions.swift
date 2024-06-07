@@ -92,20 +92,47 @@ struct Functions {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: cmd)
         process.arguments = args
-
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
-
+        do {
+            try process.run()
+            Log.debug("here")
+            process.waitUntilExit()
+            Log.debug("here")
+            if let data = try pipe.fileHandleForReading.readToEnd() {
+                Log.debug("here")
+                return String(data: data, encoding: .utf8)
+            }
+        } catch {
+            Log.error("runCommand - fail: \(error)")
+        }
+        return nil
+    }
+    
+    static func runCommandAsync(cmd: String, args: [String] = [], completion: @escaping (String?) -> Void) {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: cmd)
+        process.arguments = args
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        process.terminationHandler = { _ in
+            do {
+                if let data = try pipe.fileHandleForReading.readToEnd() {
+                    let res = String(data: data, encoding: .utf8)
+                    completion(res)
+                }
+            } catch {
+                Log.error("runCommand - fail: \(error)")
+            }
+        }
         do {
             try process.run()
         } catch {
-            Log.error("runCommand - fail: \(error.localizedDescription)")
-            return nil
+            Log.error("runCommand - fail: \(error)")
+            completion(nil)
         }
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8)
     }
     
     static func getFileSize(atPath path: String) -> UInt64? {

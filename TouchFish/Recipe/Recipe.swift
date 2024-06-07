@@ -26,10 +26,12 @@ struct Recipe {
         }
         var argments: [String] = []
         argments.append(scriptPath.path)
+        // todo: host and port
         argments.append(CommandManager.commandText)
         argments.append(contentsOf: RecipeManager.activeRecipeOrderedValue)
         let startTime = Date()
-        let executeResultText = Functions.runCommand(cmd: script.executor, args: argments)
+//        let executeResultText = Functions.runCommand(cmd: script.executor, args: argments)
+        let executeResultText = AppleScriptRunner.doShellScript(cmd: script.executor, args: argments)
         let endTime = Date()
         let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
         guard let executeResultText = executeResultText else {
@@ -101,11 +103,14 @@ struct RecipeExecuteResult: Codable {
     var timeCost: Int?
     
     enum resultType: String, Codable {
+        case none
         case text
         case list
     }
     
     enum actionType: String, Codable {
+        case back
+        case hide
         case copy
         case open
         case script
@@ -116,14 +121,28 @@ struct RecipeExecuteResult: Codable {
         var description: String?
         var icon: String?
         var tags: [String]?
-        var parameters: [String]?
-        var action: [String]?
+        var parameters: [[String]]?
+        var action: [actionType]?
+        
+        func getParameter(_ actionIndex: Int) -> [String]? {
+            guard let parameters = parameters else {
+                return nil
+            }
+            if parameters.count < actionIndex {
+                return nil
+            }
+            return parameters[actionIndex]
+        }
+        
     }
     
     var type: resultType?
     var items: [resultItem] = []
     
     static func parseResultText(executeResultText: String) -> RecipeExecuteResult {
+        if executeResultText.count == 0 {
+            return RecipeExecuteResult(type: RecipeExecuteResult.resultType.none)
+        }
         guard let executeResultData = executeResultText.data(using: .utf8) else {
             Log.error("parse recipt result - fail: got result text data = nil ")
             return RecipeExecuteResult(errorMessage: "Execute Result Decoded Error")

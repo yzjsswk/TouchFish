@@ -3,7 +3,18 @@ import CryptoKit
 
 struct AppleScriptRunner {
     
+    static func openTerminal() {
+        AppleScriptRunner.runAppleScriptAsyc(appleScript:
+            """
+              tell application "Terminal"
+                  activate
+              end tell
+            """
+        )
+    }
+    
     static func openWebUrl(with browser: String, url: String) {
+        let url = url.starts(with: "http") ? url : "https://" + url
         AppleScriptRunner.runAppleScriptAsyc(appleScript:
             """
               tell application "\(browser)"
@@ -23,6 +34,23 @@ struct AppleScriptRunner {
             """
         )
     }
+    
+    static func doShellScript(cmd: String, args: [String]) -> String? {
+        var script = "do shell script \"\(cmd)\""
+        for (idx, arg) in args.enumerated() {
+            script = "set arg\(idx) to \"\(arg)\"\n" + script + " &\" \" & quoted form of arg\(idx)"
+        }
+        return AppleScriptRunner.runAppleScriptSync(appleScript: script)
+    }
+    
+//    static func doShellScript(cmd: String, args: [String]) -> String? {
+//        return AppleScriptRunner.runAppleScriptSync(appleScript:
+//            """
+//                do shell script "/usr/local/bin/python3 -c " & quoted form of "from yfunc import *"
+//            """
+//        )
+//    }
+    
     
     // return result if successed
     static func runAppleScriptSync(appleScript: String) -> String? {

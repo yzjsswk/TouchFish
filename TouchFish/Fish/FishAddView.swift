@@ -33,7 +33,7 @@ struct FishAddView: View {
                                             description: info.description,
                                             type: type,
                                             tags: info.tags,
-                                            extraInfo: nil
+                                            extraInfo: ExtraInfo(sourceAppName: "TouchFish")
                                         )
                                         if res == .fail {
                                             Log.error("click button to add fish - fail to add a fish: storage.addFish returns fail, url=\(url.path)")

@@ -9,7 +9,7 @@ struct Key: Codable {
 	
 	// Reference: https://stackoverflow.com/a/35138823 https://gist.github.com/ArthurYidi/3af4ccd7edc87739530476fc80a22e12
 	/// Convert the key code to a character.
-	var character: Character {
+	var character: String? {
 		let keyboard = TISCopyCurrentKeyboardInputSource().takeRetainedValue()
 		guard let layoutPointer = TISGetInputSourceProperty(keyboard, kTISPropertyUnicodeKeyLayoutData) else { fatalError("Failed to get layout data.") }
 		let layoutData = Unmanaged<CFData>.fromOpaque(layoutPointer).takeUnretainedValue() as Data
@@ -30,12 +30,15 @@ struct Key: Codable {
 		}
 		
 		if status != noErr {
-			fatalError("Translation process failed.")
+//			fatalError("Translation process failed.")
+            return nil
 		}
 		
 		let string = NSString(characters: unicodeString, length: stringLength) as String
-		let character = [Character](string)[0]
-		
-		return character
+//		let character = [Character](string)[0]
+        if string.count <= 0 {
+            return nil
+        }
+		return string
 	}
 }
