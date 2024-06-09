@@ -29,7 +29,7 @@
 		99AC05F02BB2BD720046E8C5 /* AppleScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScript.swift */; };
 		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
 		99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Configuration.swift */; };
-		99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Functions.swift */; };
+		99AC05F42BB2BD720046E8C5 /* Definition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Definition.swift */; };
 		99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CE2BB2BD720046E8C5 /* Log.swift */; };
 		99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CF2BB2BD720046E8C5 /* Monitor.swift */; };
 		99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D02BB2BD720046E8C5 /* Storage.swift */; };
@@ -72,7 +72,7 @@
 		99AC05C92BB2BD720046E8C5 /* AppleScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScript.swift; sourceTree = "<group>"; };
 		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		99AC05CB2BB2BD720046E8C5 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
-		99AC05CD2BB2BD720046E8C5 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		99AC05CD2BB2BD720046E8C5 /* Definition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Definition.swift; sourceTree = "<group>"; };
 		99AC05CE2BB2BD720046E8C5 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		99AC05CF2BB2BD720046E8C5 /* Monitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Monitor.swift; sourceTree = "<group>"; };
 		99AC05D02BB2BD720046E8C5 /* Storage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
@@ -106,10 +106,10 @@
 		995E08282C15F8A700659F85 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
-				99AC05B92BB2BD710046E8C5 /* MainWindow.swift */,
-				99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */,
 				99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */,
+				99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */,
+				99AC05B92BB2BD710046E8C5 /* MainWindow.swift */,
+				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -205,7 +205,7 @@
 				99AC05C92BB2BD720046E8C5 /* AppleScript.swift */,
 				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
 				99AC05CB2BB2BD720046E8C5 /* Configuration.swift */,
-				99AC05CD2BB2BD720046E8C5 /* Functions.swift */,
+				99AC05CD2BB2BD720046E8C5 /* Definition.swift */,
 				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
 				99AC05CF2BB2BD720046E8C5 /* Monitor.swift */,
 				99AC05D02BB2BD720046E8C5 /* Storage.swift */,
@@ -343,7 +343,7 @@
 				9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */,
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
-				99AC05F42BB2BD720046E8C5 /* Functions.swift in Sources */,
+				99AC05F42BB2BD720046E8C5 /* Definition.swift in Sources */,
 				99AC05FE2BB2BD720046E8C5 /* RecipeItemView.swift in Sources */,
 				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
 				99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */,

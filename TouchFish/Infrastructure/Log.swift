@@ -1,9 +1,9 @@
 import SwiftyBeaver
 import AppKit
 
-let Log = LogManager.log
+let Log = TFLogger.log
 
-struct LogManager {
+struct TFLogger {
     
     static let log = SwiftyBeaver.self
     static let consoleDst = ConsoleDestination()

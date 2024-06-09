@@ -151,6 +151,14 @@ struct Functions {
         }
     }
     
+    static func doAlert(type: NSAlert.Style, title: String, message: String) {
+        let alert = NSAlert()
+        alert.alertStyle = type
+        alert.messageText = title
+        alert.informativeText = message
+        alert.runModal()
+    }
+    
 }
 
 extension String {
@@ -227,5 +235,9 @@ extension Notification.Name {
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")
     static let UserDefinedRecipeViewChanged = Notification.Name("UserDefinedRecipeViewChanged")
     static let RecipeCommited = Notification.Name("RecipeCommited")
+}
+
+enum CustomError: Error {
+    case exampleError
 }
 

@@ -1,5 +1,4 @@
 import SwiftUI
-import Carbon.HIToolbox.Events
 
 class TouchFishApp {
     
@@ -19,6 +18,21 @@ class TouchFishApp {
     static var mainWindow: MainWindow!
     
     static func start() {
+        TouchFishApp.createAppSupportPathIfNotExists()
+        TFLogger.prepare()
+        Cache.refresh()
+        Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)
+        Monitor.start(type: .openFishRepositoryWhenKeyShortCutPressed)
+        Monitor.start(type: .hideMainWindowWhenClickOutside)
+        Monitor.start(type: .saveFishWhenClipboardChanges)
+        Monitor.start(type: .localKeyBoardPressedAsyncEvent)
+        TouchFishApp.statusBar = StatusBar()
+        TouchFishApp.mainWindow = MainWindow()
+        TouchFishApp.activate()
+        Log.info("application start - success, support path=\(TouchFishApp.appSupportPath.path)")
+    }
+    
+    static private func createAppSupportPathIfNotExists() {
         for path in [
             TouchFishApp.appSupportPath,
             TouchFishApp.logPath,
@@ -26,24 +40,18 @@ class TouchFishApp {
             TouchFishApp.previewPath
         ] {
             if !FileManager.default.fileExists(atPath: path.path) {
-                try! FileManager.default.createDirectory(at: path, withIntermediateDirectories: false, attributes: nil)
+                do {
+                    try FileManager.default.createDirectory(at: path, withIntermediateDirectories: false, attributes: nil)
+                } catch {
+                    Functions.doAlert(type: .critical, title: "Error", message: "create application support path failed, path=\(path.path)")
+                    TouchFishApp.quit()
+                }
             }
         }
-        LogManager.prepare()
-        Cache.refresh()
-        TouchFishApp.statusBar = StatusBar() // need init here because static member will not be compute before it been used
-        TouchFishApp.mainWindow = MainWindow()
-        Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)
-        Monitor.start(type: .openFishRepositoryWhenKeyShortCutPressed)
-        Monitor.start(type: .hideMainWindowWhenClickOutside)
-        Monitor.start(type: .saveFishWhenClipboardChanges)
-        Monitor.start(type: .localKeyBoardPressedAsyncEvent)
-        TouchFishApp.activate()
-        Log.info("application start - success, application support path=\(TouchFishApp.appSupportPath.path)")
     }
     
     static func activate() {
-        LogManager.updateLogFile()
+        TFLogger.updateLogFile()
         TouchFishApp.mainWindow.show()
     }
     
