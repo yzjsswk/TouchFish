@@ -21,7 +21,7 @@ class CommandManager {
         }
         if let activeRecipe = RecipeManager.activeRecipe,
            let (argmentName, argmentValue) = commandPart.splitOnce(separator: Character(":")) {
-            for arg in activeRecipe.arguments.map({$0.name}) {
+            for arg in activeRecipe.parameters.map({$0.name}) {
                 if arg != argmentName {
                     continue
                 }

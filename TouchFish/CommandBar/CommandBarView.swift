@@ -43,6 +43,11 @@ struct CommandBarView: View {
                 CommandManager.removeCell()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .ReturnKeyWasPressed)) { _ in
+            if isFocused {
+                NotificationCenter.default.post(name: .RecipeCommited, object: nil)
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in
             if let commandText = notification.userInfo?["commandText"] as? String {
                 let curEditTs = Date().timeIntervalSince1970

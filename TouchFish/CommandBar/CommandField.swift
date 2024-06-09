@@ -13,7 +13,6 @@ struct CommandField: NSViewControllerRepresentable {
             Log.error("update command bar - fail: get textField = nil")
             return
         }
-        Log.debug((commandText, commandText.count))
         textField.stringValue = CommandManager.update(commandText)
         CommandManager.commandText = textField.stringValue
         NotificationCenter.default.post(name: .CommandTextChanged, object: nil, userInfo: ["commandText":textField.stringValue])

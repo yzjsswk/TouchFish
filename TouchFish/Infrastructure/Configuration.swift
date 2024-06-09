@@ -35,10 +35,10 @@ struct Configuration: Codable {
     
     // configurations
     
-    var dataServiceHost = "127.0.0.1"
-    var dataServicePort = "2233"
-//    var dataServiceHost = "192.168.1.104"
+//    var dataServiceHost = "127.0.0.1"
 //    var dataServicePort = "2233"
+    var dataServiceHost = "192.168.1.104"
+    var dataServicePort = "2233"
     var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 49), modifiers: [.option], events: [.keyDown])
     var fishRepositoryActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 9), modifiers: [.command,.option], events: [.keyDown])
 

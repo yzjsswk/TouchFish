@@ -37,7 +37,7 @@ struct RecipeItemView: View {
         }
         .padding(5)
         .frame(width: Config.mainWidth-30, height: isSelected ? Config.recipeItemSelectedHeight : Config.recipeItemHeight)
-        .background(isSelected ? Config.selectedItemBackgroundColor.color : recipe.menuListItemColor)
+        .background(isSelected ? Config.selectedItemBackgroundColor.color : recipe.color)
         .saturation(1.0)
         .cornerRadius(5)
         .onHover { isHovered in

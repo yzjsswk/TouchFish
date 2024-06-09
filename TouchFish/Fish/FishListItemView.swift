@@ -261,10 +261,11 @@ func pasteToFrontmostApp() {
     // 模拟粘贴操作 alfred运行时会失效
     if let frontApp = NSWorkspace.shared.frontmostApplication {
         frontApp.activate(options: .activateIgnoringOtherApps)
-        let keyEvent = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: true)
-        keyEvent?.flags = [.maskCommand]
-        keyEvent?.post(tap: .cghidEventTap)
-//        AppleScriptRunner.doPaste()
+//        let keyEvent = CGEvent(keyboardEventSource: nil, virtualKey: 9, keyDown: true)
+//        keyEvent?.flags = [.maskCommand]
+//        Log.debug("do copy")
+//        keyEvent?.post(tap: .cghidEventTap)
+        AppleScriptRunner.doPaste()
     } else {
         Log.warning("front app is nil")
     }

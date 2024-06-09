@@ -6,81 +6,96 @@ struct RecipeView: View {
     
     var activeRecipeBundleId: String?
     
-    @State var executeResult: RecipeExecuteResult?
+    @State var userDefinedRecipeView: UserDefinedRecipeView?
     
     var body: some View {
         VStack {
             if let activeRecipeBundleId = activeRecipeBundleId,
                let activeRecipe = RecipeManager.activeRecipe {
-               if let executeResult = executeResult {
-                   if let err = executeResult.errorMessage {
-                       Text(err)
-                   } else {
-                       if let type = executeResult.type {
-                           if type == .none {
-                               {
-                                   TouchFishApp.deactivate()
-                                   RecipeManager.goToRecipe(recipeId: nil)
-                                   return EmptyView()
-                               }()
-                           }
-                           if type == .text {
-                               VStack {
-                                   ForEach(executeResult.items, id: \.title) { item in
-                                       Text(item.title)
-                                   }
+                switch activeRecipe.type {
+                case .task, .commit:
+                    RecipeListView(recipeList: $recipeList)
+                case .view:
+                    if let userDefinedRecipeView = userDefinedRecipeView {
+                       switch userDefinedRecipeView.type {
+                       case .empty:
+                           EmptyView()
+                       case .error:
+                           ScrollView(showsIndicators: false) {
+                               if let err = userDefinedRecipeView.errorMessage {
+                                   Text(err)
+                                       .font(.title3)
+                                       .foregroundColor(.red)
+                               } else {
+                                   Text("Unknown Error")
+                                       .font(.title3)
+                                       .foregroundColor(.red)
                                }
                            }
-                           if type == .list {
-                               ScrollView(showsIndicators: false) {
-                                   VStack {
-                                       ForEach(executeResult.items, id: \.title) { item in
-                                           UserDefinedRecipeListItemView(item: item)
-                                               .frame(width: Config.mainWidth-30, height: Config.userDefinedRecipeItemHeight)
-                                       }
-                                   }
-                               }.padding(.vertical)
+                       case.text:
+                           VStack {
+                               ForEach(userDefinedRecipeView.items, id: \.title) { item in
+                                   Text(item.title)
+                               }
                            }
-                       } else {
-                           EmptyView()
+                       case .list:
+                           ScrollView(showsIndicators: false) {
+                               VStack {
+                                   ForEach(userDefinedRecipeView.items, id: \.title) { item in
+                                       UserDefinedRecipeListItemView(item: item)
+                                           .frame(width: Config.mainWidth-30, height: Config.userDefinedRecipeItemHeight)
+                                   }
+                               }
+                           }.padding(.vertical)
                        }
+                   } else {
+                       EmptyView()
                    }
-               } else {
-                   EmptyView()
-               }
-                Spacer()
-                HStack {
-                    Text("total: \((executeResult?.items.count) ?? 0)")
-                        .font(.system(.footnote, design: .monospaced))
                     Spacer()
-                    HStack(spacing: 0) {
-                        let timeCost = executeResult?.timeCost ?? 0
-                        Text("timeCost: ")
+                    HStack {
+                        Text("total: \((userDefinedRecipeView?.items.count) ?? 0)")
                             .font(.system(.footnote, design: .monospaced))
-                        Text("\(timeCost)")
-                            .font(.system(.footnote, design: .monospaced))
-                            .foregroundStyle(timeCost < 500 ? .green : (timeCost < 1000 ? .yellow : .red))
-                        Text(" ms")
-                            .font(.system(.footnote, design: .monospaced))
+                        Spacer()
+                        HStack(spacing: 0) {
+                            let timeCost = userDefinedRecipeView?.timeCost ?? 0
+                            Text("timeCost: ")
+                                .font(.system(.footnote, design: .monospaced))
+                            Text("\(timeCost)")
+                                .font(.system(.footnote, design: .monospaced))
+                                .foregroundStyle(timeCost < 100 ? .green : (timeCost < 500 ? .yellow : .red))
+                            Text(" ms")
+                                .font(.system(.footnote, design: .monospaced))
+                        }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             } else {
                 RecipeListView(recipeList: $recipeList)
             }
         }
-        .onAppear {
-            executeResult = RecipeManager.activeRecipe?.execute()
-        }
+//        .onAppear {
+//            RecipeManager.activeRecipe?.execute()
+//        }
+        // todo: carefully controll event, avoid repeat execute
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
-            withAnimation {
-                executeResult = RecipeManager.activeRecipe?.execute()
+            if let recipe = RecipeManager.activeRecipe, recipe.type != .commit {
+                recipe.execute()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .RecipeCommited)) { _ in
+            if let recipe = RecipeManager.activeRecipe, recipe.type == .commit {
+                recipe.execute()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .CommandBarEndEditing)) { notification in
-            if let commandText = notification.userInfo?["commandText"] as? String {
-                withAnimation {
-                    executeResult = RecipeManager.activeRecipe?.execute()
+            if let recipe = RecipeManager.activeRecipe, recipe.type == .view {
+                recipe.execute()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .UserDefinedRecipeViewChanged)) { notification in
+            if let view = notification.userInfo?["view"] as? UserDefinedRecipeView {
+                withAnimation(.spring) {
+                    self.userDefinedRecipeView = view
                 }
             }
         }
@@ -90,7 +105,7 @@ struct RecipeView: View {
 
 struct UserDefinedRecipeListItemView: View {
     
-    var item: RecipeExecuteResult.resultItem
+    var item: UserDefinedRecipeView.UserDefinedRecipeViewItem
     
     @State var isSelected: Bool = false
     
@@ -122,35 +137,14 @@ struct UserDefinedRecipeListItemView: View {
             isSelected = isHovered
         }
         .onTapGesture {
-            if let actions = item.action {
-                for (idx, action) in actions.enumerated() {
-                    if action == .back {
-                        RecipeManager.goToRecipe(recipeId: nil)
-                    }
-                    if action == .hide {
-                        TouchFishApp.deactivate()
-                    }
-                    if action == .copy {
-                        if let para = item.getParameter(idx), para.count > 0 {
-                            if let data = para[0].data(using: .utf8) {
-                                Functions.copyDataToClipboard(data: data, type: .txt)
-                            } else {
-                                Log.warning("run recipe action: skip copy action: to copy data=nil, recipe=\(RecipeManager.activeRecipe?.bundleId ?? "nil"), item.title=\(item.title)")
-                            }
-                        }
-                    }
-                    if action == .open {
-                        if let para = item.getParameter(idx), para.count > 0 {
-                            AppleScriptRunner.openWebUrl(with: "Google Chrome", url: para[0])
-                        }
-                    }
+            if let actions = item.actions {
+                for action in actions {
+                    action.execute()
                 }
             }
-
         }
 //        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
 //        .onTapGesture(count: 1, perform: action)
-        
     }
     
 }

@@ -43,15 +43,6 @@ struct AppleScriptRunner {
         return AppleScriptRunner.runAppleScriptSync(appleScript: script)
     }
     
-//    static func doShellScript(cmd: String, args: [String]) -> String? {
-//        return AppleScriptRunner.runAppleScriptSync(appleScript:
-//            """
-//                do shell script "/usr/local/bin/python3 -c " & quoted form of "from yfunc import *"
-//            """
-//        )
-//    }
-    
-    
     // return result if successed
     static func runAppleScriptSync(appleScript: String) -> String? {
         guard let script = NSAppleScript(source: appleScript) else {

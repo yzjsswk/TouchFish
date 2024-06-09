@@ -1,159 +1,227 @@
 import SwiftUI
 
 struct Recipe {
+    
     var bundleId: String
     var author: String
     var version: Int
+    var type: RecipeType
     var name: String
-    var commandCellName: String
     var description: String?
     var icon: Image
     var command: String?
-    var arguments: [RecipeScript.Argument] = []
-    var script: RecipeScript.Script?
-    var menuListItemColor: Color
+    var parameters: [Parameter] = []
+    var actions: [RecipeAction] = []
+    var color: Color
     var order: Int
     
-    func execute() -> RecipeExecuteResult {
-        guard let script = script else {
-            return RecipeExecuteResult(errorMessage: "Not Executable")
-        }
-        // todo: use resource
-        let scriptPath = TouchFishApp.previewPath.appendingPathComponent(script.identity)
-        if !FileManager.default.fileExists(atPath: scriptPath.path) {
-            Log.warning("")
-            return RecipeExecuteResult(errorMessage: "Script Resource Not Found")
-        }
-        var argments: [String] = []
-        argments.append(scriptPath.path)
-        // todo: host and port
-        argments.append(CommandManager.commandText)
-        argments.append(contentsOf: RecipeManager.activeRecipeOrderedValue)
-        let startTime = Date()
-//        let executeResultText = Functions.runCommand(cmd: script.executor, args: argments)
-        let executeResultText = AppleScriptRunner.doShellScript(cmd: script.executor, args: argments)
-        let endTime = Date()
-        let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
-        guard let executeResultText = executeResultText else {
-            return RecipeExecuteResult(errorMessage: "Execute Failed", timeCost: timeCost)
-        }
-        var ret = RecipeExecuteResult.parseResultText(executeResultText: executeResultText)
-        ret.timeCost = timeCost
-        return ret
+    enum RecipeType: String, Codable {
+        case task
+        case view
+        case commit
     }
     
-}
-
-struct RecipeScript: Codable {
-    
-    var bundleId: String
-    var author: String
-    var version: Int
-    var name: String
-    var commandCellName: String?
-    var description: String?
-    var icon: String? // system:xxx fish:xxx
-    var command: String?
-    var arguments: [Argument]?
-    var script: Script?
-    var menuListItemColor: String?
-    var order: Int?
-    
-    struct Argument: Codable {
+    struct Parameter: Codable {
         var name: String
         var separator: String?
     }
-
-    struct Script: Codable {
-        var identity: String
-        var executor: String
+    
+    func execute() {
+        for action in actions {
+            action.execute()
+        }
     }
     
-    static func parseRecipe(recipeScriptText: String) -> Recipe? {
-        guard let recipeScriptData = recipeScriptText.data(using: .utf8) else {
-            Log.error("parse recipt script - fail: get script data error ")
-            return nil
+    struct RecipeJson: Codable {
+        
+        var bundleId: String
+        var author: String
+        var version: Int
+        var type: RecipeType
+        var name: String
+        var description: String?
+        var icon: String? // system:xxx fish:xxx
+        var command: String?
+        var parameters: [Parameter]?
+        var actions: [RecipeAction]?
+        var color: String?
+        var order: Int?
+        
+        static func parse(JsonText: String) -> Recipe? {
+            guard let recipeJsonData = JsonText.data(using: .utf8) else {
+                return nil
+            }
+            guard let recipeJson = try? JSONDecoder().decode(RecipeJson.self, from: recipeJsonData) else {
+                return nil
+            }
+            return Recipe(
+                bundleId: recipeJson.bundleId,
+                author: recipeJson.author,
+                version: recipeJson.version,
+                type: recipeJson.type,
+                name: recipeJson.name,
+                description: recipeJson.description,
+                icon: recipeJson.icon?.icon ?? Image(systemName: "frying.pan"),
+                command: recipeJson.command,
+                parameters: recipeJson.parameters ?? [],
+                actions: recipeJson.actions ?? [],
+                color: (recipeJson.color ?? Config.userDefinedRecipeDefaultIemColor).color,
+                order: recipeJson.order ?? 0
+            )
         }
-        guard let recipeScript = try? JSONDecoder().decode(RecipeScript.self, from: recipeScriptData) else {
-            Log.error("parse recipt script - fail: json decode error")
-            Log.verbose(recipeScriptText)
-            return nil
-        }
-        return Recipe(
-            bundleId: recipeScript.bundleId,
-            author: recipeScript.author,
-            version: recipeScript.version,
-            name: recipeScript.name,
-            commandCellName: recipeScript.commandCellName ?? recipeScript.name,
-            description: recipeScript.description,
-            icon: recipeScript.icon?.icon ?? Image(systemName: "frying.pan"),
-            command: recipeScript.command,
-            arguments: recipeScript.arguments ?? [],
-            script: recipeScript.script,
-            menuListItemColor: (recipeScript.menuListItemColor ?? Config.userDefinedRecipeDefaultIemColor).color,
-            order: recipeScript.order ?? 0
-        )
+        
     }
     
 }
 
-struct RecipeExecuteResult: Codable {
+struct RecipeAction: Codable {
     
-    var errorMessage: String?
-    var timeCost: Int?
+    var type: ActionType
+    var arguments: [Argument] = []
     
-    enum resultType: String, Codable {
-        case none
-        case text
-        case list
-    }
-    
-    enum actionType: String, Codable {
+    enum ActionType: String, Codable {
         case back
         case hide
         case copy
         case open
-        case script
+        case shell
     }
     
-    struct resultItem: Codable {
+    struct Argument: Codable {
+        var type: ArgumentType
+        var value: String?
+        
+        enum ArgumentType: String, Codable {
+            case plain
+            case para
+            case commandBarText
+            case file
+            case context
+        }
+        
+        func getValue() -> String {
+            switch type {
+            case .plain:
+                return value ?? ""
+            case .para:
+                if let value = value {
+                    return RecipeManager.activeRecipeOriginalArg[value, default: ""]
+                }
+                return ""
+            case .commandBarText:
+                return CommandManager.commandText
+            case .file:
+                if let value = value {
+                    return TouchFishApp.previewPath.appendingPathComponent(value).path
+                }
+                return ""
+            case .context:
+                if let value = value {
+                    if value == "host" {
+                        return Config.dataServiceHost
+                    }
+                    if value == "port" {
+                        return Config.dataServicePort
+                    }
+                    return ""
+                }
+                return ""
+            }
+        }
+        
+    }
+    
+    func execute() {
+        switch type {
+        case .back:
+            RecipeManager.goToRecipe(recipeId: nil)
+        case .hide:
+            TouchFishApp.deactivate()
+        case .copy:
+            if let data = arguments.first?.getValue().data(using: .utf8) {
+                Functions.copyDataToClipboard(data: data, type: .txt)
+            } else {
+                Log.warning("run recipe action: skip copy action: to copy data=nil, recipe=\(RecipeManager.activeRecipe?.bundleId ?? "nil")")
+            }
+        case .open:
+            if let arg = arguments.first?.getValue(), arg.count > 0 {
+                // todo: browser config
+                AppleScriptRunner.openWebUrl(with: "Google Chrome", url: arg)
+            }
+        case .shell:
+            var cmd: String? = nil
+            var argments: [String] = []
+            for (index, argument) in arguments.enumerated() {
+                if index == 0 {
+                    cmd = argument.getValue()
+                } else {
+                    argments.append(argument.getValue())
+                }
+            }
+            guard let cmd = cmd else {
+                Log.warning("run recipe action: skip shell action: cmd=nil, recipe=\(RecipeManager.activeRecipe?.bundleId ?? "nil")")
+                return
+            }
+            DispatchQueue.global(qos: .userInteractive).async {
+                let startTime = Date()
+        //        let executeResultText = Functions.runCommand(cmd: script.executor, args: argments)
+                let executeResultText = AppleScriptRunner.doShellScript(cmd: cmd, args: argments)
+                let endTime = Date()
+                let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
+                if RecipeManager.activeRecipe?.type == .view {
+                    var view: UserDefinedRecipeView
+                    if let executeResultText = executeResultText {
+                        view = UserDefinedRecipeView.parse(jsonText: executeResultText)
+                    } else {
+                        view = UserDefinedRecipeView(type: .empty)
+                    }
+                    view.timeCost = timeCost
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .UserDefinedRecipeViewChanged, object: nil, userInfo: ["view":view])
+                    }
+                }
+                Log.debug("excute shell command: \(cmd), timeCost=\(timeCost)")
+            }
+        }
+    }
+    
+}
+
+struct UserDefinedRecipeView: Codable {
+    
+    var type: UserDefinedRecipeViewType
+    var items: [UserDefinedRecipeViewItem] = []
+    var errorMessage: String?
+    var timeCost: Int?
+
+    enum UserDefinedRecipeViewType: String, Codable {
+        case empty
+        case error
+        case text
+        case list
+    }
+    
+    struct UserDefinedRecipeViewItem: Codable {
         var title: String
         var description: String?
         var icon: String?
         var tags: [String]?
-        var parameters: [[String]]?
-        var action: [actionType]?
-        
-        func getParameter(_ actionIndex: Int) -> [String]? {
-            guard let parameters = parameters else {
-                return nil
-            }
-            if parameters.count < actionIndex {
-                return nil
-            }
-            return parameters[actionIndex]
-        }
-        
+        var actions: [RecipeAction]?
     }
     
-    var type: resultType?
-    var items: [resultItem] = []
-    
-    static func parseResultText(executeResultText: String) -> RecipeExecuteResult {
-        if executeResultText.count == 0 {
-            return RecipeExecuteResult(type: RecipeExecuteResult.resultType.none)
+    static func parse(jsonText: String) -> UserDefinedRecipeView {
+        if jsonText.count == 0 {
+            return UserDefinedRecipeView(type: .empty)
         }
-        guard let executeResultData = executeResultText.data(using: .utf8) else {
-            Log.error("parse recipt result - fail: got result text data = nil ")
-            return RecipeExecuteResult(errorMessage: "Execute Result Decoded Error")
+        guard let data = jsonText.data(using: .utf8) else {
+            return UserDefinedRecipeView(type: .error, errorMessage: "Decoded Failed: \n\n \(jsonText)")
         }
-        guard let result = try? JSONDecoder().decode(RecipeExecuteResult.self, from: executeResultData) else {
-            Log.error("parse recipt result - fail: json decoded error")
-            Log.verbose(executeResultText)
-            return RecipeExecuteResult(errorMessage: "Execute Result Decoded Error")
+        guard let result = try? JSONDecoder().decode(UserDefinedRecipeView.self, from: data) else {
+            return UserDefinedRecipeView(type: .error, errorMessage: "Decoded Failed: \n\n \(jsonText)")
         }
         return result
     }
+    
 }
 
 struct RecipeManager {
@@ -168,13 +236,13 @@ struct RecipeManager {
         let res = await Storage.searchFish(tags:[["Recipe"]])
         if let recipeFishList = res {
             for recipeFish in recipeFishList {
-                // todo: user resource
-                guard let recipeScriptText = Storage.getTextPreviewByIdentity(recipeFish.identity) else {
+                // todo: use resource
+                guard let recipeJsonText = Storage.getTextPreviewByIdentity(recipeFish.identity) else {
                     Log.warning("load recipe from fish - skip a recipe: Storage.getTextPreviewByIdentity return nil, fish.identity=\(recipeFish.identity)")
                     continue
                 }
-                guard let recipe = RecipeScript.parseRecipe(recipeScriptText: recipeScriptText) else {
-                    Log.warning("load recipe from fish - skip a recipe: RecipeScript.parseRecipe return nil, fish.identity=\(recipeFish.identity)")
+                guard let recipe = Recipe.RecipeJson.parse(JsonText: recipeJsonText) else {
+                    Log.warning("load recipe from fish - skip a recipe: RecipeJson.parse return nil, fish.identity=\(recipeFish.identity)")
                     continue
                 }
                 if internalRecipeList.map({$0.bundleId}).contains(recipe.bundleId) {
@@ -217,9 +285,13 @@ struct RecipeManager {
         return recipes[activeRecipeId]
     }
     
+    static var activeRecipeOriginalArg: [String:String] {
+        return activeRecipeArguments
+    }
+    
     static var activeRecipeArg: [String:[String]] {
         var ret: [String:[String]] = [:]
-        guard let args = activeRecipe?.arguments else {
+        guard let args = activeRecipe?.parameters else {
             return ret
         }
         for arg in args {
@@ -246,7 +318,7 @@ struct RecipeManager {
     
     static var activeRecipeOrderedValue: [String] {
         if let activeRecipe = activeRecipe {
-            return activeRecipe.arguments.map {activeRecipeArguments[$0.name, default: ""] }
+            return activeRecipe.parameters.map { activeRecipeArguments[$0.name, default: ""] }
         }
         return []
     }
@@ -259,7 +331,7 @@ struct RecipeManager {
     }
     
     static func addArg(key: String, value: String) {
-        if let validArgs = activeRecipe?.arguments.map({$0.name}),
+        if let validArgs = activeRecipe?.parameters.map({$0.name}),
            validArgs.contains(key),
            !activeRecipeArguments.keys.contains(key) {
             activeRecipeArguments[key] = value
@@ -287,84 +359,76 @@ struct RecipeManager {
             bundleId: "com.touchfish.FishRepository",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Fish Repository",
-            commandCellName: "Fish Repository",
             description: "master your information",
             icon: Image(systemName: "fish"),
             command: "fish",
-            arguments: [
-                RecipeScript.Argument(name: "type", separator: ","),
-                RecipeScript.Argument(name: "tag", separator: ","),
-                RecipeScript.Argument(name: "marked"),
-                RecipeScript.Argument(name: "locked"),
-                RecipeScript.Argument(name: "sort")
+            parameters: [
+                Recipe.Parameter(name: "type", separator: ","),
+                Recipe.Parameter(name: "tag", separator: ","),
+                Recipe.Parameter(name: "marked"),
+                Recipe.Parameter(name: "locked"),
+                Recipe.Parameter(name: "sort")
             ],
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -600
         ),
         Recipe(
             bundleId: "com.touchfish.AddFish",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Add Fish",
-            commandCellName: "Add Fish",
             icon: Image(systemName: "plus.square"),
             command: "add",
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -500
         ),
         Recipe(
             bundleId: "com.touchfish.Setting",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Setting",
-            commandCellName: "Setting",
             icon: Image(systemName: "gearshape"),
             command: "set",
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -400
         ),
         Recipe(
             bundleId: "com.touchfish.MessageCenter",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Message Center",
-            commandCellName: "Message Center",
             icon: Image(systemName: "ellipsis.message"),
             command: "msg",
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -300
         ),
         Recipe(
             bundleId: "com.touchfish.Statistics",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Statistics",
-            commandCellName: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
             command: "stats",
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -200
         ),
         Recipe(
             bundleId: "com.touchfish.RecipeStore",
             author: "yzjsswk",
             version: 0,
+            type: .view,
             name: "Recipe Store",
-            commandCellName: "Recipe Store",
             icon: Image(systemName: "books.vertical"),
             command: "store",
-            menuListItemColor: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.color,
             order: -100
         ),
-
-//        Recipe(
-//            id: 5,
-//            name: "Web BookMark",
-//            commandCellName: "Web BookMark",
-//            icon: Image(systemName: "globe"),
-//            command: "bm"
-//        )
     ]
     
 }

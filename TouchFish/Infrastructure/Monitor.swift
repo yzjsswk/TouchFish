@@ -47,7 +47,11 @@ struct MonitorManager {
                     if TouchFishApp.mainWindow.isVisible {
                         TouchFishApp.deactivate()
                     } else {
+//                        if let selectedText = Functions.getSelectedText() {
+//                            Log.debug(selectedText)
+//                        }
                         TouchFishApp.activate()
+                        
                     }
                 }
             )

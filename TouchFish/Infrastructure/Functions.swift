@@ -1,6 +1,7 @@
 import AppKit
 import CryptoKit
 import SwiftUI
+import Cocoa
 
 struct Functions {
     
@@ -152,8 +153,6 @@ struct Functions {
     
 }
 
-
-
 extension String {
     // This lets you subscript a String.
     subscript(idx: Int) -> String {
@@ -226,5 +225,7 @@ extension Notification.Name {
     static let RecipeStatusChanged = Notification.Name("RecipeStatusChanged")
     static let CommandTextChanged = Notification.Name("CommandTextChanged")
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")
+    static let UserDefinedRecipeViewChanged = Notification.Name("UserDefinedRecipeViewChanged")
+    static let RecipeCommited = Notification.Name("RecipeCommited")
 }
 
