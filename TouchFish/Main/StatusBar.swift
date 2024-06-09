@@ -2,39 +2,39 @@ import SwiftUI
 
 class StatusBar {
     
-    private var statusItem: NSStatusItem!
-    private var menu: NSMenu!
+    private var statusBar: NSStatusItem!
+    private var actionMenu: NSMenu!
     
     init() {
-        self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        guard let button = statusItem.button else { return }
+        self.statusBar = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        guard let button = statusBar.button else {
+            Log.warning("initialize status bar - failed: got statusBar.button=nil")
+            return
+        }
         button.image = NSImage(systemSymbolName: "fish.fill", accessibilityDescription: nil)
         
-        self.menu = NSMenu()
-        let menuItems = [
-            NSMenuItem(title: "Open",
-                       action: #selector(self.openAction),
-                       keyEquivalent: "O"),
-            NSMenuItem(title: "Preferences",
-                       action: #selector(self.showPreferencesAction),
-                       keyEquivalent: "P"),
-            NSMenuItem.separator(),
-            NSMenuItem(title: "Quit",
-                       action: #selector(self.quitAction),
-                       keyEquivalent: "Q")]
-        for menuItem in menuItems {
-            menuItem.target = self // The target should be self, otherwise, actions won't be executed.
-            menu.addItem(menuItem)
+        self.actionMenu = NSMenu()
+        let openActionItem = NSMenuItem(
+            title: "Open",
+            action: #selector(self.openAction),
+            keyEquivalent: " "
+        )
+        openActionItem.keyEquivalentModifierMask = .option
+        let quitActionItem = NSMenuItem(
+            title: "Quit",
+            action: #selector(self.quitAction),
+            keyEquivalent: ""
+        )
+        for menuItem in [openActionItem, quitActionItem] {
+            // The target should be self, otherwise, actions won't be executed.
+            menuItem.target = self
+            actionMenu.addItem(menuItem)
         }
-        statusItem.menu = menu
+        statusBar.menu = actionMenu
     }
     
     @objc func openAction() {
         TouchFishApp.activate()
-    }
-    
-    @objc func showPreferencesAction() {
-        // todo
     }
     
     @objc func quitAction() {

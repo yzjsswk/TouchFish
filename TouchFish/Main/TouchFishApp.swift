@@ -14,7 +14,7 @@ class TouchFishApp {
     static let previewPath = TouchFishApp.appSupportPath.appendingPathComponent("preview")
     static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
     
-    static var statusBar: StatusBar! // todo: icon, preference action, menu keyshortcut
+    static var statusBar: StatusBar!
     static var mainWindow: MainWindow!
     
     static func start() {
