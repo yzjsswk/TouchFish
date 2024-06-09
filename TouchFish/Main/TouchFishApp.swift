@@ -2,13 +2,8 @@ import SwiftUI
 import Carbon.HIToolbox.Events
 
 class TouchFishApp {
+    
     /**
-        todo: 1. delete old file on github: Config.swift, AppleScriptRunner.swift?
-            2. fix: paste not work
-     */
-
-    /**
-        appSupportPath: /Users/yzjsswk/Library/Application Support/TouchFish/
          - log/: record log
          - preview/: preview of fishdata
          - resource/: downloaded fishdata
@@ -44,6 +39,7 @@ class TouchFishApp {
         Monitor.start(type: .saveFishWhenClipboardChanges)
         Monitor.start(type: .localKeyBoardPressedAsyncEvent)
         TouchFishApp.activate()
+        Log.info("application start - success, application support path=\(TouchFishApp.appSupportPath.path)")
     }
     
     static func activate() {

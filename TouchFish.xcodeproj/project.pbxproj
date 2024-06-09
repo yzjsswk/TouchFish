@@ -103,6 +103,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		995E08282C15F8A700659F85 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
+				99AC05B92BB2BD710046E8C5 /* MainWindow.swift */,
+				99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */,
+				99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 		996FEE572BF2E80B0047EB82 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
@@ -137,21 +148,18 @@
 		99AC05A72BB2BCD90046E8C5 /* TouchFish */ = {
 			isa = PBXGroup;
 			children = (
+				995E08282C15F8A700659F85 /* Main */,
 				99AC05C12BB2BD720046E8C5 /* Fish */,
 				99AC05DC2BB2BD720046E8C5 /* Recipe */,
 				99AC05D72BB2BD720046E8C5 /* CommandBar */,
 				99AC05D12BB2BD720046E8C5 /* Infrastructure */,
 				996FEE572BF2E80B0047EB82 /* Setting */,
 				996FEE582BF2E81A0047EB82 /* Statistics */,
-				99AC05C22BB2BD720046E8C5 /* MainView.swift */,
-				99AC05B92BB2BD710046E8C5 /* MainWindow.swift */,
-				99AC05DF2BB2BD720046E8C5 /* StatusBar.swift */,
-				99AC05A82BB2BCD90046E8C5 /* TouchFishApp.swift */,
+				99AC05AE2BB2BCDA0046E8C5 /* Preview Content */,
 				99AC06042BB2BE440046E8C5 /* AppDelegate.swift */,
 				99AC05AC2BB2BCDA0046E8C5 /* Assets.xcassets */,
 				99AC06072BB2BE930046E8C5 /* Main.storyboard */,
 				99AC05B12BB2BCDA0046E8C5 /* TouchFish.entitlements */,
-				99AC05AE2BB2BCDA0046E8C5 /* Preview Content */,
 			);
 			path = TouchFish;
 			sourceTree = "<group>";

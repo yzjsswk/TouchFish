@@ -8,5 +8,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         TouchFishApp.start()
 	}
 
-    
 }
