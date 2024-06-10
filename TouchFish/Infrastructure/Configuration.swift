@@ -16,11 +16,6 @@ struct Configuration: Codable {
             return try JSONDecoder().decode(Configuration.self, from: configData)
         } catch {
             Log.warning("read config - use default configuration: read config file failed, path=\(TouchFishApp.configPath.path), err=\(error)")
-//            let alert = NSAlert()
-//            alert.alertStyle = .warning
-//            alert.messageText = "Configuration Error"
-//            alert.informativeText = "Something is wrong with your configuration file at: \(Configuration.configPath.path).\n\n Use default configuration."
-//            alert.runModal()
             return Configuration()
         }
     }
@@ -39,8 +34,8 @@ struct Configuration: Codable {
 //    var dataServicePort = "2233"
     var dataServiceHost = "192.168.1.104"
     var dataServicePort = "2233"
-    var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 49), modifiers: [.option], events: [.keyDown])
-    var fishRepositoryActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(key: Key(keyCode: 9), modifiers: [.command,.option], events: [.keyDown])
+    var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown])
+    var fishRepositoryActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(keyCode: 9, modifiers: [.command,.option], events: [.keyDown])
 
     var mainWidth: CGFloat = 800
     var mainHeight: CGFloat = 600

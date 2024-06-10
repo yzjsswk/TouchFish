@@ -10,7 +10,6 @@ enum MonitorType {
     case openFishRepositoryWhenKeyShortCutPressed
     case localKeyBoardPressedAsyncEvent
     case saveFishWhenClipboardChanges
-//    case openTerminalWhenKeyShortCutPressed
 }
 
 enum ClipboardListenerState {
@@ -22,10 +21,6 @@ enum ClipboardListenerState {
 
 struct MonitorManager {
     
-    private static func addGlobalKeyboardEventListener(keyboardShortcut: KeyboardShortcut, actionOnEvent: @escaping (KeyEvent) -> Void) {
-        KeyboardShortcutManager(keyboardShortcut: keyboardShortcut).startListeningForEvents(actionOnEvent: actionOnEvent)
-    }
-    
     static var localKeyBoardPressedAsyncEventMonitor: Any?
     static var hideMainWindowWhenClickOutsideMonitor: Any?
     static var clipboardListenerState: ClipboardListenerState = .unStarted
@@ -34,45 +29,26 @@ struct MonitorManager {
     static func start(type: MonitorType) {
         switch type {
         case .hideMainWindowWhenClickOutside:
-            MonitorManager.hideMainWindowWhenClickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) {
-                [] event in
+            MonitorManager.hideMainWindowWhenClickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [] event in
                 if TouchFishApp.mainWindow.isVisible {
                     TouchFishApp.deactivate()
                 }
             }
         case .showOrHideMainWindowWhenKeyShortCutPressed:
-            MonitorManager.addGlobalKeyboardEventListener(
-                keyboardShortcut: Config.appActiveKeyShortcut,
-                actionOnEvent: { [] _ in
-                    if TouchFishApp.mainWindow.isVisible {
-                        TouchFishApp.deactivate()
-                    } else {
-//                        if let selectedText = Functions.getSelectedText() {
-//                            Log.debug(selectedText)
-//                        }
-                        TouchFishApp.activate()
-                        
-                    }
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.appActiveKeyShortcut) { [] _ in
+                if TouchFishApp.mainWindow.isVisible {
+                    TouchFishApp.deactivate()
+                } else {
+                    TouchFishApp.activate()
                 }
-            )
+            }
         case .openFishRepositoryWhenKeyShortCutPressed:
-            MonitorManager.addGlobalKeyboardEventListener(
-                keyboardShortcut: Config.fishRepositoryActiveKeyShortcut,
-                actionOnEvent: { [] _ in
-                    if !TouchFishApp.mainWindow.isVisible {
-                        NotificationCenter.default.post(name: .ShouldShowFishView, object: nil)
-                        TouchFishApp.activate()
-                    }
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.fishRepositoryActiveKeyShortcut) { [] _ in
+                if !TouchFishApp.mainWindow.isVisible {
+                    NotificationCenter.default.post(name: .ShouldShowFishView, object: nil)
+                    TouchFishApp.activate()
                 }
-            )
-//        case .openTerminalWhenKeyShortCutPressed:
-//            MonitorManager.addGlobalKeyboardEventListener(
-//                keyboardShortcut: KeyboardShortcut(key: Key(keyCode: 57), modifiers: [.control], events: [.keyDown]),
-//                actionOnEvent: { [] _ in
-//                    Log.debug("here")
-//                    AppleScriptRunner.openTerminal()
-//                }
-//            )
+            }
         case .localKeyBoardPressedAsyncEvent:
             MonitorManager.localKeyBoardPressedAsyncEventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [] event in
                 if event.keyCode == kVK_UpArrow {
