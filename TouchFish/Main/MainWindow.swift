@@ -4,7 +4,12 @@ class MainWindow: NSPanel {
     
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: Config.mainWidth, height: Config.mainHeight),
+            contentRect: NSRect(
+                x: 0,
+                y: 0,
+                width: Config.mainWidth.get(),
+                height: Config.mainHeight.get()
+            ),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false

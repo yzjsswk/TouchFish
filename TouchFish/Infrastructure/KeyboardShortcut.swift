@@ -2,7 +2,7 @@ import Carbon.HIToolbox.Events
 
 struct KeyboardShortcut: Codable {
     
-    enum KeyboardShortcutModifier: String, Codable {
+    enum Modifier: String, Codable {
         case command
         case option
         case control
@@ -16,7 +16,7 @@ struct KeyboardShortcut: Codable {
     
     var keyCode: UInt32
     
-    var modifiers: [KeyboardShortcutModifier]
+    var modifiers: [Modifier]
     
     var events: [KeyEvent]
     

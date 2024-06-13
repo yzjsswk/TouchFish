@@ -21,7 +21,7 @@ struct FishRepositoryView: View {
                     description: editingFish.description,
                     tags: editingFish.tags
                 )
-                .frame(width: Config.mainWidth - 30)
+                .frame(width: Config.mainWidth.get() - 30)
             } else {
                 FishListView(
                     fishList: fishs.values.sorted(by: {
@@ -39,10 +39,10 @@ struct FishRepositoryView: View {
                     isEditing: $isEditing,
                     selectedFishIdentity: $selectedFishIdentity
                 )
-                .frame(width: (Config.mainWidth - 30)/2)
+                .frame(width: (Config.mainWidth.get() - 30)/2)
                 VStack {
                     FishDetailView(fishs: fishs, selectedFishIdentity: $selectedFishIdentity)
-                        .frame(width: (Config.mainWidth - 30)/2)
+                        .frame(width: (Config.mainWidth.get() - 30)/2)
                 }
             }
         }
@@ -56,6 +56,7 @@ struct FishRepositoryView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
+            // todo: do not refresh cache 
             Cache.type = nil
             Cache.tags = nil
             Cache.isMarked = nil
@@ -63,7 +64,7 @@ struct FishRepositoryView: View {
             sortField = ""
             for (argName, argValue) in RecipeManager.activeRecipeArg {
                 if argName == "type" {
-                    Cache.type = argValue.compactMap {FishType(rawValue: $0)}
+                    Cache.type = argValue.compactMap { FishType(rawValue: $0) }
                 }
                 if argName == "tag" {
                     // todo: mult tag search may work uncorrert

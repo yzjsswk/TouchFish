@@ -18,7 +18,7 @@ struct CommandBarView: View {
                             GeometryReader { geometry in
                                 Rectangle()
                                     .cornerRadius(5)
-                                    .foregroundColor(Config.selectedItemBackgroundColor.color)
+                                    .foregroundColor(Config.selectedItemBackgroundColor.get().color)
                                     .frame(width: geometry.size.width+5, height: geometry.size.height+8)
                                     .offset(x: -2.5, y: -4)
                             }
@@ -28,14 +28,14 @@ struct CommandBarView: View {
                         .padding([.leading], 3)
                 }
                 CommandField(commandText: $commandText)
-                    .frame(height: Config.commandFieldHeight)
+                    .frame(height: Config.commandFieldHeight.get())
                     .offset(y: 2)
                     .focused($isFocused)
             }
             .padding([.leading], 6)
-            .frame(height: Config.commandBarHeight)
+            .frame(height: Config.commandBarHeight.get())
         }
-        .background(Config.commandBarBackgroundColor.color)
+        .background(Config.commandBarBackgroundColor.get().color)
         .cornerRadius(10)
         .padding(10)
         .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in

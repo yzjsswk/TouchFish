@@ -1,12 +1,41 @@
 import SwiftUI
 
-let Config = Configuration.it
+var Config = Configuration.it
+
+struct ConfigField<T: Codable>: Codable {
+    
+    private var defaultValue: T
+    private var value: T?
+    private var canEdit: Bool // todo: not effect
+    
+    init(defaultValue: T, value: T? = nil, canEdit: Bool = false) {
+        self.defaultValue = defaultValue
+        self.value = value
+        self.canEdit = canEdit
+    }
+    
+    func get() -> T {
+        if !canEdit {
+            return defaultValue
+        }
+        return value ?? defaultValue
+    }
+    
+    mutating func set(value: T) {
+        self.value = value
+    }
+    
+    mutating func reSet() {
+        self.value = defaultValue
+    }
+    
+}
 
 struct Configuration: Codable {
     
-    static let it = readFromFile()
+    static var it = read()
     
-    static func readFromFile() -> Configuration {
+    static func read() -> Configuration {
         if !FileManager.default.fileExists(atPath: TouchFishApp.configPath.path) {
             Log.warning("read config - use default configuration: config file not exists, path=\(TouchFishApp.configPath.path)")
             return Configuration()
@@ -20,52 +49,65 @@ struct Configuration: Codable {
         }
     }
     
-    func save() {
+    func save() -> Bool {
         do {
             try JSONEncoder().encode(self).write(to: TouchFishApp.configPath)
+            return true
         } catch {
-            fatalError("Failed to write the configuration. Error: \n\(error)")
+            Log.warning("save config - failed, err=\(error)")
+            return false
         }
     }
     
     // configurations
     
-//    var dataServiceHost = "127.0.0.1"
-//    var dataServicePort = "2233"
-    var dataServiceHost = "192.168.1.104"
-    var dataServicePort = "2233"
-    var appActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown])
-    var fishRepositoryActiveKeyShortcut: KeyboardShortcut = KeyboardShortcut(keyCode: 9, modifiers: [.command,.option], events: [.keyDown])
+    // data service
+    struct DataServiceConfiguration: Codable {
+        var host: String
+        var port: String
+    }
+    var dataServiceConfigs = ConfigField<[String:DataServiceConfiguration]>(
+        defaultValue: ["local": DataServiceConfiguration(host: "127.0.0.1", port: "2233")], canEdit: true
+    )
+    var enableDataServiceConfigName = ConfigField<String>(defaultValue: "local", canEdit: true)
+    var enableDataServiceConfig: DataServiceConfiguration? {
+        return dataServiceConfigs.get()[enableDataServiceConfigName.get()]
+    }
+    var maxResourceSizeAutoFetch = ConfigField<Int>(defaultValue: 1024 * 1024 * 50, canEdit: true)  // 50MB
+    var maxDataSizeAddFish = ConfigField<Int>(defaultValue: 1024 * 1024 * 1024) // 1GB
+    
+    // basic
+    enum TFLanguage: String, Codable, CaseIterable {
+        case Chinese
+    }
+    var language = ConfigField<TFLanguage>(defaultValue: .Chinese, canEdit: true)
+    var appActiveKeyShortcut = ConfigField<KeyboardShortcut>(
+        defaultValue: KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown]), canEdit: true
+    )
+    var fishRepositoryActiveKeyShortcut = ConfigField<KeyboardShortcut>(
+        defaultValue: KeyboardShortcut(keyCode: 9, modifiers: [.command, .option], events: [.keyDown]), canEdit: true
+    ) // todo: remove to recipe setting
+    
+    var textFishDetailPreviewLength = ConfigField<Int>(defaultValue: 1500) // service limit: 2000; todo: remove to recipe setting
 
-    var mainWidth: CGFloat = 800
-    var mainHeight: CGFloat = 600
-    var commandBarHeight: CGFloat = 40
-    var commandFieldHeight: CGFloat = 28
-    var userDefinedRecipeItemHeight: CGFloat = 50
-    var recipeItemHeight: CGFloat = 40
-    var recipeItemSelectedHeight: CGFloat = 55
-    var fishItemHeight: CGFloat = 24
-    var fishItemIconWidth: CGFloat = 20
-    var fishItemPreviewLength: Int = 40
-    var fishDetailItemHeight: CGFloat = 10
-    var textFishDetailPreviewLength: Int = 1500 // service limit: 2000
-    
-    var pythonPath = "/usr/local/bin/python3"
-    
-    var mainBackgroundColor: String = "ECEEF1"
-    var commandBarBackgroundColor: String = "D8D8DB"
-    var selectedItemBackgroundColor: String = "502A70"
-    var commandFieldBackgroundColor: String = "282A36"
-    var commandFieldInsertionPointColor: String = "F8F8F2"
-    var internalRecipeItemColor: String = "D8D8DB"
-    var userDefinedRecipeDefaultIemColor: String = "D8D8DB"
-
-    var cacheRefreshLimitInterval: TimeInterval = 1
-    var fileSaveLimitInterval: TimeInterval = 60
-    var fileSaveLimitCount: Int = 5
-    
-    var maxResourceSizeAutoFetch: Int = 1024 * 1024 * 50 // 50MB
-    
-    var maxDataSizeAddFish: Int = 1024 * 1024 * 1024 // 1GB
+    // ui
+    var mainWidth = ConfigField<CGFloat>(defaultValue: 800)
+    var mainHeight = ConfigField<CGFloat>(defaultValue: 600)
+    var commandBarHeight = ConfigField<CGFloat>(defaultValue: 40)
+    var commandFieldHeight = ConfigField<CGFloat>(defaultValue: 28)
+    var userDefinedRecipeItemHeight = ConfigField<CGFloat>(defaultValue: 50)
+    var recipeItemHeight = ConfigField<CGFloat>(defaultValue: 40)
+    var recipeItemSelectedHeight = ConfigField<CGFloat>(defaultValue: 55)
+    var fishItemHeight = ConfigField<CGFloat>(defaultValue: 24)
+    var fishItemIconWidth = ConfigField<CGFloat>(defaultValue: 20)
+    var fishItemPreviewLength = ConfigField<CGFloat>(defaultValue: 40)
+    var fishDetailItemHeight = ConfigField<CGFloat>(defaultValue: 10)
+    var mainBackgroundColor = ConfigField<String>(defaultValue: "ECEEF1")
+    var commandBarBackgroundColor = ConfigField<String>(defaultValue: "D8D8DB")
+    var selectedItemBackgroundColor = ConfigField<String>(defaultValue: "502A70")
+    var commandFieldBackgroundColor = ConfigField<String>(defaultValue: "282A36")
+    var commandFieldInsertionPointColor = ConfigField<String>(defaultValue: "F8F8F2")
+    var internalRecipeItemColor = ConfigField<String>(defaultValue: "D8D8DB")
+    var userDefinedRecipeDefaultIemColor = ConfigField<String>(defaultValue: "D8D8DB")
     
 }

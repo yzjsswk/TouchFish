@@ -1,11 +1,11 @@
 import SwiftyBeaver
 import AppKit
 
-let Log = TFLogger.log
+let Log = TFLogger.logger
 
 struct TFLogger {
     
-    static let log = SwiftyBeaver.self
+    static let logger = SwiftyBeaver.self
     static let consoleDst = ConsoleDestination()
     static let fileDst = FileDestination()
     

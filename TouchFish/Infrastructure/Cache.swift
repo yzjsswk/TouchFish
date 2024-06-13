@@ -44,7 +44,7 @@ struct Cache {
     static func refresh() {
         refreshLock.wait()
         Task {
-//            Log.debug("refresh cache - start")
+            let startTime = Date()
             refreshStats()
             await refreshFish()
             await refreshPreview()
@@ -53,7 +53,9 @@ struct Cache {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .CacheRefreshed, object: nil)
             }
-//            Log.debug("refresh cache - end")
+            let endTime = Date()
+            let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
+            Log.info("refresh cache: finished - timeCost=\(timeCost)ms")
             refreshLock.signal()
         }
     }

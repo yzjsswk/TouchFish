@@ -35,7 +35,7 @@ struct MonitorManager {
                 }
             }
         case .showOrHideMainWindowWhenKeyShortCutPressed:
-            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.appActiveKeyShortcut) { [] _ in
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.appActiveKeyShortcut.get()) { [] _ in
                 if TouchFishApp.mainWindow.isVisible {
                     TouchFishApp.deactivate()
                 } else {
@@ -43,9 +43,9 @@ struct MonitorManager {
                 }
             }
         case .openFishRepositoryWhenKeyShortCutPressed:
-            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.fishRepositoryActiveKeyShortcut) { [] _ in
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.fishRepositoryActiveKeyShortcut.get()) { [] _ in
                 if !TouchFishApp.mainWindow.isVisible {
-                    NotificationCenter.default.post(name: .ShouldShowFishView, object: nil)
+                    RecipeManager.goToRecipe(recipeId: "com.touchfish.FishRepository")
                     TouchFishApp.activate()
                 }
             }

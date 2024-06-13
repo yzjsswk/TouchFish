@@ -258,13 +258,6 @@ struct Storage {
     }
     
     static func getFishOfSearchCondition() -> [String:Fish] {
-//        let fishList = Array(Cache.fishCache.values)
-//        return fishList.sorted { (fish1, fish2) -> Bool in
-//            if fish1.createTime == fish2.createTime {
-//                return fish1.identity > fish2.identity
-//            }
-//            return fish1.createTime > fish2.createTime
-//        }
         return Cache.fishCache
     }
     

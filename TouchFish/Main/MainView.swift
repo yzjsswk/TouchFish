@@ -1,5 +1,4 @@
 import SwiftUI
-import Foundation
 
 struct MainView: View {
     
@@ -15,7 +14,7 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            Config.mainBackgroundColor.color
+            Config.mainBackgroundColor.get().color
             VStack {
                 CommandBarView(commandText: $commandText, commandCell: $commandCell)
                 if let activeRecipeBundleId = activeRecipeBundleId {
@@ -26,6 +25,8 @@ struct MainView: View {
                         FishAddView()
                     case "com.touchfish.Statistics":
                         StatsView()
+                    case "com.touchfish.Setting":
+                        SettingView()
                     default:
                         RecipeView(recipeList: $recipeList, activeRecipeBundleId: activeRecipeBundleId)
                     }
@@ -37,9 +38,9 @@ struct MainView: View {
         }
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
-        .onAppear {
-            fishs = Storage.getFishOfSearchCondition()
-        }
+//        .onAppear {
+//            fishs = Storage.getFishOfSearchCondition()
+//        }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             if let recipe = RecipeManager.activeRecipe {
                 activeRecipeBundleId = recipe.bundleId

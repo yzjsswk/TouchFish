@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		995E082A2C17242C00659F85 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995E08292C17242C00659F85 /* SettingView.swift */; };
+		995E082C2C18345C00659F85 /* DataServiceSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995E082B2C18345C00659F85 /* DataServiceSettingView.swift */; };
 		996FEE492BC3E2E50047EB82 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996FEE482BC3E2E50047EB82 /* DataService.swift */; };
 		996FEE562BC917AE0047EB82 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 996FEE552BC917AE0047EB82 /* Alamofire */; };
 		9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9991B00B2C0C88B000EFE02C /* FishAddView.swift */; };
@@ -45,6 +47,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		995E08292C17242C00659F85 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		995E082B2C18345C00659F85 /* DataServiceSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataServiceSettingView.swift; sourceTree = "<group>"; };
 		996FEE482BC3E2E50047EB82 /* DataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		9991B00B2C0C88B000EFE02C /* FishAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishAddView.swift; sourceTree = "<group>"; };
 		99AC05A52BB2BCD90046E8C5 /* TouchFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,6 +113,8 @@
 		996FEE572BF2E80B0047EB82 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
+				995E08292C17242C00659F85 /* SettingView.swift */,
+				995E082B2C18345C00659F85 /* DataServiceSettingView.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -299,6 +305,7 @@
 				99AC05FF2BB2BD720046E8C5 /* RecipeListView.swift in Sources */,
 				99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */,
 				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
+				995E082A2C17242C00659F85 /* SettingView.swift in Sources */,
 				99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */,
 				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
 				99AC06002BB2BD720046E8C5 /* RecipeView.swift in Sources */,
@@ -321,6 +328,7 @@
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
 				99AC05F42BB2BD720046E8C5 /* Definition.swift in Sources */,
 				99AC05FE2BB2BD720046E8C5 /* RecipeItemView.swift in Sources */,
+				995E082C2C18345C00659F85 /* DataServiceSettingView.swift in Sources */,
 				99AC05E72BB2BD720046E8C5 /* FishListItemView.swift in Sources */,
 				99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */,
 				99AC05E92BB2BD720046E8C5 /* FishRepositoryView.swift in Sources */,

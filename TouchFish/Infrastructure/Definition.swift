@@ -58,7 +58,6 @@ struct Functions {
     
     static func getLinePreview(_ text: String) -> String {
         let firstLine = text.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n", omittingEmptySubsequences: false).first ?? ""
-//        let linePreview = firstLine.count < Config.fishItemPreviewLength ? String(firstLine) : String(firstLine.prefix(Config.fishItemPreviewLength))
         return String(firstLine)
     }
     
@@ -228,7 +227,6 @@ extension Notification.Name {
     static let ShouldPresentQuickLook = Notification.Name("ShouldPresentQuickLook")
     static let ShouldDeleteClipboardHistoryItem = Notification.Name("ShouldDeleteClipboardHistoryItem")
     static let ShouldDeleteClipboardHistory = Notification.Name("ShouldDeleteClipboardHistory")
-    static let ShouldShowFishView = Notification.Name("ShouldShowFishView")
     static let CacheRefreshed = Notification.Name("CacheRefreshed")
     static let RecipeStatusChanged = Notification.Name("RecipeStatusChanged")
     static let CommandTextChanged = Notification.Name("CommandTextChanged")

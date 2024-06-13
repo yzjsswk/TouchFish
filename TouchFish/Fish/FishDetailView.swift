@@ -29,7 +29,7 @@ struct FishDetailView: View {
                     }
                     if selectedFish.description.count > 0 {
                         DetailDescView(fish: selectedFish)
-//                            .frame(minHeight: 50, maxHeight: Config.mainHeight*0.2)
+//                            .frame(minHeight: 50, maxHeight: Config.mainHeight.get()*0.2)
                     }
                 }
                 .padding()
@@ -49,7 +49,7 @@ struct FishDetailView: View {
             }
             ArrowView()
                 .rotationEffect(.degrees(180))
-                .offset(y: showDetailWithAnima ? 0 : Config.mainWidth*0.4)
+                .offset(y: showDetailWithAnima ? 0 : Config.mainWidth.get()*0.4)
                 .onTapGesture {
                     withAnimation {
                         showDetailWithAnima = false
@@ -58,7 +58,7 @@ struct FishDetailView: View {
                 }
             if let selectedFish = self.selectedFish {
                 DetailExtraInfoView(fish: selectedFish)
-                    .frame(height: showDetailWithAnima ? Config.mainHeight*0.3 : 0)
+                    .frame(height: showDetailWithAnima ? Config.mainHeight.get()*0.3 : 0)
             }
             if !showDetail {
                 ArrowView()
@@ -135,9 +135,9 @@ struct DetailValueView: View {
         case .txt:
                 VStack {
                     if let textValue = fish.textPreview {
-                        Text(textValue.prefix(Config.textFishDetailPreviewLength))
+                        Text(textValue.prefix(Config.textFishDetailPreviewLength.get()))
                             .font(.callout)
-                        if textValue.count > Config.textFishDetailPreviewLength {
+                        if textValue.count > Config.textFishDetailPreviewLength.get() {
                             Text("...")
                                 .font(.callout)
                                 .bold()
@@ -198,7 +198,7 @@ struct DetailExtraInfoView: View {
             }
             .padding(.vertical, 5)
         }
-//        .frame(height: Config.mainHeight*0.3)
+//        .frame(height: Config.mainHeight.get()*0.3)
     }
     
 }
@@ -230,7 +230,7 @@ struct DetailItemView: View {
                 Text(itemValue)
                     .font(.system(.body, design: .monospaced))
             }
-            .frame(height: Config.fishDetailItemHeight)
+            .frame(height: Config.fishDetailItemHeight.get())
         }
     }
     
@@ -253,7 +253,7 @@ struct ArrowView: View {
     var body: some View {
         ArrowShap()
             .stroke(.gray, lineWidth: 2)
-            .frame(width: Config.mainWidth*0.15, height: 10)
+            .frame(width: Config.mainWidth.get()*0.15, height: 10)
             .background(Color.gray.opacity(0.01))
             .offset(y: isHovered ? 0 : 5)
             .onHover { isHovered in

@@ -65,7 +65,7 @@ struct Recipe {
                 command: recipeJson.command,
                 parameters: recipeJson.parameters ?? [],
                 actions: recipeJson.actions ?? [],
-                color: (recipeJson.color ?? Config.userDefinedRecipeDefaultIemColor).color,
+                color: (recipeJson.color ?? Config.userDefinedRecipeDefaultIemColor.get()).color,
                 order: recipeJson.order ?? 0
             )
         }
@@ -118,10 +118,10 @@ struct RecipeAction: Codable {
             case .context:
                 if let value = value {
                     if value == "host" {
-                        return Config.dataServiceHost
+                        return Config.enableDataServiceConfig?.host ?? ""
                     }
                     if value == "port" {
-                        return Config.dataServicePort
+                        return Config.enableDataServiceConfig?.port ?? ""
                     }
                     return ""
                 }
@@ -371,7 +371,7 @@ struct RecipeManager {
                 Recipe.Parameter(name: "locked"),
                 Recipe.Parameter(name: "sort")
             ],
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -600
         ),
         Recipe(
@@ -382,7 +382,7 @@ struct RecipeManager {
             name: "Add Fish",
             icon: Image(systemName: "plus.square"),
             command: "add",
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -500
         ),
         Recipe(
@@ -393,7 +393,7 @@ struct RecipeManager {
             name: "Setting",
             icon: Image(systemName: "gearshape"),
             command: "set",
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -400
         ),
         Recipe(
@@ -404,7 +404,7 @@ struct RecipeManager {
             name: "Message Center",
             icon: Image(systemName: "ellipsis.message"),
             command: "msg",
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -300
         ),
         Recipe(
@@ -415,7 +415,7 @@ struct RecipeManager {
             name: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
             command: "stats",
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -200
         ),
         Recipe(
@@ -426,7 +426,7 @@ struct RecipeManager {
             name: "Recipe Store",
             icon: Image(systemName: "books.vertical"),
             command: "store",
-            color: Config.internalRecipeItemColor.color,
+            color: Config.internalRecipeItemColor.get().color,
             order: -100
         ),
     ]

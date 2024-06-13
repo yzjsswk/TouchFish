@@ -141,7 +141,27 @@ struct FishResp: Codable {
 
 struct DataService {
     
-    static let urlPrefix = "http://\(Config.dataServiceHost):\(Config.dataServicePort)"
+    static var urlPrefix: String {
+        guard let dataServiceConfig = Config.enableDataServiceConfig else {
+            return ""
+        }
+        return "http://\(dataServiceConfig.host):\(dataServiceConfig.port)"
+    }
+    
+    static func tryConnect(host: String, port: String) async -> Int? {
+        let url = "http://\(host):\(port)"
+        let startTime = Date()
+        let res = await AF.request(url).serializingDecodable(Int.self).result
+        let endTime = Date()
+        let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
+        switch res {
+        case .success(_):
+            return timeCost
+        case .failure(let err):
+            Log.warning("DataService.tryConnect - failed, host=\(host), port = \(port), err=\(err)")
+            return nil
+        }
+    }
     
     static func searchFish(
         fuzzys: String? = nil,

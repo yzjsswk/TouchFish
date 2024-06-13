@@ -87,7 +87,7 @@ struct FishEditView: View {
                     }
                     .background(Color.white)
                     .cornerRadius(5)
-                    .frame(height: Config.mainWidth*0.3)
+                    .frame(height: Config.mainWidth.get()*0.3)
                     
                 }
             }
@@ -181,7 +181,7 @@ struct AddTagGroupView: View {
         Image(systemName: "plus.circle")
         .resizable()
         .frame(width: 20, height: 20)
-        .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.color : .gray)
+        .foregroundColor(isHovered ? Config.selectedItemBackgroundColor.get().color : .gray)
         .onHover { isHovered in
             self.isHovered = isHovered
         }
@@ -215,7 +215,7 @@ struct TagEditView: View {
             Image(systemName: "plus.circle")
             .resizable()
             .frame(width: 20, height: 20)
-            .foregroundColor(isHovered1 ? Config.selectedItemBackgroundColor.color : .gray)
+            .foregroundColor(isHovered1 ? Config.selectedItemBackgroundColor.get().color : .gray)
             .onHover { isHovered in
                 self.isHovered1 = isHovered
             }
