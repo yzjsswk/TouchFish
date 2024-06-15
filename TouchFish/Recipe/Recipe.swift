@@ -233,7 +233,7 @@ struct RecipeManager {
         for recipe in internalRecipeList {
             recipes[recipe.bundleId] = recipe
         }
-        let res = await Storage.searchFish(tags:[["Recipe"]])
+        let res = await Storage.searchFish(tags:[["Recipe"]], pageSize: 1000)
         if let recipeFishList = res {
             for recipeFish in recipeFishList {
                 // todo: use resource

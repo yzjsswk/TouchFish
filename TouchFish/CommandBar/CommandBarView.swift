@@ -7,6 +7,7 @@ struct CommandBarView: View {
     
     @FocusState var isFocused: Bool
     
+    @State var placeHolderString: String = ""
     @State var lastEditTs: TimeInterval = Date().timeIntervalSince1970
     
     var body: some View {
@@ -27,10 +28,20 @@ struct CommandBarView: View {
                         .font(.custom("Menlo", size: 16))
                         .padding([.leading], 3)
                 }
-                CommandField(commandText: $commandText)
-                    .frame(height: Config.commandFieldHeight.get())
-                    .offset(y: 2)
-                    .focused($isFocused)
+                ZStack {
+                    CommandField(commandText: $commandText)
+                        .frame(height: Config.commandFieldHeight.get())
+                        .offset(y: 2)
+                        .focused($isFocused)
+                    if commandText.count == 0 {
+                        HStack {
+                            Text(placeHolderString)
+                                .font(.custom("Menlo", size: 20))
+                                .foregroundStyle(.gray)
+                            Spacer()
+                        }
+                    }
+                }
             }
             .padding([.leading], 6)
             .frame(height: Config.commandBarHeight.get())
@@ -46,6 +57,16 @@ struct CommandBarView: View {
         .onReceive(NotificationCenter.default.publisher(for: .ReturnKeyWasPressed)) { _ in
             if isFocused {
                 NotificationCenter.default.post(name: .RecipeCommited, object: nil)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
+            if let recipe = RecipeManager.activeRecipe {
+                placeHolderString = recipe.parameters
+                    .filter { !RecipeManager.activeRecipeArg.keys.contains($0.name) }
+                    .map {$0.separator != nil ? "\($0.name)[\($0.separator!)]:" : "\($0.name):"}
+                    .joined()
+            } else {
+                placeHolderString = ""
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .CommandTextChanged)) { notification in

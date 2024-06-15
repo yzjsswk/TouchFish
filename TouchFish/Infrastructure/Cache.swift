@@ -15,30 +15,31 @@ struct Cache {
     static var lockCount = 0
     static var unLockCount = 0
     
-    static var fuzzys: String? = nil { didSet { refresh() } }
-    static var value: String? = nil { didSet { refresh() } }
-    static var description: String? = nil { didSet { refresh() } }
-    static var identity: String? = nil { didSet { refresh() } }
-    static var type: [FishType]? = nil { didSet { refresh() } }
-    static var tags: [[String]]? = nil { didSet { refresh() } }
-    static var isMarked: Bool? = nil { didSet { refresh() } }
-    static var isLocked: Bool? = nil { didSet { refresh() } }
-    static var pageNum: Int? = nil { didSet { refresh() } }
-    static var pageSize: Int? = nil { didSet { refresh() } }
+    static var fuzzys: String? = nil { didSet { needRefresh = true } }
+    static var value: String? = nil { didSet { needRefresh = true } }
+    static var description: String? = nil { didSet { needRefresh = true } }
+    static var identity: String? = nil { didSet { needRefresh = true } }
+    static var type: [FishType]? = nil { didSet { needRefresh = true } }
+    static var tags: [[String]]? = nil { didSet { needRefresh = true } }
+    static var isMarked: Bool? = nil { didSet { needRefresh = true } }
+    static var isLocked: Bool? = nil { didSet { needRefresh = true } }
+    static var pageNum: Int? = nil { didSet { needRefresh = true } }
+    static var pageSize: Int? = nil { didSet { needRefresh = true } }
     
-//    static func start() {
-//        refresh()
-//        refreshIfNeed()
-//        func refreshIfNeed() {
-//            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
-//                if needRefresh {
-//                    needRefresh = false
-//                    doRefresh()
-//                }
-//                refreshIfNeed()
-//            }
-//        }
-//    }
+    static private var needRefresh = false
+    static func start() {
+        refresh()
+        refreshIfNeed()
+        func refreshIfNeed() {
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 0.5) {
+                if needRefresh {
+                    needRefresh = false
+                    refresh()
+                }
+                refreshIfNeed()
+            }
+        }
+    }
     
     static private var refreshLock = DispatchSemaphore(value: 1)
     static func refresh() {
@@ -96,11 +97,13 @@ struct Cache {
             pageSize: 100
         )
         guard case .success(let resp) = result else {
+            fishCache.removeAll()
             Log.warning("refresh fish cache - fail: request data service fail")
             Log.verbose(result)
             return
         }
         guard let fishList = resp.getFish() else {
+            fishCache.removeAll()
             Log.warning("refresh fish cache - fail: dataService.searchFish..getFish return nil")
             return
         }

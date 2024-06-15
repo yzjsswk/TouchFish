@@ -20,7 +20,7 @@ class TouchFishApp {
     static func start() {
         TouchFishApp.createAppSupportPathIfNotExists()
         TFLogger.prepare()
-        Cache.refresh()
+        Cache.start()
         Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)
         Monitor.start(type: .openFishRepositoryWhenKeyShortCutPressed)
         Monitor.start(type: .hideMainWindowWhenClickOutside)
