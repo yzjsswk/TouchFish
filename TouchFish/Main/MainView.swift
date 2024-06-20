@@ -27,6 +27,10 @@ struct MainView: View {
                         StatsView()
                     case "com.touchfish.Setting":
                         SettingView()
+                    case "com.touchfish.MessageCenter":
+                        EmptyView()
+                    case "com.touchfish.RecipeStore":
+                        EmptyView()
                     default:
                         RecipeView(recipeList: $recipeList, activeRecipeBundleId: activeRecipeBundleId)
                     }
@@ -38,9 +42,6 @@ struct MainView: View {
         }
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
-//        .onAppear {
-//            fishs = Storage.getFishOfSearchCondition()
-//        }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             if let recipe = RecipeManager.activeRecipe {
                 activeRecipeBundleId = recipe.bundleId
@@ -62,6 +63,12 @@ struct MainView: View {
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
             TouchFishApp.deactivate()
         }
+//        .onAppear {
+//            withAnimation {
+//                fishs = Storage.getFishOfSearchCondition()
+//                recipeList = RecipeManager.orderedRecipeList
+//            }
+//        }
         .onReceive(NotificationCenter.default.publisher(for: .CacheRefreshed)) { _ in
             withAnimation {
                 fishs = Storage.getFishOfSearchCondition()

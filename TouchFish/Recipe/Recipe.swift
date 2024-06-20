@@ -365,6 +365,7 @@ struct RecipeManager {
             icon: Image(systemName: "fish"),
             command: "fish",
             parameters: [
+                Recipe.Parameter(name: "identity"),
                 Recipe.Parameter(name: "type", separator: ","),
                 Recipe.Parameter(name: "tag", separator: ","),
                 Recipe.Parameter(name: "marked"),

@@ -57,12 +57,16 @@ struct FishRepositoryView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             // todo: do not refresh cache 
+            Cache.identity = nil
             Cache.type = nil
             Cache.tags = nil
             Cache.isMarked = nil
             Cache.isLocked = nil
             sortField = ""
             for (argName, argValue) in RecipeManager.activeRecipeArg {
+                if argName == "identity", argValue.count > 0 {
+                    Cache.identity = argValue[0]
+                }
                 if argName == "type" {
                     Cache.type = argValue.compactMap { FishType(rawValue: $0) }
                 }

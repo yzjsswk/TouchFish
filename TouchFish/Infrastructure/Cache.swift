@@ -56,7 +56,7 @@ struct Cache {
             }
             let endTime = Date()
             let timeCost = Int(endTime.timeIntervalSince(startTime)*1000)
-            Log.info("refresh cache: finished - timeCost=\(timeCost)ms")
+            Log.debug("refresh cache: finished - timeCost=\(timeCost)ms")
             refreshLock.signal()
         }
     }

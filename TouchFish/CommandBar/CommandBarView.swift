@@ -14,7 +14,7 @@ struct CommandBarView: View {
         ZStack {
             HStack {
                 ForEach(Array(commandCell.enumerated()), id: \.0) { _, cellText in
-                    Text(cellText)
+                    Text(cellText.count > 25 ? "\(cellText.prefix(22))..." : cellText)
                         .background(
                             GeometryReader { geometry in
                                 Rectangle()
@@ -63,7 +63,8 @@ struct CommandBarView: View {
             if let recipe = RecipeManager.activeRecipe {
                 placeHolderString = recipe.parameters
                     .filter { !RecipeManager.activeRecipeArg.keys.contains($0.name) }
-                    .map {$0.separator != nil ? "\($0.name)[\($0.separator!)]:" : "\($0.name):"}
+//                    .map {$0.separator != nil ? "\($0.name)[\($0.separator!)]:" : "\($0.name):"}
+                    .map {"\($0.name):"}
                     .joined()
             } else {
                 placeHolderString = ""
