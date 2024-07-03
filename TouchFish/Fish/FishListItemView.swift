@@ -27,12 +27,12 @@ struct FishListItemView: View {
             .frame(width: Config.fishItemIconWidth.get())
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    if fish.linePreview.1 {
-                        Text(fish.linePreview.0)
+                    if fish.isMarked {
+                        Text(fish.linePreview)
                             .font(.title2)
                             .foregroundColor(isSelected ? Color.white: Color.black)
                     } else {
-                        Text(fish.linePreview.0)
+                        Text(fish.linePreview)
                             .font(.title3)
                             .foregroundColor(isSelected ? Color.white: Color.gray)
                     }

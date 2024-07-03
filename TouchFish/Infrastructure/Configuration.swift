@@ -14,6 +14,12 @@ struct ConfigField<T: Codable>: Codable {
         self.canEdit = canEdit
     }
     
+    enum CodingKeys: String, CodingKey {
+        case defaultValue
+        case value
+        case canEdit
+    }
+    
     func get() -> T {
         if !canEdit {
             return defaultValue
@@ -37,8 +43,9 @@ struct Configuration: Codable {
     
     static func read() -> Configuration {
         if !FileManager.default.fileExists(atPath: TouchFishApp.configPath.path) {
-            Log.warning("read config - use default configuration: config file not exists, path=\(TouchFishApp.configPath.path)")
-            return Configuration()
+            let defaultConfig = Configuration()
+            _ = defaultConfig.save()
+            return defaultConfig
         }
         do {
             let configData = try Data(contentsOf: TouchFishApp.configPath)

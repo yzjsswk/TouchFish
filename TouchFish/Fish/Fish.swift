@@ -37,28 +37,28 @@ struct Fish {
         return Storage.getImagePreviewByIdentity(self.identity)
     }
     
-    var defaultLinePreview: (String, Bool) {
-        return ("\(self.type.rawValue):\(self.identity)", false)
+    var defaultLinePreview: String {
+        return "\(self.type.rawValue):\(self.identity)"
     }
     
-    var linePreview: (String, Bool) {
+    var linePreview: String {
         switch type {
         case .txt:
             if self.description.count > 0 {
-                return (Functions.getLinePreview(self.description), true)
+                return Functions.getLinePreview(self.description)
             }
             if let textPreview = self.textPreview {
-                return (Functions.getLinePreview(textPreview), false)
+                return Functions.getLinePreview(textPreview)
             }
             return self.defaultLinePreview
         case .tiff, .png, .jpg:
             if self.description.count > 0 {
-                return (Functions.getLinePreview(self.description), true)
+                return Functions.getLinePreview(self.description)
             }
             return self.defaultLinePreview
         default:
             if self.description.count > 0 {
-                return (Functions.getLinePreview(self.description), true)
+                return Functions.getLinePreview(self.description)
             }
             return self.defaultLinePreview
         }

@@ -111,7 +111,7 @@ struct MonitorManager {
                             let ex = extraInfo
                             Task {
                                 let ok = await Storage.addOrPinFish(
-                                    value: clipboardData.1, type: clipboardData.0, tags: [["Clipboard"]], extraInfo: ex, pin: true
+                                    value: clipboardData.1, type: clipboardData.0, extraInfo: ex, pin: true
                                 )
                                 if !ok {
                                     Log.error("save fish from clipboard - fail: Storage.addOrPinFish return false")
