@@ -8,6 +8,8 @@ struct FishListItemView: View {
     @Binding var selectedFishIdentity: String?
     @Binding var hoveringFishIdentity: String?
     
+    @State var showCopyed: Bool = false
+    
     var isSelected: Bool {
         selectedFishIdentity == fish.identity
     }
@@ -118,10 +120,26 @@ struct FishListItemView: View {
 //        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
         .cornerRadius(5)
         .frame(width: (Constant.mainWidth-30)/2, height: isHovering ? Constant.fishItemHeight+20 : Constant.fishItemHeight)
-        .onTapGesture(count: 1) {
+        .popover(isPresented: $showCopyed, arrowEdge: .trailing) {
+            Text("Copyed")
+                .padding(10)
+        }
+        .onHover { isHovered in
+            if !isHovered {
+                showCopyed = false
+            }
+        }
+        .onTapGesture {
             fish.copyToClipboard()
-            TouchFishApp.deactivate()
-            pasteToFrontmostApp()
+            if Config.fastPasteToFrontmostApplication {
+                TouchFishApp.deactivate()
+                pasteToFrontmostApp()
+            } else {
+                showCopyed = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    showCopyed = false
+                }
+            }
         }
 
     }
@@ -265,8 +283,9 @@ func pasteToFrontmostApp() {
 //        keyEvent?.flags = [.maskCommand]
 //        Log.debug("do copy")
 //        keyEvent?.post(tap: .cghidEventTap)
+        Log.debug("paste fish to frontmost app")
         AppleScriptRunner.doPaste()
     } else {
-        Log.warning("front app is nil")
+        Log.warning("paste fish to frontmost app - failed: got frontApp=nil")
     }
 }

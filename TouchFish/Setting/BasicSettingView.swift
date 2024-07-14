@@ -21,6 +21,7 @@ struct BasicSettingView: View {
                     .pickerStyle(.menu)
                     .frame(width: 150)
             }
+            .padding(.vertical, 2)
             HStack{
                 Text("the language of the application")
                     .font(.callout)
@@ -45,19 +46,33 @@ struct BasicSettingView: View {
                 .frame(width: 50)
                 .padding(.horizontal, 5)
             }
+            .padding(.vertical, 2)
             HStack{
                 Text("when pressed, the application activates and shows")
                     .font(.callout)
-                    .foregroundStyle(.gray)
-                Text("(edit here not supported currently)")
-                    .font(.callout)
-                    .bold()
                     .foregroundStyle(.gray)
                 Spacer()
             }
             .padding(.vertical, 2)
             Divider()
-
+            // hideMainWindowWhenClickOutSideEnable
+            HStack {
+                Text("Hide When Click Outside")
+                    .font(.title3)
+                    .bold()
+                Spacer()
+                Toggle(isOn: $tempSetting.hideMainWindowWhenClickOutSideEnable) {}
+                    .padding(.horizontal, 5)
+            }
+            .padding(.vertical, 2)
+            HStack{
+                Text("if enabled, when click outside the window, the application will hide and deactivate")
+                    .font(.callout)
+                    .foregroundStyle(.gray)
+                Spacer()
+            }
+            .padding(.vertical, 2)
+            Divider()
         }
         .padding()
     }

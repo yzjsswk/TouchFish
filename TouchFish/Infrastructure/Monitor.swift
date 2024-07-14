@@ -30,7 +30,7 @@ struct MonitorManager {
         switch type {
         case .hideMainWindowWhenClickOutside:
             MonitorManager.hideMainWindowWhenClickOutsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [] event in
-                if TouchFishApp.mainWindow.isVisible {
+                if Config.hideMainWindowWhenClickOutSideEnable && TouchFishApp.mainWindow.isVisible {
                     TouchFishApp.deactivate()
                 }
             }
@@ -101,6 +101,9 @@ struct MonitorManager {
                             }
                             if MonitorManager.clipboardListenerState != .running {
                                 listenToClipboardChanges()
+                                return
+                            }
+                            if !Config.autoImportedFromClipboard {
                                 return
                             }
                             var extraInfo = ExtraInfo()

@@ -37,13 +37,13 @@ struct Configuration: Codable {
     enum TFLanguage: String, Codable, CaseIterable, Identifiable {
         
         case English
-        case Chinese
         
         var id: String { self.rawValue }
         
     }
     var language: TFLanguage = .English
     var appActiveKeyShortcut = KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown])
+    var hideMainWindowWhenClickOutSideEnable = true
     
     // data service
     struct DataServiceConfiguration: Codable {
@@ -58,8 +58,11 @@ struct Configuration: Codable {
     
     // fish repository
     var fishRepositoryActiveKeyShortcut = KeyboardShortcut(keyCode: 9, modifiers: [.command, .option], events: [.keyDown])
-    var maxResourceSizeAutoFetch = 1024 * 1024 * 50  // 50MB
-    var maxDataSizeAddFish = 1024 * 1024 * 1024 // 1GB
     var textFishDetailPreviewLength = 1500 // service limit: 2000
+    var maxResourceSizeAutoFetch = 1024 * 1024 * 50  // 50MB
+    var autoImportedFromClipboard = true
+    var fastPasteToFrontmostApplication = false
+    // add fish
+    var maxDataSizeAddFish = 1024 * 1024 * 1024 // 1GB
 
 }

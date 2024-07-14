@@ -28,7 +28,7 @@ struct SettingView: View {
         VStack {
             HStack {
                 SettingTabView(selectedTab: $selectedTab)
-                    .frame(width: Constant.mainWidth*0.25)
+                    .frame(width: Constant.mainWidth*0.2)
                 Divider()
                 VStack {
                     ScrollView(showsIndicators: false) {
@@ -42,7 +42,7 @@ struct SettingView: View {
                         }
                     }
                 }
-                .frame(width: Constant.mainWidth*0.7)
+                .frame(width: Constant.mainWidth*0.75)
             }
             HStack {
                 Spacer()
@@ -95,9 +95,9 @@ struct SettingTabView: View {
         
         var body: some View {
             ZStack {
-                isSelected ? Constant.commandBarBackgroundColor.color : Constant.mainBackgroundColor.color
+                isSelected || isHovered ? Constant.commandBarBackgroundColor.color : Constant.mainBackgroundColor.color
                 Text(title)
-                    .font(isHovered && !isSelected ? .title2 : .title3)
+                    .font(.title3)
                     .bold()
                     .padding()
             }
