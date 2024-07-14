@@ -20,9 +20,9 @@ struct SettingView: View {
     
     @State var selectedTab: SettingViewTab = .basic
     
-    @State var language: String = Config.language.get().rawValue
-    @State var dataServiceConfigs: [String:Configuration.DataServiceConfiguration] = Config.dataServiceConfigs.get()
-    @State var enableDataServiceConfigName: String = Config.enableDataServiceConfigName.get()
+    @State var language: String = Config.language.rawValue
+    @State var dataServiceConfigs: [String:Configuration.DataServiceConfiguration] = Config.dataServiceConfigs
+    @State var enableDataServiceConfigName: String = Config.enableDataServiceConfigName
     
     @State var saveMessage = ""
     
@@ -35,7 +35,7 @@ struct SettingView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .frame(width: Config.mainWidth.get()-30)
+                .frame(width: Constant.mainWidth-30)
             }
             ScrollView(showsIndicators: false) {
                 switch selectedTab {
@@ -51,7 +51,7 @@ struct SettingView: View {
                         HStack {
                             Text("Call Application KeyBoard ShortCut")
                             ZStack {
-                                Config.commandBarBackgroundColor.get().color
+                                Constant.commandBarBackgroundColor.color
                                 HStack(spacing: 2) {
                                     Image(systemName: "option")
                                     Image(systemName: "space")
@@ -63,7 +63,7 @@ struct SettingView: View {
                         HStack {
                             Text("Call Fish Respository KeyBoard ShortCut")
                             ZStack {
-                                Config.commandBarBackgroundColor.get().color
+                                Constant.commandBarBackgroundColor.color
                                 HStack(spacing: 2) {
                                     Image(systemName: "command")
                                     Image(systemName: "option")
@@ -88,8 +88,8 @@ struct SettingView: View {
                 .frame(width: 200)
                 Spacer()
                 Button(action: {
-                    Config.dataServiceConfigs.set(value: dataServiceConfigs)
-                    Config.enableDataServiceConfigName.set(value: enableDataServiceConfigName)
+                    Config.dataServiceConfigs = dataServiceConfigs
+                    Config.enableDataServiceConfigName = enableDataServiceConfigName
                     let ok = Config.save()
                     if ok {
                         saveMessage = "success"
@@ -102,7 +102,7 @@ struct SettingView: View {
                 .frame(width: 100)
                 Text(saveMessage)
             }
-            .frame(width: Config.mainWidth.get()*0.6)
+            .frame(width: Constant.mainWidth*0.6)
             .padding(5)
         }
     }

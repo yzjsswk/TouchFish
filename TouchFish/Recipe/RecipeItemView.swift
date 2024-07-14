@@ -14,7 +14,7 @@ struct RecipeItemView: View {
                 .scaledToFit()
                 .foregroundColor(isSelected ? Color.white: Color.black)
             }
-            .frame(width: Config.recipeItemHeight.get())
+            .frame(width: Constant.recipeItemHeight)
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(recipe.name)
@@ -36,8 +36,8 @@ struct RecipeItemView: View {
             Spacer()
         }
         .padding(5)
-        .frame(width: Config.mainWidth.get()-30, height: isSelected ? Config.recipeItemSelectedHeight.get() : Config.recipeItemHeight.get())
-        .background(isSelected ? Config.selectedItemBackgroundColor.get().color : recipe.color)
+        .frame(width: Constant.mainWidth-30, height: isSelected ? Constant.recipeItemSelectedHeight : Constant.recipeItemHeight)
+        .background(isSelected ? Constant.selectedItemBackgroundColor.color : recipe.color)
         .saturation(1.0)
         .cornerRadius(5)
         .onHover { isHovered in

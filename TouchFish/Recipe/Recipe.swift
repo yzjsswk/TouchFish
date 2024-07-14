@@ -65,7 +65,7 @@ struct Recipe {
                 command: recipeJson.command,
                 parameters: recipeJson.parameters ?? [],
                 actions: recipeJson.actions ?? [],
-                color: (recipeJson.color ?? Config.userDefinedRecipeDefaultIemColor.get()).color,
+                color: (recipeJson.color ?? Constant.userDefinedRecipeDefaultIemColor).color,
                 order: recipeJson.order ?? 0
             )
         }
@@ -372,7 +372,7 @@ struct RecipeManager {
                 Recipe.Parameter(name: "locked"),
                 Recipe.Parameter(name: "sort")
             ],
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -600
         ),
         Recipe(
@@ -383,7 +383,7 @@ struct RecipeManager {
             name: "Add Fish",
             icon: Image(systemName: "plus.square"),
             command: "add",
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -500
         ),
         Recipe(
@@ -394,7 +394,7 @@ struct RecipeManager {
             name: "Setting",
             icon: Image(systemName: "gearshape"),
             command: "set",
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -400
         ),
         Recipe(
@@ -405,7 +405,7 @@ struct RecipeManager {
             name: "Message Center",
             icon: Image(systemName: "ellipsis.message"),
             command: "msg",
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -300
         ),
         Recipe(
@@ -416,7 +416,7 @@ struct RecipeManager {
             name: "Statistics",
             icon: Image(systemName: "chart.line.uptrend.xyaxis.circle.fill"),
             command: "stats",
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -200
         ),
         Recipe(
@@ -427,7 +427,7 @@ struct RecipeManager {
             name: "Recipe Store",
             icon: Image(systemName: "books.vertical"),
             command: "store",
-            color: Config.internalRecipeItemColor.get().color,
+            color: Constant.internalRecipeItemColor.color,
             order: -100
         ),
     ]

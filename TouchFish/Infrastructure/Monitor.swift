@@ -35,7 +35,7 @@ struct MonitorManager {
                 }
             }
         case .showOrHideMainWindowWhenKeyShortCutPressed:
-            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.appActiveKeyShortcut.get()) { [] _ in
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.appActiveKeyShortcut) { [] _ in
                 if TouchFishApp.mainWindow.isVisible {
                     TouchFishApp.deactivate()
                 } else {
@@ -43,7 +43,7 @@ struct MonitorManager {
                 }
             }
         case .openFishRepositoryWhenKeyShortCutPressed:
-            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.fishRepositoryActiveKeyShortcut.get()) { [] _ in
+            GlobalKeyboardEventListener().startListening(keyboardShortcut: Config.fishRepositoryActiveKeyShortcut) { [] _ in
                 if !TouchFishApp.mainWindow.isVisible {
                     RecipeManager.goToRecipe(recipeId: "com.touchfish.FishRepository")
                     TouchFishApp.activate()
@@ -139,7 +139,7 @@ struct MonitorManager {
                 MonitorManager.clipboardListenerState = .stop
             }
         default:
-            Log.warning("monitor type not support: stop \(type)")
+            Log.warning("stop monitor - failed: not support, type=\(type)")
         }
     }
     

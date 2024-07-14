@@ -43,7 +43,7 @@ struct RecipeView: View {
                                VStack {
                                    ForEach(userDefinedRecipeView.items, id: \.title) { item in
                                        UserDefinedRecipeListItemView(item: item)
-                                           .frame(width: Config.mainWidth.get()-30, height: Config.userDefinedRecipeItemHeight.get())
+                                           .frame(width: Constant.mainWidth-30, height: Constant.userDefinedRecipeItemHeight)
                                    }
                                }
                            }.padding(.vertical)
@@ -115,7 +115,7 @@ struct UserDefinedRecipeListItemView: View {
                 (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
                     .resizable()
                     .scaledToFit()
-            }.frame(width: Config.userDefinedRecipeItemHeight.get())
+            }.frame(width: Constant.userDefinedRecipeItemHeight)
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
                 .font(.title2)
@@ -131,7 +131,7 @@ struct UserDefinedRecipeListItemView: View {
         }
 //        .frame(maxWidth: Config.mainWidth)
         .padding(5)
-        .background(isSelected ? Config.selectedItemBackgroundColor.get().color : Config.userDefinedRecipeDefaultIemColor.get().color)
+        .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.userDefinedRecipeDefaultIemColor.color)
         .cornerRadius(5)
         .onHover { isHovered in
             isSelected = isHovered

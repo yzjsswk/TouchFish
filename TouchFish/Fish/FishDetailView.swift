@@ -49,7 +49,7 @@ struct FishDetailView: View {
             }
             ArrowView()
                 .rotationEffect(.degrees(180))
-                .offset(y: showDetailWithAnima ? 0 : Config.mainWidth.get()*0.4)
+                .offset(y: showDetailWithAnima ? 0 : Constant.mainWidth*0.4)
                 .onTapGesture {
                     withAnimation {
                         showDetailWithAnima = false
@@ -58,7 +58,7 @@ struct FishDetailView: View {
                 }
             if let selectedFish = self.selectedFish {
                 DetailExtraInfoView(fish: selectedFish)
-                    .frame(height: showDetailWithAnima ? Config.mainHeight.get()*0.3 : 0)
+                    .frame(height: showDetailWithAnima ? Constant.mainHeight*0.3 : 0)
             }
             if !showDetail {
                 ArrowView()
@@ -135,9 +135,9 @@ struct DetailValueView: View {
         case .txt:
                 VStack {
                     if let textValue = fish.textPreview {
-                        Text(textValue.prefix(Config.textFishDetailPreviewLength.get()))
+                        Text(textValue.prefix(Config.textFishDetailPreviewLength))
                             .font(.callout)
-                        if textValue.count > Config.textFishDetailPreviewLength.get() {
+                        if textValue.count > Config.textFishDetailPreviewLength {
                             Text("...")
                                 .font(.callout)
                                 .bold()
@@ -230,7 +230,7 @@ struct DetailItemView: View {
                 Text(itemValue)
                     .font(.system(.body, design: .monospaced))
             }
-            .frame(height: Config.fishDetailItemHeight.get())
+            .frame(height: Constant.fishDetailItemHeight)
         }
     }
     
@@ -253,7 +253,7 @@ struct ArrowView: View {
     var body: some View {
         ArrowShap()
             .stroke(.gray, lineWidth: 2)
-            .frame(width: Config.mainWidth.get()*0.15, height: 10)
+            .frame(width: Constant.mainWidth*0.15, height: 10)
             .background(Color.gray.opacity(0.01))
             .offset(y: isHovered ? 0 : 5)
             .onHover { isHovered in

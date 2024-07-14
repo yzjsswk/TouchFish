@@ -14,7 +14,7 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            Config.mainBackgroundColor.get().color
+            Constant.mainBackgroundColor.color
             VStack {
                 CommandBarView(commandText: $commandText, commandCell: $commandCell)
                 if let activeRecipeBundleId = activeRecipeBundleId {

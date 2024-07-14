@@ -21,7 +21,7 @@ struct FishRepositoryView: View {
                     description: editingFish.description,
                     tags: editingFish.tags
                 )
-                .frame(width: Config.mainWidth.get() - 30)
+                .frame(width: Constant.mainWidth - 30)
             } else {
                 FishListView(
                     fishList: fishs.values.sorted(by: {
@@ -39,10 +39,10 @@ struct FishRepositoryView: View {
                     isEditing: $isEditing,
                     selectedFishIdentity: $selectedFishIdentity
                 )
-                .frame(width: (Config.mainWidth.get() - 30)/2)
+                .frame(width: (Constant.mainWidth - 30)/2)
                 VStack {
                     FishDetailView(fishs: fishs, selectedFishIdentity: $selectedFishIdentity)
-                        .frame(width: (Config.mainWidth.get() - 30)/2)
+                        .frame(width: (Constant.mainWidth - 30)/2)
                 }
             }
         }

@@ -24,7 +24,7 @@ struct FishListItemView: View {
                 .scaledToFit()
                 .foregroundColor(isSelected ? Color.white: fish.fishIconColor)
             }
-            .frame(width: Config.fishItemIconWidth.get())
+            .frame(width: Constant.fishItemIconWidth)
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     if fish.isMarked {
@@ -112,12 +112,12 @@ struct FishListItemView: View {
                 }
             }
         }
-        .frame(maxWidth: Config.mainWidth.get())
+        .frame(maxWidth: Constant.mainWidth)
         .padding(5)
-        .background(isSelected ? Config.selectedItemBackgroundColor.get().color : Config.mainBackgroundColor.get().color)
+        .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.mainBackgroundColor.color)
 //        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
         .cornerRadius(5)
-        .frame(width: (Config.mainWidth.get() - 30)/2, height: isHovering ? Config.fishItemHeight.get()+20 : Config.fishItemHeight.get())
+        .frame(width: (Constant.mainWidth-30)/2, height: isHovering ? Constant.fishItemHeight+20 : Constant.fishItemHeight)
         .onTapGesture(count: 1) {
             fish.copyToClipboard()
             TouchFishApp.deactivate()

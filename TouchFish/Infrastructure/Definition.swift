@@ -3,6 +3,29 @@ import CryptoKit
 import SwiftUI
 import Cocoa
 
+struct Constant {
+    
+    static let mainWidth: CGFloat = 800
+    static let mainHeight: CGFloat = 600
+    static let commandBarHeight: CGFloat = 40
+    static let commandFieldHeight: CGFloat = 28
+    static let userDefinedRecipeItemHeight: CGFloat = 50
+    static let recipeItemHeight: CGFloat = 40
+    static let recipeItemSelectedHeight: CGFloat = 55
+    static let fishItemHeight: CGFloat = 24
+    static let fishItemIconWidth: CGFloat = 20
+    static let fishItemPreviewLength: CGFloat = 40
+    static let fishDetailItemHeight: CGFloat = 10
+    static let mainBackgroundColor: String = "ECEEF1"
+    static let commandBarBackgroundColor: String = "D8D8DB"
+    static let selectedItemBackgroundColor: String = "502A70"
+    static let commandFieldBackgroundColor: String = "282A36"
+    static let commandFieldInsertionPointColor: String = "F8F8F2"
+    static let internalRecipeItemColor: String = "D8D8DB"
+    static let userDefinedRecipeDefaultIemColor: String = "D8D8DB"
+    
+}
+
 struct Functions {
     
     static func getDataFromClipboard() -> (FishType, Data, Any)? {

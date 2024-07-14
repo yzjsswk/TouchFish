@@ -7,8 +7,8 @@ class MainWindow: NSPanel {
             contentRect: NSRect(
                 x: 0,
                 y: 0,
-                width: Config.mainWidth.get(),
-                height: Config.mainHeight.get()
+                width: Constant.mainWidth,
+                height: Constant.mainHeight
             ),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,

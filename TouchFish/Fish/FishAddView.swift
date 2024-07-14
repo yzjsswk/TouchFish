@@ -68,8 +68,8 @@ struct FishAddView: View {
                 let urls = panel.urls.sorted {$0.path < $1.path}
                 for url in urls {
                     if let fileSize = Functions.getFileSize(atPath: url.path) {
-                        if fileSize > Config.maxDataSizeAddFish.get() {
-                            Log.warning("select file to add fish - skip a file: size out of limited, url=\(url.path), size=\(fileSize), limited=\(Config.maxDataSizeAddFish.get())")
+                        if fileSize > Config.maxDataSizeAddFish {
+                            Log.warning("select file to add fish - skip a file: size out of limited, url=\(url.path), size=\(fileSize), limited=\(Config.maxDataSizeAddFish)")
                             continue
                         }
                         var addInfo = AddInfo(fileSize: Int(fileSize))
@@ -143,7 +143,7 @@ struct AddInfoView: View {
                         Text(type.rawValue)
                     }
                 }
-                .frame(width: Config.mainWidth.get()*0.1)
+                .frame(width: Constant.mainWidth*0.1)
                 .pickerStyle(.menu)
             }
             HStack(spacing: 10) {
@@ -179,7 +179,7 @@ struct AddInfoView: View {
                 }
                 .background(Color.white)
                 .cornerRadius(5)
-                .frame(height: Config.mainWidth.get()*0.3)
+                .frame(height: Constant.mainWidth*0.3)
 
         }
         .onAppear {

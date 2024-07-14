@@ -19,7 +19,7 @@ struct CommandBarView: View {
                             GeometryReader { geometry in
                                 Rectangle()
                                     .cornerRadius(5)
-                                    .foregroundColor(Config.selectedItemBackgroundColor.get().color)
+                                    .foregroundColor(Constant.selectedItemBackgroundColor.color)
                                     .frame(width: geometry.size.width+5, height: geometry.size.height+8)
                                     .offset(x: -2.5, y: -4)
                             }
@@ -30,7 +30,7 @@ struct CommandBarView: View {
                 }
                 ZStack {
                     CommandField(commandText: $commandText)
-                        .frame(height: Config.commandFieldHeight.get())
+                        .frame(height: Constant.commandFieldHeight)
                         .offset(y: 2)
                         .focused($isFocused)
                     if commandText.count == 0 {
@@ -44,9 +44,9 @@ struct CommandBarView: View {
                 }
             }
             .padding([.leading], 6)
-            .frame(height: Config.commandBarHeight.get())
+            .frame(height: Constant.commandBarHeight)
         }
-        .background(Config.commandBarBackgroundColor.get().color)
+        .background(Constant.commandBarBackgroundColor.color)
         .cornerRadius(10)
         .padding(10)
         .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
