@@ -16,7 +16,7 @@ struct Configuration: Codable {
             let configData = try Data(contentsOf: TouchFishApp.configPath)
             return try JSONDecoder().decode(Configuration.self, from: configData)
         } catch {
-            Log.warning("read config - use default configuration: read config file failed, path=\(TouchFishApp.configPath.path), err=\(error)")
+            Log.error("read config - use default configuration: read config file failed, path=\(TouchFishApp.configPath.path), err=\(error)")
             return Configuration()
         }
     }
@@ -26,7 +26,7 @@ struct Configuration: Codable {
             try JSONEncoder().encode(self).write(to: TouchFishApp.configPath)
             return true
         } catch {
-            Log.warning("save config - failed, err=\(error)")
+            Log.error("save config - failed, err=\(error)")
             return false
         }
     }
@@ -34,10 +34,15 @@ struct Configuration: Codable {
     // configurations
     
     // basic
-    enum TFLanguage: String, Codable, CaseIterable {
-        case english
+    enum TFLanguage: String, Codable, CaseIterable, Identifiable {
+        
+        case English
+        case Chinese
+        
+        var id: String { self.rawValue }
+        
     }
-    var language: TFLanguage = .english
+    var language: TFLanguage = .English
     var appActiveKeyShortcut = KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown])
     
     // data service

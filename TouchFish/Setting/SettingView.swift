@@ -1,9 +1,10 @@
 import SwiftUI
 
-enum SettingViewTab: CaseIterable {
+enum SettingTab: CaseIterable {
     
     case basic
     case dataService
+    case fishRespository
     
     var tabName: String {
         switch self {
@@ -11,6 +12,8 @@ enum SettingViewTab: CaseIterable {
             return "Basic"
         case .dataService: 
             return "Data Service"
+        case .fishRespository:
+            return "Fish Respository"
         }
     }
     
@@ -18,92 +21,106 @@ enum SettingViewTab: CaseIterable {
 
 struct SettingView: View {
     
-    @State var selectedTab: SettingViewTab = .basic
-    
-    @State var language: String = Config.language.rawValue
-    @State var dataServiceConfigs: [String:Configuration.DataServiceConfiguration] = Config.dataServiceConfigs
-    @State var enableDataServiceConfigName: String = Config.enableDataServiceConfigName
-    
-    @State var saveMessage = ""
+    @State var tempSetting = Configuration.read()
+    @State var selectedTab: SettingTab = .basic
     
     var body: some View {
         VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                Picker("", selection: $selectedTab) {
-                    ForEach(SettingViewTab.allCases, id:\.self) { tab in
-                        Text(tab.tabName)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: Constant.mainWidth-30)
-            }
-            ScrollView(showsIndicators: false) {
-                switch selectedTab {
-                case .basic:
-                    VStack(alignment: .leading, spacing: 40) {
-                        Picker("Language", selection: $language) {
-                            ForEach(Configuration.TFLanguage.allCases, id:\.rawValue) { lan in
-                                Text(lan.rawValue)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .frame(width: 200)
-                        HStack {
-                            Text("Call Application KeyBoard ShortCut")
-                            ZStack {
-                                Constant.commandBarBackgroundColor.color
-                                HStack(spacing: 2) {
-                                    Image(systemName: "option")
-                                    Image(systemName: "space")
-                                }
-                            }
-                            .frame(width: 50)
-                            .padding(.horizontal, 5)
-                        }
-                        HStack {
-                            Text("Call Fish Respository KeyBoard ShortCut")
-                            ZStack {
-                                Constant.commandBarBackgroundColor.color
-                                HStack(spacing: 2) {
-                                    Image(systemName: "command")
-                                    Image(systemName: "option")
-                                    Image(systemName: "v.square")
-                                }
-                            }
-                            .frame(width: 50)
-                            .padding(.horizontal, 5)
+            HStack {
+                SettingTabView(selectedTab: $selectedTab)
+                    .frame(width: Constant.mainWidth*0.25)
+                Divider()
+                VStack {
+                    ScrollView(showsIndicators: false) {
+                        switch selectedTab {
+                        case .basic:
+                            BasicSettingView(tempSetting: $tempSetting)
+                        case .dataService:
+                            DataServiceSettingView(tempSetting: $tempSetting)
+                        case .fishRespository:
+                            FishRepositorySettingView(tempSetting: $tempSetting)
                         }
                     }
-                    .padding()
-                case .dataService:
-                    DataServiceSettingView(dataServiceConfigs: $dataServiceConfigs, enableDataServiceConfigName: $enableDataServiceConfigName)
                 }
+                .frame(width: Constant.mainWidth*0.7)
             }
             HStack {
-                Button(action: {
-                    // todo
-                }) {
-                    Text("Save To Fish Repository")
-                }
-                .frame(width: 200)
                 Spacer()
                 Button(action: {
-                    Config.dataServiceConfigs = dataServiceConfigs
-                    Config.enableDataServiceConfigName = enableDataServiceConfigName
-                    let ok = Config.save()
+                    tempSetting = Configuration.read()
+                }) {
+                    Text("Undo Changes")
+                        .font(.title3)
+                        .padding(3)
+                }
+                Spacer()
+                Button(action: {
+                    tempSetting = Configuration()
+                }) {
+                    Text("Set To Default")
+                        .font(.title3)
+                        .padding(3)
+                }
+                Spacer()
+                Button(action: {
+                    let ok = tempSetting.save()
                     if ok {
-                        saveMessage = "success"
+                        Config = Configuration.read()
+                        RecipeManager.goToRecipe(recipeId: nil)
                     } else {
-                        saveMessage = "save failed"
+                        Functions.doAlert(type: .warning, title: "Warning", message: "Save Failed")
                     }
                 }) {
-                    Text("Apply")
+                    Text("Apply Changes")
+                        .font(.title3)
+                        .bold()
+                        .padding(3)
                 }
-                .frame(width: 100)
-                Text(saveMessage)
+                Spacer()
             }
-            .frame(width: Constant.mainWidth*0.6)
             .padding(5)
+        }
+    }
+    
+}
+
+struct SettingTabView: View {
+    
+    struct SettingTabItemView: View {
+        
+        var title: String
+        var isSelected: Bool
+        
+        @State var isHovered: Bool = false
+        
+        var body: some View {
+            ZStack {
+                isSelected ? Constant.commandBarBackgroundColor.color : Constant.mainBackgroundColor.color
+                Text(title)
+                    .font(isHovered && !isSelected ? .title2 : .title3)
+                    .bold()
+                    .padding()
+            }
+            .cornerRadius(5)
+            .onHover { isHovered in
+                self.isHovered = isHovered
+            }
+        }
+        
+    }
+    
+    @Binding var selectedTab: SettingTab
+    
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            
+            ForEach(SettingTab.allCases, id:\.self) { tab in
+                SettingTabItemView(title: tab.tabName, isSelected: selectedTab == tab)
+                    .onTapGesture {
+                        selectedTab = tab
+                    }
+            }
+            
         }
     }
     

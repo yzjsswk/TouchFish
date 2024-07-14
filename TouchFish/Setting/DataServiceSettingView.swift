@@ -2,38 +2,37 @@ import SwiftUI
 
 struct DataServiceSettingView: View {
     
-    @Binding var dataServiceConfigs: [String:Configuration.DataServiceConfiguration]
-    @Binding var enableDataServiceConfigName: String
+    @Binding var tempSetting: Configuration
     
     var body: some View {
         VStack {
             HStack {
                 Text("Connection Info")
-                    .font(.title2)
+                    .font(.title3)
                     .bold()
-                DataServiceConfigAddView(dataServiceConfigs: $dataServiceConfigs)
+                DataServiceConfigAddView(dataServiceConfigs: $tempSetting.dataServiceConfigs)
                 Spacer()
             }
             .padding()
-            if let enableConfig = dataServiceConfigs[enableDataServiceConfigName] {
+            if let enableConfig = tempSetting.dataServiceConfigs[tempSetting.enableDataServiceConfigName] {
                 DataServiceConfigItemView(
                     isEnabled: true,
-                    name: enableDataServiceConfigName,
+                    name: tempSetting.enableDataServiceConfigName,
                     host: enableConfig.host,
                     port: enableConfig.port,
-                    dataServiceConfigs: $dataServiceConfigs,
-                    enableDataServiceConfigName: $enableDataServiceConfigName
+                    dataServiceConfigs: $tempSetting.dataServiceConfigs,
+                    enableDataServiceConfigName: $tempSetting.enableDataServiceConfigName
                 )
                 .padding(.horizontal)
             }
-            ForEach(Array(dataServiceConfigs).sorted(by: { $0.key < $1.key } ), id:\.key) { config in
-                if config.key != enableDataServiceConfigName {
+            ForEach(Array(tempSetting.dataServiceConfigs).sorted(by: { $0.key < $1.key } ), id:\.key) { config in
+                if config.key != tempSetting.enableDataServiceConfigName {
                     DataServiceConfigItemView(
                         name: config.key,
                         host: config.value.host,
                         port: config.value.port,
-                        dataServiceConfigs: $dataServiceConfigs,
-                        enableDataServiceConfigName: $enableDataServiceConfigName
+                        dataServiceConfigs: $tempSetting.dataServiceConfigs,
+                        enableDataServiceConfigName: $tempSetting.enableDataServiceConfigName
                     )
                     .padding(.horizontal)
                 }

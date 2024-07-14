@@ -258,7 +258,4 @@ extension Notification.Name {
     static let RecipeCommited = Notification.Name("RecipeCommited")
 }
 
-enum CustomError: Error {
-    case exampleError
-}
 

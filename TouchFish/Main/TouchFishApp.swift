@@ -3,9 +3,10 @@ import SwiftUI
 class TouchFishApp {
     
     /**
-         - log/: record log
-         - preview/: preview of fishdata
-         - resource/: downloaded fishdata
+        Application Support Path:
+         - /log: log
+         - /preview: preview of fish
+         - /resource: downloaded fishdata
          - config.json: user configuration
      */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
