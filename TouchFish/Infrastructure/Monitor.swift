@@ -4,22 +4,22 @@ import Carbon.HIToolbox.Events
 
 let Monitor = MonitorManager.self
 
-enum MonitorType {
-    case hideMainWindowWhenClickOutside
-    case showOrHideMainWindowWhenKeyShortCutPressed
-    case openFishRepositoryWhenKeyShortCutPressed
-    case localKeyBoardPressedAsyncEvent
-    case saveFishWhenClipboardChanges
-}
-
-enum ClipboardListenerState {
-    case unStarted // app just run and listener function has not start running
-    case stop // function has been running, but stop working
-    case ready // function has been running, but waiting for clipboard data change once (should ignore the first data)
-    case running // normal running, works whenever clipbaord data changes
-}
-
 struct MonitorManager {
+    
+    enum MonitorType {
+        case hideMainWindowWhenClickOutside
+        case showOrHideMainWindowWhenKeyShortCutPressed
+        case openFishRepositoryWhenKeyShortCutPressed
+        case localKeyBoardPressedAsyncEvent
+        case saveFishWhenClipboardChanges
+    }
+
+    enum ClipboardListenerState {
+        case unStarted // app just run and listener function has not start running
+        case stop // function has been running, but stop working
+        case ready // function has been running, but waiting for clipboard data change once (should ignore the first data)
+        case running // normal running, works whenever clipbaord data changes
+    }
     
     static var localKeyBoardPressedAsyncEventMonitor: Any?
     static var hideMainWindowWhenClickOutsideMonitor: Any?

@@ -68,8 +68,8 @@ struct FishAddView: View {
                 let urls = panel.urls.sorted {$0.path < $1.path}
                 for url in urls {
                     if let fileSize = Functions.getFileSize(atPath: url.path) {
-                        if fileSize > Config.maxDataSizeAddFish {
-                            Log.warning("select file to add fish - skip a file: size out of limited, url=\(url.path), size=\(fileSize), limited=\(Config.maxDataSizeAddFish)")
+                        if fileSize > Constant.maxDataSizeAddFish {
+                            Log.warning("select file to add fish - skip a file: size out of limited, url=\(url.path), size=\(fileSize), limited=\(Constant.maxDataSizeAddFish)")
                             continue
                         }
                         var addInfo = AddInfo(fileSize: Int(fileSize))

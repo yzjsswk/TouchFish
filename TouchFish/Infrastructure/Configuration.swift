@@ -62,7 +62,7 @@ struct Configuration: Codable {
     var maxResourceSizeAutoFetch = 1024 * 1024 * 50  // 50MB
     var autoImportedFromClipboard = true
     var fastPasteToFrontmostApplication = false
-    // add fish
-    var maxDataSizeAddFish = 1024 * 1024 * 1024 // 1GB
+    var autoRemoveFishEnable = true
+    var autoRemoveFishPastHours = 3 * 24
 
 }

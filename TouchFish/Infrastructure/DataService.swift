@@ -50,6 +50,16 @@ struct NoDataResp: Codable {
     
 }
 
+struct ClearFishResp: Codable {
+    
+    let clearedIdentitys: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case clearedIdentitys = "cleared_identitys"
+    }
+    
+}
+
 struct StatsResp: Codable {
     let totalCount: Int
     let type: [String: Int]
@@ -89,7 +99,6 @@ struct FishResp: Codable {
     let identity: String
     let type: String
     let byteCount: Int
-//    let preview: Data?
     let description: String
     let tags: [[String]]
     let isMarked: Bool
@@ -103,7 +112,6 @@ struct FishResp: Codable {
         case identity = "identity"
         case type = "type"
         case byteCount = "byte_count"
-//        case preview = "preview"
         case description = "description"
         case tags = "tags"
         case isMarked = "is_marked"
@@ -276,6 +284,14 @@ struct DataService {
     static func pinFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
         let url = DataService.urlPrefix + "/fish/pin"
         let para: [String:String] = ["identity": identity]
+        return await AF.request(
+            url, method: .post, parameters: para
+        ).serializingDecodable(DataServiceResponse.self).result
+    }
+    
+    static func clearFish(secondDelta: Int) async -> Result<DataServiceResponse<ClearFishResp>, AFError> {
+        let url = DataService.urlPrefix + "/fish/clear"
+        let para: [String:String] = ["second_delta": String(secondDelta)]
         return await AF.request(
             url, method: .post, parameters: para
         ).serializingDecodable(DataServiceResponse.self).result

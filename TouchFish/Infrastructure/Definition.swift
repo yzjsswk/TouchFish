@@ -16,6 +16,7 @@ struct Constant {
     static let fishItemIconWidth: CGFloat = 20
     static let fishItemPreviewLength: CGFloat = 40
     static let fishDetailItemHeight: CGFloat = 10
+    
     static let mainBackgroundColor: String = "ECEEF1"
     static let commandBarBackgroundColor: String = "D8D8DB"
     static let selectedItemBackgroundColor: String = "502A70"
@@ -23,6 +24,8 @@ struct Constant {
     static let commandFieldInsertionPointColor: String = "F8F8F2"
     static let internalRecipeItemColor: String = "D8D8DB"
     static let userDefinedRecipeDefaultIemColor: String = "D8D8DB"
+    
+    static let maxDataSizeAddFish = 1024 * 1024 * 1024 // 1GB
     
 }
 
