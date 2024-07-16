@@ -46,7 +46,7 @@ struct MessageCenter {
         return messages.filter({ !$0.hasRead }).count
     }
     
-    static func send(level: Message.MessageLevel, content: String, title: String? = nil, source: String? = nil) {
+    static func send(level: Message.MessageLevel, title: String? = nil, content: String, source: String? = nil) {
         messages.append(
             Message(
                 uid: UUID().uuidString,

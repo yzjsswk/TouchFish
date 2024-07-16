@@ -43,6 +43,7 @@ struct MessageCenterView: View {
                             .padding(3)
                             .foregroundColor(MessageCenter.showCount >= MessageCenter.messages.count ? .gray : .black)
                     }
+                    .padding()
                 }
             }
         }
@@ -81,15 +82,34 @@ struct MessageView: View {
             Image(systemName: "circle.fill")
                 .foregroundColor(message.hasRead ? Constant.commandBarBackgroundColor.color : Constant.unreadMessageTipColor.color)
                 .padding(.leading, 10)
-            HStack {
+            HStack(spacing: 5) {
+                if let source = message.source, let icon = RecipeManager.recipes[source]?.icon {
+                    HStack {
+                        icon
+                        .resizable()
+                        .scaledToFit()
+                    }
+                    .frame(width: 60)
+                } else if let appIcon = NSImage(named: NSImage.applicationIconName) {
+                    HStack {
+                        Image(nsImage: appIcon)
+                        .resizable()
+                        .scaledToFit()
+                    }
+                    .frame(width: 60)
+                }
                 VStack {
                     HStack {
                         Text(message.time)
                             .font(.custom("Menlo", size: 14))
                             .bold()
-                            .padding(8)
+                            .padding(.vertical, 8)
                         if let title = message.title {
-                            Text(title)
+                            Text("- \(title)")
+                                .font(.custom("Menlo", size: 13))
+                                .bold()
+                                .padding(.trailing, 8)
+                                .padding(.vertical, 8)
                         }
                         Spacer()
                     }
@@ -97,7 +117,6 @@ struct MessageView: View {
                         Text(message.content)
                             .font(.custom("Menlo", size: 12))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 8)
                             .padding(.bottom, 8)
                         Spacer()
                     }

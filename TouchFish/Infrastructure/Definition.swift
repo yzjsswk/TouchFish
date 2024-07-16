@@ -193,9 +193,9 @@ struct Functions {
     
     static func sendDataServiceErrorMessage() {
         if let config = Config.enableDataServiceConfig {
-            MessageCenter.send(level: .error, content: "request the data service(host=\(config.host), port=\(config.port)) fail, please check [data service]-[connection info] in setting and ensure the data service running normally")
+            MessageCenter.send(level: .error, title: "Data Service Error", content: "request the data service(host=\(config.host), port=\(config.port)) fail, please check [data service]-[connection info] in setting and ensure the data service running normally")
         } else {
-            MessageCenter.send(level: .error, content: "no valid data service configuration, please check [data service]-[connection info] in setting")
+            MessageCenter.send(level: .error, title: "Data Service Error", content: "no valid data service configuration, please check [data service]-[connection info] in setting")
         }
     }
     
