@@ -64,7 +64,7 @@ struct SettingView: View {
                 Spacer()
                 Button(action: {
                     let ok = tempSetting.save()
-                    if ok {
+                    if false {
                         Config = Configuration.read()
                         RecipeManager.goToRecipe(recipeId: nil)
                     } else {

@@ -45,8 +45,8 @@ struct Functions {
                     return (.tiff, data, img)
                 }
             }
-            Log.warning("data type not supported from clipboard")
-            Log.verbose(types)
+            // reach here would repeat logging
+//            Log.warning("get data from clipboard - return nil: data type not supported, types=\(types)")
         }
         return nil
     }
@@ -184,6 +184,10 @@ struct Functions {
         alert.alertStyle = type
         alert.messageText = title
         alert.informativeText = message
+        if let appIcon = NSImage(named: NSImage.applicationIconName) {
+            Log.debug("here")
+            alert.icon = appIcon
+        }
         alert.runModal()
     }
     
