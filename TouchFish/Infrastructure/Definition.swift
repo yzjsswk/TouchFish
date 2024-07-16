@@ -16,6 +16,7 @@ struct Constant {
     static let fishItemIconWidth: CGFloat = 20
     static let fishItemPreviewLength: CGFloat = 40
     static let fishDetailItemHeight: CGFloat = 10
+    static let messageItemHeight: CGFloat = 60
     
     static let mainBackgroundColor: String = "ECEEF1"
     static let commandBarBackgroundColor: String = "D8D8DB"
@@ -24,6 +25,8 @@ struct Constant {
     static let commandFieldInsertionPointColor: String = "F8F8F2"
     static let internalRecipeItemColor: String = "D8D8DB"
     static let userDefinedRecipeDefaultIemColor: String = "D8D8DB"
+    static let errorMessageColor: String = "DA5448"
+    static let unreadMessageTipColor: String = "E2503F"
     
     static let maxDataSizeAddFish = 1024 * 1024 * 1024 // 1GB
     
@@ -184,6 +187,22 @@ struct Functions {
         alert.runModal()
     }
     
+    static func sendDataServiceErrorMessage() {
+        if let config = Config.enableDataServiceConfig {
+            MessageCenter.send(level: .error, content: "request the data service(host=\(config.host), port=\(config.port)) fail, please check [data service]-[connection info] in setting and ensure the data service running normally")
+        } else {
+            MessageCenter.send(level: .error, content: "no valid data service configuration, please check [data service]-[connection info] in setting")
+        }
+    }
+    
+    static func getCurrentDateString(format: String) -> String {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        let dateString = dateFormatter.string(from: currentDate)
+        return dateString
+    }
+    
 }
 
 extension String {
@@ -259,6 +278,7 @@ extension Notification.Name {
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")
     static let UserDefinedRecipeViewChanged = Notification.Name("UserDefinedRecipeViewChanged")
     static let RecipeCommited = Notification.Name("RecipeCommited")
+    static let MessageCenterShouldUpdate = Notification.Name("MessageCenterShouldUpdate")
 }
 
 

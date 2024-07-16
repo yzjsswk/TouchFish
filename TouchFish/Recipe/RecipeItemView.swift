@@ -34,6 +34,17 @@ struct RecipeItemView: View {
                 }
             }
             Spacer()
+            if recipe.bundleId == "com.touchfish.MessageCenter", MessageCenter.unreadCount > 0 {
+                ZStack {
+                    Image(systemName: "circle.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(Constant.unreadMessageTipColor.color)
+                    Text(String(MessageCenter.unreadCount))
+                        .font(.custom("Menlo", size: 12))
+                        .foregroundColor(.white)
+                }
+            }
         }
         .padding(5)
         .frame(width: Constant.mainWidth-30, height: isSelected ? Constant.recipeItemSelectedHeight : Constant.recipeItemHeight)

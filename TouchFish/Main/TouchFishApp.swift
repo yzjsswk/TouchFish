@@ -4,16 +4,18 @@ class TouchFishApp {
     
     /**
         Application Support Path:
-         - /log: log
-         - /preview: preview of fish
-         - /resource: downloaded fishdata
-         - config.json: user configuration
+            - /log: log
+            - /preview: preview of fish
+            - /resource: downloaded fishdata
+            - config.json: user configuration
+            - message: messages from message center
      */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
     static let logPath = TouchFishApp.appSupportPath.appendingPathComponent("log")
     static let resourcePath = TouchFishApp.appSupportPath.appendingPathComponent("resource")
     static let previewPath = TouchFishApp.appSupportPath.appendingPathComponent("preview")
     static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
+    static let messagePath = TouchFishApp.appSupportPath.appendingPathComponent("message")
     
     static var statusBar: StatusBar!
     static var mainWindow: MainWindow!
@@ -21,6 +23,7 @@ class TouchFishApp {
     static func start() {
         TouchFishApp.createAppSupportPathIfNotExists()
         TFLogger.prepare()
+        MessageCenter.readFromFile()
         Cache.start()
         Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)
         Monitor.start(type: .openFishRepositoryWhenKeyShortCutPressed)

@@ -31,6 +31,7 @@ struct Storage {
             return resp.getFish()
         case .failure(let err):
             Log.error("Storage.searchFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return nil
         }
     }
@@ -61,6 +62,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.addFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -87,6 +89,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.modifyFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -109,6 +112,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.removeFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -131,6 +135,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.markFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -153,6 +158,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.unMarkFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -175,6 +181,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.lockFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -197,6 +204,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.unLockFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }
@@ -219,6 +227,7 @@ struct Storage {
             return resp.status
         case .failure(let err):
             Log.error("Storage.pinFish - fail: request data service fail, err=\(err)")
+            Functions.sendDataServiceErrorMessage()
             return .fail
         }
     }

@@ -28,9 +28,16 @@ struct MainView: View {
                     case "com.touchfish.Setting":
                         SettingView()
                     case "com.touchfish.MessageCenter":
-                        EmptyView()
+                        MessageCenterView()
                     case "com.touchfish.RecipeStore":
-                        EmptyView()
+                        VStack {
+                            Spacer()
+                            Text("Not   Avaliable")
+                                .foregroundStyle(.gray)
+                                .font(.largeTitle)
+                                .offset(x:0, y:-60)
+                            Spacer()
+                        }
                     default:
                         RecipeView(recipeList: $recipeList, activeRecipeBundleId: activeRecipeBundleId)
                     }

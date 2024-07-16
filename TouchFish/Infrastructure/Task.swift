@@ -17,6 +17,7 @@ struct TFTask {
                         case .success:
                             if let clearedIdentitys = resp.data?.clearedIdentitys {
                                 Log.info("auto remove fish - remove \(clearedIdentitys.count) fish, identitys=\(clearedIdentitys)")
+                                MessageCenter.send(level: .info, content: "remove \(clearedIdentitys.count) fish, identitys=\(clearedIdentitys)")
                                 Cache.refresh()
                             } else {
                                 Log.warning("auto remove fish - cleared fish identitys may lose: resp.status=success but resp.data=nil")

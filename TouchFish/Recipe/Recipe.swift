@@ -405,6 +405,9 @@ struct RecipeManager {
             name: "Message Center",
             icon: Image(systemName: "ellipsis.message"),
             command: "msg",
+            parameters: [
+                Recipe.Parameter(name: "level")
+            ],
             color: Constant.internalRecipeItemColor.color,
             order: -300
         ),
