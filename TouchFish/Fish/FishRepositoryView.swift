@@ -49,6 +49,7 @@ struct FishRepositoryView: View {
         .padding(.horizontal, 5)
         .onAppear() {
             isEditing = false
+            Cache.refresh()
         }
         .onReceive(NotificationCenter.default.publisher(for: .CommandBarEndEditing)) { notification in
             if let commandText = notification.userInfo?["commandText"] as? String, !isEditing {

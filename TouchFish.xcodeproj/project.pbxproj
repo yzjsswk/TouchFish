@@ -33,7 +33,6 @@
 		99AC05F72BB2BD720046E8C5 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D02BB2BD720046E8C5 /* Storage.swift */; };
 		99AC05F82BB2BD720046E8C5 /* CommandBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */; };
 		99AC05F92BB2BD720046E8C5 /* CommandField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D32BB2BD720046E8C5 /* CommandField.swift */; };
-		99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */; };
 		99AC05FB2BB2BD720046E8C5 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D52BB2BD720046E8C5 /* CommandManager.swift */; };
 		99AC05FD2BB2BD720046E8C5 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D82BB2BD720046E8C5 /* Recipe.swift */; };
 		99AC05FE2BB2BD720046E8C5 /* RecipeItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05D92BB2BD720046E8C5 /* RecipeItemView.swift */; };
@@ -79,7 +78,6 @@
 		99AC05D02BB2BD720046E8C5 /* Storage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandBarView.swift; sourceTree = "<group>"; };
 		99AC05D32BB2BD720046E8C5 /* CommandField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandField.swift; sourceTree = "<group>"; };
-		99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandFieldViewController.swift; sourceTree = "<group>"; };
 		99AC05D52BB2BD720046E8C5 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
 		99AC05D82BB2BD720046E8C5 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		99AC05D92BB2BD720046E8C5 /* RecipeItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeItemView.swift; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 			children = (
 				99AC05D22BB2BD720046E8C5 /* CommandBarView.swift */,
 				99AC05D32BB2BD720046E8C5 /* CommandField.swift */,
-				99AC05D42BB2BD720046E8C5 /* CommandFieldViewController.swift */,
 				99AC05D52BB2BD720046E8C5 /* CommandManager.swift */,
 			);
 			path = CommandBar;
@@ -332,7 +329,6 @@
 				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
 				99C614FC2C43F56500A99567 /* FishRepositorySettingView.swift in Sources */,
 				995E082A2C17242C00659F85 /* SettingView.swift in Sources */,
-				99AC05FA2BB2BD720046E8C5 /* CommandFieldViewController.swift in Sources */,
 				99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */,
 				99AC06002BB2BD720046E8C5 /* RecipeView.swift in Sources */,
 				99AC05E52BB2BD720046E8C5 /* FishEditView.swift in Sources */,

@@ -26,7 +26,6 @@ class StatusBar {
             keyEquivalent: ""
         )
         for menuItem in [openActionItem, quitActionItem] {
-            // The target should be self, otherwise, actions won't be executed.
             menuItem.target = self
             actionMenu.addItem(menuItem)
         }

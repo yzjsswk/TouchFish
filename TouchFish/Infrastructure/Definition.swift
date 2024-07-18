@@ -227,7 +227,7 @@ struct Functions {
 }
 
 extension String {
-    // This lets you subscript a String.
+
     subscript(idx: Int) -> String {
         String(self[index(startIndex, offsetBy: idx)])
     }

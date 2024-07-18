@@ -66,6 +66,7 @@ struct Cache {
             let result = await DataService.statistic()
             guard case .success(let resp) = result else {
                 Log.warning("refresh statistic - fail: request data service fail")
+                Functions.sendDataServiceErrorMessage()
                 Log.verbose(result)
                 return
             }
@@ -99,6 +100,7 @@ struct Cache {
         guard case .success(let resp) = result else {
             fishCache.removeAll()
             Log.warning("refresh fish cache - fail: request data service fail")
+//            Functions.sendDataServiceErrorMessage()
             Log.verbose(result)
             return
         }
