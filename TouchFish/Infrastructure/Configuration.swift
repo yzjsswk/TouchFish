@@ -43,7 +43,7 @@ struct Configuration: Codable {
     }
     var language: TFLanguage = .English
     var appActiveKeyShortcut = KeyboardShortcut(keyCode: 49, modifiers: [.option], events: [.keyDown])
-    var recipeDirectorys: [URL] = [URL(fileURLWithPath: "/Users/yzjsswk/WorkSpace/Recipes")]
+    var recipeDirectorys: [URL] = []
     var hideMainWindowWhenClickOutSideEnable = true
     
     // data service

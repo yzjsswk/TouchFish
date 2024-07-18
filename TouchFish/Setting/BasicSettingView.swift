@@ -155,16 +155,22 @@ struct RecipeDirectoryListView: View {
     }
     
     var body: some View {
-        VStack(spacing: 10) {
-            ForEach(tempSetting.recipeDirectorys, id: \.self) { dir in
-                HStack {
-                    Text("\(dir.path) (\(countRecipe(directory: dir)) recipes)")
-                        .font(.custom("Menlo", size: 13))
-                    Spacer()
-                    RecipeDirectoryRemoveButtonView(tempSetting: $tempSetting, dir: dir)
+        if tempSetting.recipeDirectorys.count > 0 {
+            VStack(spacing: 10) {
+                ForEach(tempSetting.recipeDirectorys, id: \.self) { dir in
+                    HStack {
+                        Text("\(dir.path) (\(countRecipe(directory: dir)) recipes)")
+                            .font(.custom("Menlo", size: 13))
+                        Spacer()
+                        RecipeDirectoryRemoveButtonView(tempSetting: $tempSetting, dir: dir)
+                    }
+                    
                 }
-                
             }
+        } else {
+            Text("-- Empty --")
+                .font(.custom("Menlo", size: 13))
+                .foregroundStyle(.gray)
         }
     }
     
