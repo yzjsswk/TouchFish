@@ -2,6 +2,7 @@ import SwiftUI
 
 struct Recipe {
     
+    var location: URL?
     var bundleId: String
     var author: String
     var version: Int
@@ -47,14 +48,15 @@ struct Recipe {
         var color: String?
         var order: Int?
         
-        static func parse(JsonText: String) -> Recipe? {
-            guard let recipeJsonData = JsonText.data(using: .utf8) else {
+        static func parse(recipePath: URL) -> Recipe? {
+            guard let recipeJsonData = try? Data(contentsOf: recipePath) else {
                 return nil
             }
             guard let recipeJson = try? JSONDecoder().decode(RecipeJson.self, from: recipeJsonData) else {
                 return nil
             }
             return Recipe(
+                location: recipePath.deletingLastPathComponent(),
                 bundleId: recipeJson.bundleId,
                 author: recipeJson.author,
                 version: recipeJson.version,
@@ -111,8 +113,8 @@ struct RecipeAction: Codable {
             case .commandBarText:
                 return CommandManager.commandText
             case .file:
-                if let value = value {
-                    return TouchFishApp.previewPath.appendingPathComponent(value).path
+                if let value = value, let location = RecipeManager.activeRecipe?.location {
+                    return location.appendingPathComponent(value).path
                 }
                 return ""
             case .context:
@@ -228,30 +230,27 @@ struct RecipeManager {
     
     static var recipes: [String:Recipe] = [:]
     
-    static func refresh() async {
+    static func refresh() {
         recipes.removeAll()
         for recipe in internalRecipeList {
             recipes[recipe.bundleId] = recipe
         }
-        let res = await Storage.searchFish(tags:[["Recipe"]], pageSize: 1000)
-        if let recipeFishList = res {
-            for recipeFish in recipeFishList {
-                // todo: use resource
-                guard let recipeJsonText = Storage.getTextPreviewByIdentity(recipeFish.identity) else {
-                    Log.warning("load recipe from fish - skip a recipe: Storage.getTextPreviewByIdentity return nil, fish.identity=\(recipeFish.identity)")
+        for dir in Config.recipeDirectorys {
+            for fileURL in Functions.getAllFiles(in: dir) {
+                if !(fileURL.lastPathComponent == "recipe.json") {
                     continue
                 }
-                guard let recipe = Recipe.RecipeJson.parse(JsonText: recipeJsonText) else {
-                    Log.warning("load recipe from fish - skip a recipe: RecipeJson.parse return nil, fish.identity=\(recipeFish.identity)")
+                guard let recipe = Recipe.RecipeJson.parse(recipePath: fileURL) else {
+                    Log.warning("load recipe - ignore a recipe: RecipeJson.parse return nil, path=\(fileURL.path)")
                     continue
                 }
                 if internalRecipeList.map({$0.bundleId}).contains(recipe.bundleId) {
-                    Log.warning("load recipe from fish - skip a recipe: bundledId conflicts with internal recipes, bundleId=\(recipe.bundleId), fish.identity=\(recipeFish.identity)")
+                    Log.warning("load recipe - ignore a recipe: bundledId conflicts with internal recipes, bundleId=\(recipe.bundleId), path=\(fileURL.path)")
                     continue
                 }
                 if let existsRecipe = recipes[recipe.bundleId] {
                     if existsRecipe.version == recipe.version {
-                        Log.warning("load recipe from fish - randomly select version: duplicate version number, bundleId=\(recipe.bundleId), fish.identity=\(recipeFish.identity)")
+                        Log.warning("load recipe - ignore a recipe: duplicate version number, bundleId=\(recipe.bundleId), ignored path = \(fileURL.path)")
                     }
                     if existsRecipe.version < recipe.version {
                         recipes[recipe.bundleId] = recipe
@@ -260,8 +259,6 @@ struct RecipeManager {
                     recipes[recipe.bundleId] = recipe
                 }
             }
-        } else {
-            Log.warning("load recipe from fish - fail: storage.searchFish return nil")
         }
     }
     

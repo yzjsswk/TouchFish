@@ -207,6 +207,23 @@ struct Functions {
         return dateString
     }
     
+    static func getAllFiles(in directory: URL) -> [URL] {
+        var fileURLs: [URL] = []
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+            for fileURL in contents {
+                if fileURL.hasDirectoryPath {
+                    fileURLs.append(contentsOf: getAllFiles(in: fileURL))
+                } else {
+                    fileURLs.append(fileURL)
+                }
+            }
+        } catch {
+            print("get files in dirctory - fail: got contentsOfDirectory fail, err=\(error)")
+        }
+        return fileURLs
+    }
+    
 }
 
 extension String {

@@ -50,7 +50,7 @@ struct Cache {
             await refreshFish()
             await refreshPreview()
             refreshPreviewByType()
-            await RecipeManager.refresh()
+            RecipeManager.refresh()
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .CacheRefreshed, object: nil)
             }
