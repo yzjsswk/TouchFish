@@ -23,7 +23,7 @@ struct MessageCenter {
     static var messages: [Message] = [] {
         didSet {
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .MessageCenterShouldUpdate, object: nil)
+                NotificationCenter.default.post(name: .MessageCenterHasUpdated, object: nil)
             }
         }
     }

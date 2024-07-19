@@ -70,12 +70,6 @@ struct MainView: View {
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
             TouchFishApp.deactivate()
         }
-//        .onAppear {
-//            withAnimation {
-//                fishs = Storage.getFishOfSearchCondition()
-//                recipeList = RecipeManager.orderedRecipeList
-//            }
-//        }
         .onReceive(NotificationCenter.default.publisher(for: .CacheRefreshed)) { _ in
             withAnimation {
                 fishs = Storage.getFishOfSearchCondition()

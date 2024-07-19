@@ -125,6 +125,9 @@ struct RecipeAction: Codable {
                     if value == "port" {
                         return Config.enableDataServiceConfig?.port ?? ""
                     }
+                    if value == "support_path" {
+                        return TouchFishApp.appSupportPath.path
+                    }
                     return ""
                 }
                 return ""
@@ -182,10 +185,27 @@ struct RecipeAction: Codable {
                         NotificationCenter.default.post(name: .UserDefinedRecipeViewChanged, object: nil, userInfo: ["view":view])
                     }
                 }
-                Log.debug("excute shell command: \(cmd), timeCost=\(timeCost)")
+                if let executeResultData = executeResultText?.data(using: .utf8) {
+                    do {
+                        let message = try JSONDecoder().decode(RecipeSendMessageInfo.self, from: executeResultData)
+                        MessageCenter.send(level: message.level, title: message.title, content: message.content, source: message.source)
+                    } catch {
+                        // do nothing
+                    }
+                }
+                Log.debug("excute shell command: \(cmd) \(argments), timeCost=\(timeCost)")
             }
         }
     }
+    
+}
+
+struct RecipeSendMessageInfo: Codable {
+    
+    var level: MessageCenter.Message.MessageLevel
+    var content: String
+    var title: String?
+    var source: String?
     
 }
 
@@ -200,7 +220,8 @@ struct UserDefinedRecipeView: Codable {
         case empty
         case error
         case text
-        case list
+        case list1
+        case list2
     }
     
     struct UserDefinedRecipeViewItem: Codable {

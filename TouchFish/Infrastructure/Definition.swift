@@ -299,7 +299,7 @@ extension Notification.Name {
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")
     static let UserDefinedRecipeViewChanged = Notification.Name("UserDefinedRecipeViewChanged")
     static let RecipeCommited = Notification.Name("RecipeCommited")
-    static let MessageCenterShouldUpdate = Notification.Name("MessageCenterShouldUpdate")
+    static let MessageCenterHasUpdated = Notification.Name("MessageCenterHasUpdated")
 }
 
 

@@ -47,7 +47,7 @@ struct MessageCenterView: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .MessageCenterShouldUpdate)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .MessageCenterHasUpdated)) { _ in
             withAnimation {
                 messages = MessageCenter.shouldShowingMessages
             }

@@ -38,12 +38,20 @@ struct RecipeView: View {
                                    Text(item.title)
                                }
                            }
-                       case .list:
+                       case .list1:
                            ScrollView(showsIndicators: false) {
                                VStack {
                                    ForEach(userDefinedRecipeView.items, id: \.title) { item in
                                        UserDefinedRecipeListItemView(item: item)
                                            .frame(width: Constant.mainWidth-30, height: Constant.userDefinedRecipeItemHeight)
+                                   }
+                               }
+                           }.padding(.vertical)
+                       case .list2:
+                           ScrollView(showsIndicators: false) {
+                               VStack(spacing: 5) {
+                                   ForEach(userDefinedRecipeView.items, id: \.title) { item in
+                                       UserDefinedRecipeListItemView2(item: item)
                                    }
                                }
                            }.padding(.vertical)
@@ -62,7 +70,7 @@ struct RecipeView: View {
                                 .font(.system(.footnote, design: .monospaced))
                             Text("\(timeCost)")
                                 .font(.system(.footnote, design: .monospaced))
-                                .foregroundStyle(timeCost < 100 ? .green : (timeCost < 500 ? .yellow : .red))
+                                .foregroundStyle(timeCost < 200 ? .green : (timeCost < 500 ? .yellow : .red))
                             Text(" ms")
                                 .font(.system(.footnote, design: .monospaced))
                         }
@@ -115,7 +123,8 @@ struct UserDefinedRecipeListItemView: View {
                 (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
                     .resizable()
                     .scaledToFit()
-            }.frame(width: Constant.userDefinedRecipeItemHeight)
+            }
+            .frame(width: Constant.userDefinedRecipeItemHeight)
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
                 .font(.title2)
@@ -129,7 +138,6 @@ struct UserDefinedRecipeListItemView: View {
             }
             Spacer()
         }
-//        .frame(maxWidth: Config.mainWidth)
         .padding(5)
         .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.userDefinedRecipeDefaultIemColor.color)
         .cornerRadius(5)
@@ -143,9 +151,55 @@ struct UserDefinedRecipeListItemView: View {
                 }
             }
         }
-//        .shadow(color: Color.gray.opacity(0.3), radius: 2, x: 0, y: 2)
-//        .onTapGesture(count: 1, perform: action)
     }
     
 }
 
+struct UserDefinedRecipeListItemView2: View {
+    
+    var item: UserDefinedRecipeView.UserDefinedRecipeViewItem
+    
+    @State var isSelected: Bool = false
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            HStack {
+                (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
+                    .resizable()
+                    .scaledToFit()
+            }
+            .frame(width: Constant.userDefinedRecipeItemHeight*(isSelected ? 0.5 : 0.4))
+            .padding(.leading, 5)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                .font(.title3)
+//                    .fontWeight(.bold)
+                .foregroundColor(isSelected ? Color.white: Color.black)
+                if let desc = item.description, isSelected {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        Text(desc)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            Spacer()
+        }
+        .frame(width: Constant.mainWidth-30, height: isSelected ? Constant.userDefinedRecipeItemHeight : Constant.userDefinedRecipeItemHeight-15)
+        .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.mainBackgroundColor.color)
+        .cornerRadius(5)
+        .onHover { isHovered in
+            withAnimation(.spring(duration: 0.1)) {
+                isSelected = isHovered
+            }
+        }
+        .onTapGesture {
+            if let actions = item.actions {
+                for action in actions {
+                    action.execute()
+                }
+            }
+        }
+    }
+    
+}
