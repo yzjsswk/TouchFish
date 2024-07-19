@@ -15,6 +15,7 @@ struct Recipe {
     var actions: [RecipeAction] = []
     var color: Color
     var order: Int
+    var enabled: Bool = true
     
     enum RecipeType: String, Codable {
         case task
@@ -47,6 +48,7 @@ struct Recipe {
         var actions: [RecipeAction]?
         var color: String?
         var order: Int?
+        var enabled: Bool?
         
         static func parse(recipePath: URL) -> Recipe? {
             guard let recipeJsonData = try? Data(contentsOf: recipePath) else {
@@ -68,7 +70,8 @@ struct Recipe {
                 parameters: recipeJson.parameters ?? [],
                 actions: recipeJson.actions ?? [],
                 color: (recipeJson.color ?? Constant.userDefinedRecipeDefaultIemColor).color,
-                order: recipeJson.order ?? 0
+                order: recipeJson.order ?? 0,
+                enabled: recipeJson.enabled ?? true
             )
         }
         
@@ -212,9 +215,18 @@ struct RecipeSendMessageInfo: Codable {
 struct UserDefinedRecipeView: Codable {
     
     var type: UserDefinedRecipeViewType
+    var defaultItemIcon: String?
     var items: [UserDefinedRecipeViewItem] = []
     var errorMessage: String?
     var timeCost: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case type = "type"
+        case defaultItemIcon = "default_item_icon"
+        case items = "items"
+        case errorMessage = "error_message"
+        case timeCost = "time_cost"
+    }
 
     enum UserDefinedRecipeViewType: String, Codable {
         case empty
@@ -263,6 +275,9 @@ struct RecipeManager {
                 }
                 guard let recipe = Recipe.RecipeJson.parse(recipePath: fileURL) else {
                     Log.warning("load recipe - ignore a recipe: RecipeJson.parse return nil, path=\(fileURL.path)")
+                    continue
+                }
+                if !recipe.enabled {
                     continue
                 }
                 if internalRecipeList.map({$0.bundleId}).contains(recipe.bundleId) {

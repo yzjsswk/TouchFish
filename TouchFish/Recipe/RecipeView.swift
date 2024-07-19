@@ -40,10 +40,9 @@ struct RecipeView: View {
                            }
                        case .list1:
                            ScrollView(showsIndicators: false) {
-                               VStack {
+                               VStack(spacing: 5) {
                                    ForEach(userDefinedRecipeView.items, id: \.title) { item in
-                                       UserDefinedRecipeListItemView(item: item)
-                                           .frame(width: Constant.mainWidth-30, height: Constant.userDefinedRecipeItemHeight)
+                                       UserDefinedRecipeListItemView1(item: item, defaultItemIcon: userDefinedRecipeView.defaultItemIcon)
                                    }
                                }
                            }.padding(.vertical)
@@ -51,7 +50,7 @@ struct RecipeView: View {
                            ScrollView(showsIndicators: false) {
                                VStack(spacing: 5) {
                                    ForEach(userDefinedRecipeView.items, id: \.title) { item in
-                                       UserDefinedRecipeListItemView2(item: item)
+                                       UserDefinedRecipeListItemView2(item: item, defaultItemIcon: userDefinedRecipeView.defaultItemIcon)
                                    }
                                }
                            }.padding(.vertical)
@@ -111,38 +110,44 @@ struct RecipeView: View {
     
 }
 
-struct UserDefinedRecipeListItemView: View {
+struct UserDefinedRecipeListItemView1: View {
     
     var item: UserDefinedRecipeView.UserDefinedRecipeViewItem
+    var defaultItemIcon: String?
     
     @State var isSelected: Bool = false
     
     var body: some View {
         HStack(spacing: 10) {
             HStack {
-                (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
+                (item.icon?.icon ?? (defaultItemIcon?.icon ?? Image(systemName: "doc.plaintext")))
                     .resizable()
                     .scaledToFit()
             }
-            .frame(width: Constant.userDefinedRecipeItemHeight)
+            .frame(width: Constant.userDefinedRecipeItemHeight*0.5)
+            .padding(.leading, 5)
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
-                .font(.title2)
-//                    .fontWeight(.bold)
+                .font(.title3)
+                .fontWeight(.bold)
                 .foregroundColor(isSelected ? Color.white: Color.black)
                 if let desc = item.description {
-                    Text(desc)
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        Text(desc)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
                 }
             }
             Spacer()
         }
-        .padding(5)
-        .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.userDefinedRecipeDefaultIemColor.color)
+        .frame(width: Constant.mainWidth-30, height: Constant.userDefinedRecipeItemHeight)
+        .background(isSelected ? Constant.selectedItemBackgroundColor.color : Constant.mainBackgroundColor.color)
         .cornerRadius(5)
         .onHover { isHovered in
-            isSelected = isHovered
+            withAnimation(.spring(duration: 0.1)) {
+                isSelected = isHovered
+            }
         }
         .onTapGesture {
             if let actions = item.actions {
@@ -158,13 +163,14 @@ struct UserDefinedRecipeListItemView: View {
 struct UserDefinedRecipeListItemView2: View {
     
     var item: UserDefinedRecipeView.UserDefinedRecipeViewItem
+    var defaultItemIcon: String?
     
     @State var isSelected: Bool = false
     
     var body: some View {
         HStack(spacing: 10) {
             HStack {
-                (item.icon?.icon ?? Image(systemName: "doc.plaintext"))
+                (item.icon?.icon ?? (defaultItemIcon?.icon ?? Image(systemName: "doc.plaintext")))
                     .resizable()
                     .scaledToFit()
             }

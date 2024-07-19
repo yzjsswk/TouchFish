@@ -95,7 +95,7 @@ struct Cache {
             isMarked: isMarked,
             isLocked: isLocked,
             pageNum: 1,
-            pageSize: 100
+            pageSize: 1000
         )
         guard case .success(let resp) = result else {
             fishCache.removeAll()
