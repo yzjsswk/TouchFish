@@ -9,6 +9,7 @@ class TouchFishApp {
             - /resource: downloaded fishdata
             - config.json: user configuration
             - message: messages from message center
+            - tf.db: fish data
      */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
     static let logPath = TouchFishApp.appSupportPath.appendingPathComponent("log")
