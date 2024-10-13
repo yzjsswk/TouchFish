@@ -133,6 +133,7 @@ struct Cache {
                     switch result {
                     case .success(let url):
                         let curData = FileManager.default.contents(atPath: url.path)
+                        // todo: may panic
                         previewDataCache[identity] = curData
                         return url
                     case .failure(let err):

@@ -196,7 +196,7 @@ struct RecipeAction: Codable {
                         // do nothing
                     }
                 }
-                Log.debug("excute shell command: \(cmd) \(argments), timeCost=\(timeCost)")
+                Log.debug("execute shell command: \(cmd) \(argments), timeCost=\(timeCost)")
             }
         }
     }
