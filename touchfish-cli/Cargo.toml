@@ -1,0 +1,10 @@
+[package]
+name = "touchfish-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+touchfish-core = { path = "../touchfish-core" }
+touchfish-sqlite-storage = { path = "../touchfish-sqlite-storage" }
+yfunc-rust = { path = "../../yfunc-rust" }
+clap = { version = "4.5", features = ["derive"] }

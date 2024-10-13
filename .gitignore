@@ -1,6 +1,3 @@
 .DS_Store
 /target
 /example-recipes
-/touchfish-cli
-/touchfish-core
-/touchfish-sqlite-storage
