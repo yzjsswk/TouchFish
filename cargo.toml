@@ -1,0 +1,6 @@
+[workspace]
+members = [ 
+    "touchfish-cli",
+    "touchfish-core",
+    "touchfish-sqlite-storage",
+]

@@ -1,2 +1,6 @@
 .DS_Store
-# TouchFish.xcodeproj/project.xcworkspace/xcuserdata/
+/target
+/example-recipes
+/touchfish-cli
+/touchfish-core
+/touchfish-sqlite-storage
