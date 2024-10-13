@@ -1,10 +1,14 @@
-use std::io::Write;
+use std::{io::Write, rc::Rc};
 use cli::Cli;
+use touchfish_core::TouchFishCore;
+use touchfish_sqlite_storage::SqliteStorage;
 use yfunc_rust::prelude::*;
 
 mod cli;
 
 fn main() -> YRes<()> {
+    let storage = SqliteStorage::connect("/Users/yzjsswk/WorkSpace/touchfish.db")?;
+    let core = TouchFishCore::new(Rc::new(storage))?;
     loop {
         write!(std::io::stdout(), "> ").map_err(|e|
             err!(IOError::"write > to stdin", e)
@@ -25,7 +29,7 @@ fn main() -> YRes<()> {
         if input == "exit" || input == "quit" {
             break Ok(());
         }
-        match Cli::handle(input) {
+        match Cli::handle(input, &core) {
             Ok(output) => {
                 write!(std::io::stdout(), "{}\n", output).map_err(|e|
                     err!(IOError::"write output to stdin", e)

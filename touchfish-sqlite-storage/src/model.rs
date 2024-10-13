@@ -43,7 +43,11 @@ impl TryFrom<FishModel> for Fish {
             Some(x) => Some(YBytes::new(x)),
             None => None,
         };
-        let tags = model.tags.split(',').map(String::from).collect();
+        let tags = if model.tags.len() > 0 {
+            model.tags.split(',').map(String::from).collect()
+        } else {
+            vec![]
+        };
         let extra_info: ExtraInfo = serde_json::from_str(&model.extra_info).map_err(|err|
             err!(ParseError::"try from FishModel to Fish": "parse extra_info failed", model.extra_info, model.id, err)
         )?;
@@ -86,10 +90,12 @@ impl FishInserter {
 
     pub fn new(
         identity: String, length: i32, duplicate_count: i32, fish_type: FishType,
-        preview: Option<Vec<u8>>, data: Option<Vec<u8>>, description: String, tags: Vec<String>,
+        preview: Option<YBytes>, data: Option<YBytes>, description: String, tags: Vec<String>,
         is_marked: bool, is_locked: bool, extra_info: ExtraInfo,
     ) -> YRes<FishInserter> {
         let fish_type = fish_type.to_string();
+        let preview = preview.map(|x| x.into_vec());
+        let data = data.map(|x| x.into_vec());
         let mut tags = tags.unique();
         tags.sort();
         let tags = tags.join(",");
@@ -131,14 +137,16 @@ impl FishUpdater {
 
     pub fn new(
         identity: Option<String>, length: Option<i32>, duplicate_count: Option<i32>,
-        fish_type: Option<FishType>, preview: Option<Option<Vec<u8>>>,
-        data: Option<Option<Vec<u8>>>, description: Option<String>, tags: Option<Vec<String>>,
+        fish_type: Option<FishType>, preview: Option<Option<YBytes>>,
+        data: Option<Option<YBytes>>, description: Option<String>, tags: Option<Vec<String>>,
         is_marked: Option<bool>, is_locked: Option<bool>, extra_info: Option<ExtraInfo>,
     ) -> YRes<FishUpdater> {
         let fish_type = match fish_type {
             Some(x) => Some(x.to_string()),
             None => None,
         };
+        let preview = preview.map(|x| x.map(|y| y.into_vec()));
+        let data = data.map(|x| x.map(|y| y.into_vec()));
         let tags = match tags {
             Some(x) => {
                 let mut x = x.unique();
@@ -182,14 +190,16 @@ impl FishPager {
     
     pub fn new(
         identity: Option<String>, length: Option<i32>, duplicate_count: Option<i32>,
-        fish_type: Option<Vec<FishType>>, preview: Option<Option<Vec<u8>>>,
-        data: Option<Option<Vec<u8>>>, description: Option<String>, tags: Option<Vec<String>>,
+        fish_type: Option<Vec<FishType>>, preview: Option<Option<YBytes>>,
+        data: Option<Option<YBytes>>, description: Option<String>, tags: Option<Vec<String>>,
         is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
     ) -> YRes<FishPager> {
         let fish_type = match fish_type {
             Some(x) => Some(x.into_iter().map(|x| x.to_string()).collect()),
             None => None,
         };
+        let preview = preview.map(|x| x.map(|y| y.into_vec()));
+        let data = data.map(|x| x.map(|y| y.into_vec()));
         let description = match description {
             Some(x) => Some(format!("%{}%", x)),
             None => None,
