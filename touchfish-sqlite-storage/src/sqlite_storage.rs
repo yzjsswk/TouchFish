@@ -24,7 +24,7 @@ impl SqliteStorage {
         Ok(SqliteStorage { pool })
     }
 
-    pub fn fish__insert(&self, conn: &mut SqliteConnection, inserter: &FishInserter) -> Result<FishModel, Error> {
+    fn fish__insert(&self, conn: &mut SqliteConnection, inserter: &FishInserter) -> Result<FishModel, Error> {
         let inserted = diesel::insert_into(fish::table)
             .values(inserter)
             .returning(FishModel::as_returning())
@@ -32,12 +32,18 @@ impl SqliteStorage {
         Ok(inserted)
     }
 
-    pub fn fish__delete(&self, conn: &mut SqliteConnection, id: i32) -> Result<usize, Error> {
+    fn fish__delete(&self, conn: &mut SqliteConnection, id: i32) -> Result<usize, Error> {
         let cnt = diesel::delete(fish::table.filter(fish::id.eq(id))).execute(conn)?;
         Ok(cnt)
     }
 
-    pub fn fish__pick(&self, conn: &mut SqliteConnection, identity: &str) -> Result<Vec<FishModel>, Error> {
+    fn fish__update(&self, conn: &mut SqliteConnection, identity: &str, updater: &FishUpdater) -> Result<usize, Error> {
+        diesel::update(fish::table.filter(fish::identity.eq(identity)))
+            .set(updater)
+            .execute(conn)
+    }
+
+    fn fish__pick(&self, conn: &mut SqliteConnection, identity: &str) -> Result<Vec<FishModel>, Error> {
         let selected: Vec<FishModel> = fish::dsl::fish
             .filter(fish::identity.eq(identity))
             .select(FishModel::as_select())
@@ -45,7 +51,7 @@ impl SqliteStorage {
         Ok(selected)
     }
 
-    pub fn fish__page(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<FishModel>, Error> {
+    fn fish__page(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<FishModel>, Error> {
         let mut query = fish::dsl::fish.into_boxed();
         if let Some(fuzzy) = &pager.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
@@ -80,7 +86,7 @@ impl SqliteStorage {
         Ok(selected)
     }
 
-    pub fn fish__count(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<i64, Error> {
+    fn fish__count(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<i64, Error> {
         let mut query = fish::dsl::fish.into_boxed();
         if let Some(fuzzy) = &pager.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
@@ -112,7 +118,7 @@ impl SqliteStorage {
         Ok(cnt)
     }
 
-    pub fn fish_expired__insert(&self, conn: &mut SqliteConnection, inserter: &FishExpiredInserter) -> Result<FishExpiredModel, Error> {
+    fn fish_expired__insert(&self, conn: &mut SqliteConnection, inserter: &FishExpiredInserter) -> Result<FishExpiredModel, Error> {
         let inserted = diesel::insert_into(fish_expired::table)
             .values(inserter)
             .returning(FishExpiredModel::as_returning())
@@ -137,11 +143,11 @@ impl FishStorage for SqliteStorage {
         Ok(Fish::try_from(fish)?)
     }
 
-    fn expire_fish(&self, identity: String) -> YRes<()> {
+    fn expire_fish(&self, identity: &str) -> YRes<()> {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"expire fish": "fetch connection from pool failed", e),
         )?;
-        let to_expire_fish = self.fish__pick(&mut conn, &identity).map_err(|e| 
+        let to_expire_fish = self.fish__pick(&mut conn, identity).map_err(|e| 
             err!(DataBaseError::"expire fish": "query to delete fish failed", identity, e)
         )?;
         if to_expire_fish.is_empty() {
@@ -161,6 +167,91 @@ impl FishStorage for SqliteStorage {
             self.fish_expired__insert(conn, &expired_fish_inserter)?;
             Ok(())
         }).map_err(|e| err!(DataBaseError::"expire fish": "execute transaction failed", e))
+    }
+
+    fn modify_fish(
+        &self, identity: &str, desc: Option<String>, tags: Option<Vec<String>>, extra_info: Option<String>,
+    ) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"modify fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            desc, tags, None, None, extra_info,
+        )?).map_err(|e| err!(DataBaseError::"modify fish", identity, e))?;
+        Ok(())
+    }
+
+    fn mark_fish(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"mark fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            None, None, Some(true), None, None,
+        )?).map_err(|e| err!(DataBaseError::"mark fish", identity, e))?;
+        Ok(())
+    }
+    
+    fn unmark_fish(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"unmark fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            None, None, Some(false), None, None,
+        )?).map_err(|e| err!(DataBaseError::"unmark fish", identity, e))?;
+        Ok(())
+    }
+    
+    fn lock_fish(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"lock fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            None, None, None, Some(true), None,
+        )?).map_err(|e| err!(DataBaseError::"lock fish", identity, e))?;
+        Ok(())
+    }
+    
+    fn unlock_fish(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"unlock fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            None, None, None, Some(false), None,
+        )?).map_err(|e| err!(DataBaseError::"unlock fish", identity, e))?;
+        Ok(())
+    }
+    
+    fn pin_fish(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"pin fish": "fetch connection from pool failed", e),
+        )?;
+        self.fish__update(&mut conn, identity, &FishUpdater::new(
+            None, None, None, None, None,
+            None, None, None, None, None,
+        )?).map_err(|e| err!(DataBaseError::"pin fish", identity, e))?;
+        Ok(())
+    }
+    
+    fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"pick fish": "fetch connection from pool failed", e),
+        )?;
+        let fish_list = self.fish__pick(&mut conn, identity).map_err(|e| 
+            err!(DataBaseError::"pick fish", identity, e)
+        )?;
+        if fish_list.is_empty() {
+            return Ok(None);
+        }
+        if fish_list.len() > 1 {
+            return Err(err!(DataBaseError::"pick fish": "found more than one fish", identity));
+        }
+        let fish = fish_list.into_iter().next().unwrap();
+        Ok(Some(Fish::try_from(fish)?))
     }
 
     fn page_fish(

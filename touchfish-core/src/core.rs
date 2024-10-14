@@ -23,6 +23,40 @@ impl<S> TouchFishCore<S> where S: FishStorage {
         self.fish_service.add_fish(fish_type, fish_data, description, tags, is_marked, is_locked, extra_info)
     }
 
+    pub fn expire_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.expire_fish(identity)
+    }
+
+    pub fn modify_fish(
+        &self, identity: &str, desc: Option<String>, tags: Option<Vec<String>>, extra_info: Option<String>,
+    ) -> YRes<()> {
+        self.fish_service.modify_fish(identity, desc, tags, extra_info)
+    }
+
+    pub fn mark_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.mark_fish(identity)
+    }
+
+    pub fn unmark_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.unmark_fish(identity)
+    }
+
+    pub fn lock_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.lock_fish(identity)
+    }
+
+    pub fn unlock_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.unlock_fish(identity)
+    }
+
+    pub fn pin_fish(&self, identity: &str) -> YRes<()> {
+        self.fish_service.pin_fish(identity)
+    }
+
+    pub fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>> {
+        self.fish_service.pick_fish(identity)
+    }
+
     pub fn search_fish(
         &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
         fish_type: Option<Vec<FishType>>, desc: Option<String>,
@@ -30,10 +64,6 @@ impl<S> TouchFishCore<S> where S: FishStorage {
         page_num: Option<i32>, page_size: Option<i32>,
     ) -> YRes<Page<Fish>> {
         self.fish_service.search_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked, page_num, page_size)
-    }
-
-    pub fn expire_fish(&self, identity: String) -> YRes<()> {
-        self.fish_service.expire_fish(identity)
     }
 
 }

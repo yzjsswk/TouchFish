@@ -9,7 +9,23 @@ pub trait FishStorage {
         desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: String,
     ) -> YRes<Fish>;
 
-    fn expire_fish(&self, identity: String) -> YRes<()>;
+    fn expire_fish(&self, identity: &str) -> YRes<()>;
+
+    fn modify_fish(
+        &self, identity: &str, desc: Option<String>, tags: Option<Vec<String>>, extra_info: Option<String>,
+    ) -> YRes<()>;
+
+    fn mark_fish(&self, identity: &str) -> YRes<()>;
+
+    fn unmark_fish(&self, identity: &str) -> YRes<()>;
+
+    fn lock_fish(&self, identity: &str) -> YRes<()>;
+
+    fn unlock_fish(&self, identity: &str) -> YRes<()>;
+
+    fn pin_fish(&self, identity: &str) -> YRes<()>;
+
+    fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>>;
 
     fn page_fish(
         &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,

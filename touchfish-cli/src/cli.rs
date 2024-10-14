@@ -61,7 +61,7 @@ impl Cli {
                         Ok(res.to_json_string()?)
                     },
                     Commands::Expire { identity } => {
-                        core.expire_fish(identity)?;
+                        core.expire_fish(&identity)?;
                         Ok("Ok".to_string())
                     }
                 }

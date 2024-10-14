@@ -53,6 +53,104 @@ impl<S> FishService<S> where S: FishStorage {
         )
     }
 
+    pub fn expire_fish(&self, identity: &str) -> YRes<()> {
+        self.storage.expire_fish(identity)
+    }
+
+    pub fn modify_fish(
+        &self, identity: &str, desc: Option<String>, tags: Option<Vec<String>>, extra_info: Option<String>,
+    ) -> YRes<()>  {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"modify fish": "fish not exist", identity))
+            },
+            Some(x) => {
+                if x.is_locked {
+                    return Err(err!(BusinessError::"modify fish": "fish is locked", identity))
+                } else {
+                    self.storage.modify_fish(identity, desc, tags, extra_info)
+                }
+            }
+        }
+    }
+
+    pub fn mark_fish(&self, identity: &str) -> YRes<()> {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"mark fish": "fish not exist", identity))
+            },
+            Some(x) => {
+                if x.is_locked {
+                    return Err(err!(BusinessError::"mark fish": "fish is locked", identity))
+                } else {
+                    self.storage.mark_fish(identity)
+                }
+            }
+        }
+    }
+
+    pub fn unmark_fish(&self, identity: &str) -> YRes<()> {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"unmark fish": "fish not exist", identity))
+            },
+            Some(x) => {
+                if x.is_locked {
+                    return Err(err!(BusinessError::"unmark fish": "fish is locked", identity))
+                } else {
+                    self.storage.unmark_fish(identity)
+                }
+            }
+        }
+    }
+
+    pub fn lock_fish(&self, identity: &str) -> YRes<()> {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"lock fish": "fish not exist", identity))
+            },
+            Some(_) => {
+                self.storage.lock_fish(identity)
+            }
+        }
+    }
+
+    pub fn unlock_fish(&self, identity: &str) -> YRes<()> {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"unlock fish": "fish not exist", identity))
+            },
+            Some(_) => {
+                self.storage.unlock_fish(identity)
+            }
+        }
+    }
+
+    pub fn pin_fish(&self, identity: &str) -> YRes<()> {
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"pin fish": "fish not exist", identity))
+            },
+            Some(x) => {
+                if x.is_locked {
+                    return Err(err!(BusinessError::"pin fish": "fish is locked", identity))
+                } else {
+                    self.storage.pin_fish(identity)
+                }
+            }
+        }
+    }
+
+    pub fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>> {
+        self.storage.pick_fish(identity)
+    }
+
     pub fn search_fish(
         &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
         fish_type: Option<Vec<FishType>>, desc: Option<String>,
@@ -63,10 +161,6 @@ impl<S> FishService<S> where S: FishStorage {
             fuzzy, identity, None, fish_type, None, desc, tags, is_marked, is_locked,
             page_num.unwrap_or(1), page_size.unwrap_or(10),
         )
-    }
-
-    pub fn expire_fish(&self, identity: String) -> YRes<()> {
-        self.storage.expire_fish(identity)
     }
 
 }
