@@ -1,12 +1,13 @@
 use diesel::dsl::sql;
 use diesel::prelude::*;
+use diesel::result::Error;
 use diesel::sql_types::{Bool, Text};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use r2d2::Pool;
 use touchfish_core::{Fish, FishStorage};
 use yfunc_rust::{Page, prelude::*};
 
-use crate::model::{FishInserter, FishModel, FishPager, FishUpdater};
+use crate::model::{FishExpiredInserter, FishExpiredModel, FishInserter, FishModel, FishPager, FishUpdater};
 use crate::schema::{fish, fish_expired};
 
 pub struct SqliteStorage {
@@ -23,22 +24,28 @@ impl SqliteStorage {
         Ok(SqliteStorage { pool })
     }
 
-    pub fn fish__insert(&self, inserter: &FishInserter) -> YRes<Fish> {
-        let mut conn = self.pool.get().map_err(
-            |err| err!(DataBaseError::"insert fish": "fetch connection from pool failed", err),
-        )?;
+    pub fn fish__insert(&self, conn: &mut SqliteConnection, inserter: &FishInserter) -> Result<FishModel, Error> {
         let inserted = diesel::insert_into(fish::table)
             .values(inserter)
             .returning(FishModel::as_returning())
-            .get_result(&mut conn)
-            .map_err(|err| err!(DataBaseError::"insert fish", err))?;
-        Ok(Fish::try_from(inserted)?)
+            .get_result(conn)?;
+        Ok(inserted)
     }
 
-    pub fn fish__page(&self, pager: &FishPager) -> YRes<Vec<Fish>> {
-        let mut conn = self.pool.get().map_err(
-            |err| err!(DataBaseError::"page fish": "fetch connection from pool failed", err),
-        )?;
+    pub fn fish__delete(&self, conn: &mut SqliteConnection, id: i32) -> Result<usize, Error> {
+        let cnt = diesel::delete(fish::table.filter(fish::id.eq(id))).execute(conn)?;
+        Ok(cnt)
+    }
+
+    pub fn fish__pick(&self, conn: &mut SqliteConnection, identity: &str) -> Result<Vec<FishModel>, Error> {
+        let selected: Vec<FishModel> = fish::dsl::fish
+            .filter(fish::identity.eq(identity))
+            .select(FishModel::as_select())
+            .load(conn)?;
+        Ok(selected)
+    }
+
+    pub fn fish__page(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<FishModel>, Error> {
         let mut query = fish::dsl::fish.into_boxed();
         if let Some(fuzzy) = &pager.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
@@ -69,19 +76,11 @@ impl SqliteStorage {
         // println!("{}", diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query));
         let selected: Vec<FishModel> = query
             .select(FishModel::as_select())
-            .load(&mut conn)
-            .map_err(|err| err!(DataBaseError::"page fish", err))?;
-        let res = selected
-            .into_iter()
-            .map(|x| Fish::try_from(x))
-            .collect::<YRes<Vec<_>>>()?;
-        Ok(res)
+            .load(conn)?;
+        Ok(selected)
     }
 
-    pub fn fish__count(&self, pager: &FishPager) -> YRes<i64> {
-        let mut conn = self.pool.get().map_err(
-            |err| err!(DataBaseError::"count fish": "fetch connection from pool failed", err),
-        )?;
+    pub fn fish__count(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<i64, Error> {
         let mut query = fish::dsl::fish.into_boxed();
         if let Some(fuzzy) = &pager.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
@@ -109,22 +108,59 @@ impl SqliteStorage {
         }
         let cnt: i64 = query
             .count()
-            .get_result(&mut conn)
-            .map_err(|err| err!(DataBaseError::"count fish", err))?;
+            .get_result(conn)?;
         Ok(cnt)
+    }
+
+    pub fn fish_expired__insert(&self, conn: &mut SqliteConnection, inserter: &FishExpiredInserter) -> Result<FishExpiredModel, Error> {
+        let inserted = diesel::insert_into(fish_expired::table)
+            .values(inserter)
+            .returning(FishExpiredModel::as_returning())
+            .get_result(conn)?;
+        Ok(inserted)
     }
 
 }
 
 impl FishStorage for SqliteStorage {
+
     fn add_fish(
         &self, identity: String, count: i32, fish_type: touchfish_core::FishType, fish_data: yfunc_rust::YBytes,
         desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: touchfish_core::ExtraInfo,
     ) -> YRes<Fish> {
-        let fish = self.fish__insert(&FishInserter::new(
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"add fish": "fetch connection from pool failed", e),
+        )?;
+        let fish = self.fish__insert(&mut conn, &FishInserter::new(
             identity, count, fish_type, fish_data, desc, tags, is_marked, is_locked, extra_info
-        )?)?;
-        Ok(fish)
+        )?).map_err(|e| err!(DataBaseError::"add fish", e))?;
+        Ok(Fish::try_from(fish)?)
+    }
+
+    fn expire_fish(&self, identity: String) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"expire fish": "fetch connection from pool failed", e),
+        )?;
+        let to_expire_fish = self.fish__pick(&mut conn, &identity).map_err(|e| 
+            err!(DataBaseError::"expire fish": "query to delete fish failed", identity, e)
+        )?;
+        if to_expire_fish.is_empty() {
+            return Err(err!(DataBaseError::"expire fish": "too delete fish not exist", identity));
+        }
+        if to_expire_fish.len() > 1 {
+            return Err(err!(DataBaseError::"expire fish": "too delete fish more than one", identity));
+        }
+        let to_expire_fish = to_expire_fish.into_iter().next().unwrap();
+        let to_expire_fish_id = to_expire_fish.id;
+        let expired_fish_inserter = FishExpiredInserter::new(to_expire_fish)?;
+        conn.transaction::<_, Error, _>(|conn| {
+            let cnt = self.fish__delete(conn, to_expire_fish_id)?;
+            if cnt != 1 {
+                return Err(Error::RollbackTransaction)
+            }
+            self.fish_expired__insert(conn, &expired_fish_inserter)?;
+            Ok(())
+        }).map_err(|e| err!(DataBaseError::"expire fish": "execute transaction failed", e))
     }
 
     fn page_fish(
@@ -133,18 +169,22 @@ impl FishStorage for SqliteStorage {
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
         page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"page fish": "fetch connection from pool failed", e),
+        )?;
         let pager = FishPager::new(
             fuzzy, identity, count, fish_type, fish_data, 
             desc, tags, is_marked, is_locked, page_num, page_size
         )?;
-        let total_count = self.fish__count(&pager)?;
-        let fish_list = self.fish__page(&pager)?;
-        Ok(Page {
-            total_count,
-            page_num,
-            page_size,
-            data: fish_list,
-        })
+        let total_count = self.fish__count(&mut conn, &pager)
+            .map_err(|e| err!(DataBaseError::"page fish", e))?;
+        let fish_list = self.fish__page(&mut conn, &pager)
+            .map_err(|e| err!(DataBaseError::"page fish", e))?;
+        let data = fish_list
+            .into_iter()
+            .map(|x| Fish::try_from(x))
+            .collect::<YRes<Vec<_>>>()?;
+        Ok(Page { total_count, page_num, page_size, data })
     }
 
 }

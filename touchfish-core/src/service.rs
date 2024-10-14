@@ -64,5 +64,9 @@ impl<S> FishService<S> where S: FishStorage {
         )
     }
 
+    pub fn expire_fish(&self, identity: String) -> YRes<()> {
+        self.storage.expire_fish(identity)
+    }
+
 }
 

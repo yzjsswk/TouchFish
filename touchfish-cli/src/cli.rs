@@ -20,6 +20,9 @@ pub enum Commands {
         page_num: Option<i32>,
         #[arg(short = 's', long = "size")]
         page_size: Option<i32>,
+    },
+    Expire {
+        identity: String,
     }
 }
 
@@ -57,6 +60,10 @@ impl Cli {
                         )?;
                         Ok(res.to_json_string()?)
                     },
+                    Commands::Expire { identity } => {
+                        core.expire_fish(identity)?;
+                        Ok("Ok".to_string())
+                    }
                 }
             },
             Err(err) => Ok(err.to_string()),

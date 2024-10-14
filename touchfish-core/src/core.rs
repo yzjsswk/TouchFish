@@ -32,4 +32,8 @@ impl<S> TouchFishCore<S> where S: FishStorage {
         self.fish_service.search_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked, page_num, page_size)
     }
 
+    pub fn expire_fish(&self, identity: String) -> YRes<()> {
+        self.fish_service.expire_fish(identity)
+    }
+
 }
