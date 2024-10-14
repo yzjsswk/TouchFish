@@ -25,13 +25,16 @@ pub trait FishStorage {
 
     fn pin_fish(&self, identity: &str) -> YRes<()>;
 
+    fn increase_count(&self, identity: &str) -> YRes<()>;
+
+    fn decrease_count(&self, identity: &str) -> YRes<()>;
+
     fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>>;
 
     fn page_fish(
         &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
-        fish_type: Option<Vec<FishType>>, fish_data: Option<YBytes>, desc: Option<String>,
-        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
-        page_num: i32, page_size: i32,
+        fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
+        is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>>;
 
 }

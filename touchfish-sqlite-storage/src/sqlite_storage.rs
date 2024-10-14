@@ -43,6 +43,18 @@ impl SqliteStorage {
             .execute(conn)
     }
 
+    fn fish__inc_cnt(&self, conn: &mut SqliteConnection, identity: &str) -> Result<usize, Error> {
+        diesel::update(fish::table.filter(fish::identity.eq(identity)))
+        .set(fish::count.eq(fish::count+1))
+        .execute(conn)
+    }
+
+    fn fish__dec_cnt(&self, conn: &mut SqliteConnection, identity: &str) -> Result<usize, Error> {
+        diesel::update(fish::table.filter(fish::identity.eq(identity)))
+        .set(fish::count.eq(fish::count-1))
+        .execute(conn)
+    }
+
     fn fish__pick(&self, conn: &mut SqliteConnection, identity: &str) -> Result<Vec<FishModel>, Error> {
         let selected: Vec<FishModel> = fish::dsl::fish
             .filter(fish::identity.eq(identity))
@@ -236,6 +248,22 @@ impl FishStorage for SqliteStorage {
         )?).map_err(|e| err!(DataBaseError::"pin fish", identity, e))?;
         Ok(())
     }
+
+    fn increase_count(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"increase fish count": "fetch connection from pool failed", e),
+        )?;
+        self.fish__inc_cnt(&mut conn, identity).map_err(|e| err!(DataBaseError::"increase fish count", identity, e))?;
+        Ok(())
+    }
+
+    fn decrease_count(&self, identity: &str) -> YRes<()> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"decrease fish count": "fetch connection from pool failed", e),
+        )?;
+        self.fish__dec_cnt(&mut conn, identity).map_err(|e| err!(DataBaseError::"decrease fish count", identity, e))?;
+        Ok(())
+    }
     
     fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>> {
         let mut conn = self.pool.get().map_err(
@@ -256,7 +284,7 @@ impl FishStorage for SqliteStorage {
 
     fn page_fish(
         &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
-        fish_type: Option<Vec<touchfish_core::FishType>>, fish_data: Option<yfunc_rust::YBytes>, desc: Option<String>,
+        fish_type: Option<Vec<touchfish_core::FishType>>, desc: Option<String>,
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
         page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>> {
@@ -264,8 +292,7 @@ impl FishStorage for SqliteStorage {
             |e| err!(DataBaseError::"page fish": "fetch connection from pool failed", e),
         )?;
         let pager = FishPager::new(
-            fuzzy, identity, count, fish_type, fish_data, 
-            desc, tags, is_marked, is_locked, page_num, page_size
+            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, page_num, page_size
         )?;
         let total_count = self.fish__count(&mut conn, &pager)
             .map_err(|e| err!(DataBaseError::"page fish", e))?;

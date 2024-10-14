@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{borrow::BorrowMut, rc::Rc};
 
 use yfunc_rust::{prelude::*, Page, Unique, YBytes};
 
@@ -22,6 +22,42 @@ impl<S> FishService<S> where S: FishStorage {
     ) -> YRes<Fish> {
         if fish_data.length() > FISH_DATA_LEN_LIMIT {
             return Err(err!(BusinessError::"add fish": "fish data too long", fish_data.length(), FISH_DATA_LEN_LIMIT))
+        }
+        let identity = fish_data.md5();
+        if let Some(mut existed_fish) = self.storage.pick_fish(&identity)? {
+            if fish_type != existed_fish.fish_type {
+                return Err(err!(BusinessError::"add fish": "fish data exists and fish type not consistent", identity))
+            }
+            if let Some(desc) = &desc {
+                if *desc != existed_fish.desc {
+                    return Err(err!(BusinessError::"add fish": "fish data exists and desc not consistent", identity))
+                }
+            }
+            if let Some(tags) = &tags {
+                let mut tags = tags.unique();
+                tags.sort();
+                if tags != existed_fish.tags {
+                    return Err(err!(BusinessError::"add fish": "fish data exists and tags not consistent", identity))
+                }
+            }
+            if let Some(is_marked) = is_marked {
+                if is_marked != existed_fish.is_marked {
+                    return Err(err!(BusinessError::"add fish": "fish data exists and is_marked not consistent", identity))
+                }
+            }
+            if let Some(is_locked) = is_locked {
+                if is_locked != existed_fish.is_locked {
+                    return Err(err!(BusinessError::"add fish": "fish data exists and is_locked not consistent", identity))
+                }
+            }
+            if let Some(extra_info) = &extra_info {
+                if *extra_info != existed_fish.extra_info {
+                    return Err(err!(BusinessError::"add fish": "fish data exists and extra_info not consistent", identity))
+                }
+            }
+            self.storage.increase_count(&identity)?;
+            existed_fish.count += 1;
+            return Ok(existed_fish)
         }
         let desc = desc.unwrap_or("".to_string());
         let extra_info = extra_info.unwrap_or("".to_string());
@@ -49,7 +85,7 @@ impl<S> FishService<S> where S: FishStorage {
             FishType::Image => {},
         };
         self.storage.add_fish(
-            fish_data.md5(), 1, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info,
+            identity, 1, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info,
         )
     }
 
@@ -158,7 +194,7 @@ impl<S> FishService<S> where S: FishStorage {
         page_num: Option<i32>, page_size: Option<i32>,
     ) -> YRes<Page<Fish>> {
         self.storage.page_fish(
-            fuzzy, identity, None, fish_type, None, desc, tags, is_marked, is_locked,
+            fuzzy, identity, None, fish_type, desc, tags, is_marked, is_locked,
             page_num.unwrap_or(1), page_size.unwrap_or(10),
         )
     }

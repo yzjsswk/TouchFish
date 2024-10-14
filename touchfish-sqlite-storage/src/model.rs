@@ -161,7 +161,6 @@ pub struct FishPager {
     pub identity: Option<Vec<String>>,
     pub count: Option<i32>,
     pub fish_type: Option<Vec<String>>,
-    pub fish_data: Option<Vec<u8>>,
     pub desc: Option<String>,
     pub tags: Option<String>,
     pub is_marked: Option<bool>,
@@ -174,8 +173,7 @@ impl FishPager {
     
     pub fn new(
         fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
-        fish_type: Option<Vec<FishType>>, fish_data: Option<YBytes>, 
-        desc: Option<String>, tags: Option<Vec<String>>, 
+        fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
         is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
     ) -> YRes<FishPager> {
         if page_num <= 0 {
@@ -192,7 +190,6 @@ impl FishPager {
             Some(x) => Some(x.into_iter().map(|x| x.to_string()).collect()),
             None => None,
         };
-        let fish_data = fish_data.map(|x| x.into_vec());
         let desc = match desc {
             Some(x) => Some(format!("%{}%", x)),
             None => None,
@@ -213,9 +210,7 @@ impl FishPager {
         let limit = page_size.into();
         let offset = ((page_num-1) * page_size).into();
         Ok(FishPager {
-            fuzzy, identity, count, fish_type,
-            fish_data, desc, tags, is_marked,
-            is_locked, limit, offset,
+            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, limit, offset,
         })
     }
 
