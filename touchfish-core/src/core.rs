@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use yfunc_rust::{YBytes, YRes};
+use yfunc_rust::{Page, YBytes, YRes};
 
 use crate::{Fish, FishService, FishStorage, FishType};
 
@@ -21,6 +21,15 @@ impl<S> TouchFishCore<S> where S: FishStorage {
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Fish> {
         self.fish_service.add_fish(fish_type, fish_data, description, tags, is_marked, is_locked)
+    }
+
+    pub fn search_fish(
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
+        fish_type: Option<Vec<FishType>>, desc: Option<String>,
+        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>, 
+        page_num: Option<i32>, page_size: Option<i32>,
+    ) -> YRes<Page<Fish>> {
+        self.fish_service.search_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked, page_num, page_size)
     }
 
 }

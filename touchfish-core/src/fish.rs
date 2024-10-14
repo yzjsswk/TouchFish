@@ -5,12 +5,10 @@ use yfunc_rust::{YBytes, YTime, prelude::*};
 #[derive(Serialize, Debug)]
 pub struct Fish {
     pub identity: String,
-    pub length: i32,
-    pub duplicate_count: i32,
+    pub count: i32,
     pub fish_type: FishType,
-    pub preview: Option<YBytes>,
-    pub data: Option<YBytes>,
-    pub description: String,
+    pub fish_data: YBytes,
+    pub desc: String,
     pub tags: Vec<String>,
     pub is_marked: bool,
     pub is_locked: bool,
@@ -37,6 +35,7 @@ pub enum FishType {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExtraInfo {
+    pub byte_count: Option<usize>,
     // Text
     #[serde(skip_serializing_if = "Option::is_none")]
     pub char_count: Option<usize>,
@@ -55,7 +54,9 @@ impl ExtraInfo {
 
     pub fn new() -> ExtraInfo {
         ExtraInfo { 
-            char_count: None, word_count: None, row_count: None, width: None, height: None,
+            byte_count: None, 
+            char_count: None, word_count: None, row_count: None,
+            width: None, height: None,
         }
     }
 

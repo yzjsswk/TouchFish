@@ -1,8 +1,10 @@
+use diesel::dsl::sql;
 use diesel::prelude::*;
+use diesel::sql_types::{Bool, Text};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use r2d2::Pool;
 use touchfish_core::{Fish, FishStorage};
-use yfunc_rust::{ctx, err, Page, YError, YRes};
+use yfunc_rust::{Page, prelude::*};
 
 use crate::model::{FishInserter, FishModel, FishPager, FishUpdater};
 use crate::schema::{fish, fish_expired};
@@ -38,20 +40,20 @@ impl SqliteStorage {
             |err| err!(DataBaseError::"page fish": "fetch connection from pool failed", err),
         )?;
         let mut query = fish::dsl::fish.into_boxed();
+        if let Some(fuzzy) = &pager.fuzzy {
+            query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        }
         if let Some(identity) = &pager.identity {
-            query = query.filter(fish::identity.eq(identity));
+            query = query.filter(fish::identity.eq_any(identity));
         }
-        if let Some(length) = pager.length {
-            query = query.filter(fish::length.eq(length));
-        }
-        if let Some(duplicate_count) = pager.duplicate_count {
-            query = query.filter(fish::duplicate_count.eq(duplicate_count));
+        if let Some(count) = pager.count {
+            query = query.filter(fish::count.eq(count));
         }
         if let Some(fish_type) = &pager.fish_type {
             query = query.filter(fish::fish_type.eq_any(fish_type));
         }
-        if let Some(desc) = &pager.description {
-            query = query.filter(fish::fish_type.like(desc));
+        if let Some(desc) = &pager.desc {
+            query = query.filter(fish::desc.like(desc));
         }
         if let Some(tags) = &pager.tags {
             query = query.filter(fish::tags.like(tags));
@@ -64,6 +66,7 @@ impl SqliteStorage {
         }
         query = query.limit(pager.limit);
         query = query.offset(pager.offset);
+        // println!("{}", diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query));
         let selected: Vec<FishModel> = query
             .select(FishModel::as_select())
             .load(&mut conn)
@@ -77,23 +80,23 @@ impl SqliteStorage {
 
     pub fn fish__count(&self, pager: &FishPager) -> YRes<i64> {
         let mut conn = self.pool.get().map_err(
-            |err| err!(DataBaseError::"page fish": "fetch connection from pool failed", err),
+            |err| err!(DataBaseError::"count fish": "fetch connection from pool failed", err),
         )?;
         let mut query = fish::dsl::fish.into_boxed();
+        if let Some(fuzzy) = &pager.fuzzy {
+            query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        }
         if let Some(identity) = &pager.identity {
-            query = query.filter(fish::identity.eq(identity));
+            query = query.filter(fish::identity.eq_any(identity));
         }
-        if let Some(length) = pager.length {
-            query = query.filter(fish::length.eq(length));
-        }
-        if let Some(duplicate_count) = pager.duplicate_count {
-            query = query.filter(fish::duplicate_count.eq(duplicate_count));
+        if let Some(count) = pager.count {
+            query = query.filter(fish::count.eq(count));
         }
         if let Some(fish_type) = &pager.fish_type {
             query = query.filter(fish::fish_type.eq_any(fish_type));
         }
-        if let Some(desc) = &pager.description {
-            query = query.filter(fish::fish_type.like(desc));
+        if let Some(desc) = &pager.desc {
+            query = query.filter(fish::desc.like(desc));
         }
         if let Some(tags) = &pager.tags {
             query = query.filter(fish::tags.like(tags));
@@ -104,8 +107,6 @@ impl SqliteStorage {
         if let Some(is_locked) = pager.is_locked {
             query = query.filter(fish::is_locked.eq(is_locked));
         }
-        query = query.limit(pager.limit);
-        query = query.offset(pager.offset);
         let cnt: i64 = query
             .count()
             .get_result(&mut conn)
@@ -116,28 +117,25 @@ impl SqliteStorage {
 }
 
 impl FishStorage for SqliteStorage {
-
     fn add_fish(
-        &self, identity: String, length: i32, duplicate_count: i32, fish_type: touchfish_core::FishType,
-        preview: Option<yfunc_rust::YBytes>, data: Option<yfunc_rust::YBytes>, description: String,
-        tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: touchfish_core::ExtraInfo,
+        &self, identity: String, count: i32, fish_type: touchfish_core::FishType, fish_data: yfunc_rust::YBytes,
+        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: touchfish_core::ExtraInfo,
     ) -> YRes<Fish> {
         let fish = self.fish__insert(&FishInserter::new(
-            identity, length, duplicate_count, fish_type, 
-            preview, data, description, tags, is_marked, is_locked, extra_info
+            identity, count, fish_type, fish_data, desc, tags, is_marked, is_locked, extra_info
         )?)?;
         Ok(fish)
     }
 
     fn page_fish(
-        &self, identity: Option<String>, length: Option<i32>, duplicate_count: Option<i32>,
-        fish_type: Option<Vec<touchfish_core::FishType>>, preview: Option<Option<yfunc_rust::YBytes>>,
-        data: Option<Option<yfunc_rust::YBytes>>, description: Option<String>, tags: Option<Vec<String>>,
-        is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
+        fish_type: Option<Vec<touchfish_core::FishType>>, fish_data: Option<yfunc_rust::YBytes>, desc: Option<String>,
+        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
+        page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>> {
         let pager = FishPager::new(
-            identity, length, duplicate_count, fish_type, preview, data, 
-            description, tags, is_marked, is_locked, page_num, page_size
+            fuzzy, identity, count, fish_type, fish_data, 
+            desc, tags, is_marked, is_locked, page_num, page_size
         )?;
         let total_count = self.fish__count(&pager)?;
         let fish_list = self.fish__page(&pager)?;

@@ -13,12 +13,10 @@ use crate::schema;
 pub struct FishModel {
     pub id: i32,
     pub identity: String,
-    pub length: i32,
-    pub duplicate_count: i32,
+    pub count: i32,
     pub fish_type: String,
-    pub preview: Option<Vec<u8>>,
-    pub data: Option<Vec<u8>>,
-    pub description: String,
+    pub fish_data: Vec<u8>,
+    pub desc: String,
     pub tags: String,
     pub is_marked: bool,
     pub is_locked: bool,
@@ -35,14 +33,7 @@ impl TryFrom<FishModel> for Fish {
         let fish_type = FishType::from_str(&model.fish_type).map_err(|err|
             err!(ParseError::"try from FishModel to Fish": "parse fish_type failed", model.fish_type, model.id, err)
         )?;
-        let preview = match model.preview {
-            Some(x) => Some(YBytes::new(x)),
-            None => None,
-        };
-        let data = match model.data {
-            Some(x) => Some(YBytes::new(x)),
-            None => None,
-        };
+        let fish_data = YBytes::new(model.fish_data);
         let tags = if model.tags.len() > 0 {
             model.tags.split(',').map(String::from).collect()
         } else {
@@ -58,8 +49,8 @@ impl TryFrom<FishModel> for Fish {
             ctx!("try from FishModel to Fish": "parse update_time failed", model.update_time, model.id)
         )?;
         Ok(Fish {
-            identity: model.identity, length: model.length, duplicate_count: model.duplicate_count,
-            fish_type, preview, data, description: model.description, tags, is_marked: model.is_marked,
+            identity: model.identity, count: model.count, fish_type, fish_data, 
+            desc: model.desc, tags, is_marked: model.is_marked,
             is_locked: model.is_locked, extra_info, create_time, update_time,
         })
     }
@@ -72,12 +63,10 @@ impl TryFrom<FishModel> for Fish {
 #[derive(Debug)]
 pub struct FishInserter {
     pub identity: String,
-    pub length: i32,
-    pub duplicate_count: i32,
+    pub count: i32,
     pub fish_type: String,
-    pub preview: Option<Vec<u8>>,
-    pub data: Option<Vec<u8>>,
-    pub description: String,
+    pub fish_data: Vec<u8>,
+    pub desc: String,
     pub tags: String,
     pub is_marked: bool,
     pub is_locked: bool,
@@ -89,13 +78,11 @@ pub struct FishInserter {
 impl FishInserter {
 
     pub fn new(
-        identity: String, length: i32, duplicate_count: i32, fish_type: FishType,
-        preview: Option<YBytes>, data: Option<YBytes>, description: String, tags: Vec<String>,
-        is_marked: bool, is_locked: bool, extra_info: ExtraInfo,
+        identity: String, count: i32, fish_type: FishType, fish_data: YBytes,
+        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: ExtraInfo,
     ) -> YRes<FishInserter> {
         let fish_type = fish_type.to_string();
-        let preview = preview.map(|x| x.into_vec());
-        let data = data.map(|x| x.into_vec());
+        let fish_data = fish_data.into_vec();
         let mut tags = tags.unique();
         tags.sort();
         let tags = tags.join(",");
@@ -105,8 +92,7 @@ impl FishInserter {
         let create_time = YTime::now().to_str();
         let update_time = YTime::now().to_str();
         Ok(FishInserter {
-            identity, length, duplicate_count,
-            fish_type, preview, data, description,
+            identity, count, fish_type, fish_data, desc,
             tags, is_marked, is_locked, extra_info,
             create_time, update_time,
         })
@@ -120,12 +106,10 @@ impl FishInserter {
 #[derive(Debug)]
 pub struct FishUpdater {
     pub identity: Option<String>,
-    pub length: Option<i32>,
-    pub duplicate_count: Option<i32>,
+    pub count: Option<i32>,
     pub fish_type: Option<String>,
-    pub preview: Option<Option<Vec<u8>>>,
-    pub data: Option<Option<Vec<u8>>>,
-    pub description: Option<String>,
+    pub fish_data: Option<Vec<u8>>,
+    pub desc: Option<String>,
     pub tags: Option<String>,
     pub is_marked: Option<bool>,
     pub is_locked: Option<bool>,
@@ -136,17 +120,15 @@ pub struct FishUpdater {
 impl FishUpdater {
 
     pub fn new(
-        identity: Option<String>, length: Option<i32>, duplicate_count: Option<i32>,
-        fish_type: Option<FishType>, preview: Option<Option<YBytes>>,
-        data: Option<Option<YBytes>>, description: Option<String>, tags: Option<Vec<String>>,
+        identity: Option<String>, count: Option<i32>, fish_type: Option<FishType>,
+        fish_data: Option<YBytes>, desc: Option<String>, tags: Option<Vec<String>>,
         is_marked: Option<bool>, is_locked: Option<bool>, extra_info: Option<ExtraInfo>,
     ) -> YRes<FishUpdater> {
         let fish_type = match fish_type {
             Some(x) => Some(x.to_string()),
             None => None,
         };
-        let preview = preview.map(|x| x.map(|y| y.into_vec()));
-        let data = data.map(|x| x.map(|y| y.into_vec()));
+        let fish_data = fish_data.map(|x| x.into_vec());
         let tags = match tags {
             Some(x) => {
                 let mut x = x.unique();
@@ -163,22 +145,21 @@ impl FishUpdater {
         };
         let update_time = YTime::now().to_str();
         Ok(FishUpdater {
-            identity, length, duplicate_count, fish_type,
-            preview, data, description, tags, is_marked,
-            is_locked, extra_info, update_time,
+            identity, count, fish_type, fish_data, 
+            desc, tags, is_marked, is_locked,
+            extra_info, update_time,
         })
     }
 
 }
 
 pub struct FishPager {
-    pub identity: Option<String>,
-    pub length: Option<i32>,
-    pub duplicate_count: Option<i32>,
+    pub fuzzy: Option<String>,
+    pub identity: Option<Vec<String>>,
+    pub count: Option<i32>,
     pub fish_type: Option<Vec<String>>,
-    pub preview: Option<Option<Vec<u8>>>,
-    pub data: Option<Option<Vec<u8>>>,
-    pub description: Option<String>,
+    pub fish_data: Option<Vec<u8>>,
+    pub desc: Option<String>,
     pub tags: Option<String>,
     pub is_marked: Option<bool>,
     pub is_locked: Option<bool>,
@@ -189,18 +170,27 @@ pub struct FishPager {
 impl FishPager {
     
     pub fn new(
-        identity: Option<String>, length: Option<i32>, duplicate_count: Option<i32>,
-        fish_type: Option<Vec<FishType>>, preview: Option<Option<YBytes>>,
-        data: Option<Option<YBytes>>, description: Option<String>, tags: Option<Vec<String>>,
+        fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
+        fish_type: Option<Vec<FishType>>, fish_data: Option<YBytes>, 
+        desc: Option<String>, tags: Option<Vec<String>>, 
         is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
     ) -> YRes<FishPager> {
+        if page_num <= 0 {
+            return Err(err!(BusinessError::"build fish pager": "page num must be a positive number", page_num))
+        }
+        if page_size <= 0 {
+            return Err(err!(BusinessError::"build fish pager": "page size must be a positive number", page_size))
+        }
+        let fuzzy = match fuzzy {
+            Some(x) => Some(format!("%{}%", x)),
+            None => None,
+        };
         let fish_type = match fish_type {
             Some(x) => Some(x.into_iter().map(|x| x.to_string()).collect()),
             None => None,
         };
-        let preview = preview.map(|x| x.map(|y| y.into_vec()));
-        let data = data.map(|x| x.map(|y| y.into_vec()));
-        let description = match description {
+        let fish_data = fish_data.map(|x| x.into_vec());
+        let desc = match desc {
             Some(x) => Some(format!("%{}%", x)),
             None => None,
         };
@@ -217,11 +207,11 @@ impl FishPager {
             }
             None => None,
         };
-        let limit = page_num.into();
+        let limit = page_size.into();
         let offset = ((page_num-1) * page_size).into();
         Ok(FishPager {
-            identity, length, duplicate_count, fish_type,
-            preview, data, description, tags, is_marked,
+            fuzzy, identity, count, fish_type,
+            fish_data, desc, tags, is_marked,
             is_locked, limit, offset,
         })
     }
