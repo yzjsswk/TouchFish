@@ -4,13 +4,15 @@ create table fish (
     count integer NOT NULL DEFAULT 1,
     fish_type varchar(16) NOT NULL,
     fish_data blob NOT NULL,
+    data_info text NOT NULL,
     desc text NOT NULL DEFAULT '',
     tags text NOT NULL DEFAULT '',
     is_marked tinyint NOT NUll DEFAULT 0,
     is_locked tinyint NOT NUll DEFAULT 0,
-    extra_info text NOT NULL,
+    extra_info text NOT NULL DEFAULT '',
     create_time varchar(64) NOT NULL,
-    update_time varchar(64) NOT NULL
+    update_time varchar(64) NOT NULL,
+    CONSTRAINT unique_data UNIQUE (identity)
 );
 
 create index idx__identity on fish (identity);
@@ -22,6 +24,7 @@ create table fish_expired (
     count integer NOT NULL,
     fish_type varchar(16) NOT NULL,
     fish_data blob NOT NULL,
+    data_info text NOT NULL,
     desc text NOT NULL,
     tags text NOT NULL,
     is_marked tinyint NOT NUll,

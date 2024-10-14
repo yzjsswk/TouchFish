@@ -8,11 +8,12 @@ pub struct Fish {
     pub count: i32,
     pub fish_type: FishType,
     pub fish_data: YBytes,
+    pub data_info: DataInfo,
     pub desc: String,
     pub tags: Vec<String>,
     pub is_marked: bool,
     pub is_locked: bool,
-    pub extra_info: ExtraInfo,
+    pub extra_info: String,
     pub create_time: YTime,
     pub update_time: YTime,
 }
@@ -34,7 +35,7 @@ pub enum FishType {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ExtraInfo {
+pub struct DataInfo {
     pub byte_count: Option<usize>,
     // Text
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -50,10 +51,10 @@ pub struct ExtraInfo {
     pub height: Option<usize>,
 }
 
-impl ExtraInfo {
+impl DataInfo {
 
-    pub fn new() -> ExtraInfo {
-        ExtraInfo { 
+    pub fn new() -> DataInfo {
+        DataInfo { 
             byte_count: None, 
             char_count: None, word_count: None, row_count: None,
             width: None, height: None,

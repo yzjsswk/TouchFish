@@ -45,7 +45,7 @@ impl Cli {
                         let fish_type = FishType::from_str(&fish_type).map_err(|e|
                             err!(ParseError::"handle add command": "parse fish_type failed", fish_type, e)
                         )?;
-                        let fish = core.add_fish(fish_type, YBytes::new(fish_data.into_bytes()), None, None, None, None)?;
+                        let fish = core.add_fish(fish_type, YBytes::new(fish_data.into_bytes()), None, None, None, None, None)?;
                         Ok(fish.to_json_string()?)
                     },
                     Commands::Search { fuzzy, fish_types, page_num, page_size } => {

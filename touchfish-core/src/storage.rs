@@ -1,12 +1,12 @@
 use yfunc_rust::{Page, YBytes, YRes};
 
-use crate::{FishType, ExtraInfo, Fish};
+use crate::{FishType, DataInfo, Fish};
 
 pub trait FishStorage {
 
     fn add_fish(
-        &self, identity: String, count: i32, fish_type: FishType, fish_data: YBytes,
-        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: ExtraInfo,
+        &self, identity: String, count: i32, fish_type: FishType, fish_data: YBytes, data_info: DataInfo,
+        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: String,
     ) -> YRes<Fish>;
 
     fn expire_fish(&self, identity: String) -> YRes<()>;

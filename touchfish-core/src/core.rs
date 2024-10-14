@@ -18,9 +18,9 @@ impl<S> TouchFishCore<S> where S: FishStorage {
 
     pub fn add_fish(
         &self, fish_type: FishType, fish_data: YBytes, description: Option<String>,
-        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
+        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>, extra_info: Option<String>,
     ) -> YRes<Fish> {
-        self.fish_service.add_fish(fish_type, fish_data, description, tags, is_marked, is_locked)
+        self.fish_service.add_fish(fish_type, fish_data, description, tags, is_marked, is_locked, extra_info)
     }
 
     pub fn search_fish(

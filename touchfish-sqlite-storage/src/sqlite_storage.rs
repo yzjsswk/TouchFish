@@ -4,8 +4,8 @@ use diesel::result::Error;
 use diesel::sql_types::{Bool, Text};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use r2d2::Pool;
-use touchfish_core::{Fish, FishStorage};
-use yfunc_rust::{Page, prelude::*};
+use touchfish_core::{DataInfo, Fish, FishStorage, FishType};
+use yfunc_rust::{prelude::*, Page, YBytes};
 
 use crate::model::{FishExpiredInserter, FishExpiredModel, FishInserter, FishModel, FishPager, FishUpdater};
 use crate::schema::{fish, fish_expired};
@@ -125,14 +125,14 @@ impl SqliteStorage {
 impl FishStorage for SqliteStorage {
 
     fn add_fish(
-        &self, identity: String, count: i32, fish_type: touchfish_core::FishType, fish_data: yfunc_rust::YBytes,
-        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: touchfish_core::ExtraInfo,
+        &self, identity: String, count: i32, fish_type: FishType, fish_data: YBytes, data_info: DataInfo,
+        desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: String,
     ) -> YRes<Fish> {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"add fish": "fetch connection from pool failed", e),
         )?;
         let fish = self.fish__insert(&mut conn, &FishInserter::new(
-            identity, count, fish_type, fish_data, desc, tags, is_marked, is_locked, extra_info
+            identity, count, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info
         )?).map_err(|e| err!(DataBaseError::"add fish", e))?;
         Ok(Fish::try_from(fish)?)
     }
@@ -145,10 +145,10 @@ impl FishStorage for SqliteStorage {
             err!(DataBaseError::"expire fish": "query to delete fish failed", identity, e)
         )?;
         if to_expire_fish.is_empty() {
-            return Err(err!(DataBaseError::"expire fish": "too delete fish not exist", identity));
+            return Err(err!(DataBaseError::"expire fish": "to delete fish not exist", identity));
         }
         if to_expire_fish.len() > 1 {
-            return Err(err!(DataBaseError::"expire fish": "too delete fish more than one", identity));
+            return Err(err!(DataBaseError::"expire fish": "to delete fish more than one", identity));
         }
         let to_expire_fish = to_expire_fish.into_iter().next().unwrap();
         let to_expire_fish_id = to_expire_fish.id;
