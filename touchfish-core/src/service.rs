@@ -90,7 +90,19 @@ impl<S> FishService<S> where S: FishStorage {
     }
 
     pub fn expire_fish(&self, identity: &str) -> YRes<()> {
-        self.storage.expire_fish(identity)
+        let fish = self.storage.pick_fish(identity)?;
+        match fish {
+            None => {
+                return Err(err!(BusinessError::"expire fish": "fish not exist", identity))
+            },
+            Some(x) => {
+                if x.is_locked {
+                    return Err(err!(BusinessError::"expire fish": "fish is locked", identity))
+                } else {
+                    self.storage.expire_fish(identity)
+                }
+            }
+        }
     }
 
     pub fn modify_fish(

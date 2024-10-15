@@ -30,6 +30,12 @@ pub enum Commands {
     },
     Modify {
         identity: String,
+        #[arg(long = "desc")]
+        desc: Option<String>,
+        #[arg(long = "tags", use_value_delimiter = true)]
+        tags: Option<Vec<String>>,
+        #[arg(long = "extra")]
+        extra_info: Option<String>,
     },
     Mark {
         identity: String,
@@ -134,8 +140,8 @@ impl Cli {
                 core.expire_fish(&identity)?;
                 Ok(CliOutput::Ok)
             },
-            Commands::Modify { identity } => {
-                core.modify_fish(&identity, None, None, None)?;
+            Commands::Modify { identity, desc, tags, extra_info } => {
+                core.modify_fish(&identity, desc, tags, extra_info)?;
                 Ok(CliOutput::Ok)
             },
             Commands::Mark { identity } => {
