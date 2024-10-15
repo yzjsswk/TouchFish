@@ -220,6 +220,7 @@ impl FishPager {
 #[diesel(table_name = schema::fish_expired)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct FishExpiredModel {
     pub id: i32,
     pub identity: String,

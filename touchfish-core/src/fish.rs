@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use serde_with::skip_serializing_none;
 use strum_macros::{Display, EnumString};
 use yfunc_rust::{YBytes, YTime, prelude::*};
 
@@ -7,6 +9,7 @@ pub struct Fish {
     pub identity: String,
     pub count: i32,
     pub fish_type: FishType,
+    // #[serde(skip_serializing)] 
     pub fish_data: YBytes,
     pub data_info: DataInfo,
     pub desc: String,
@@ -26,6 +29,13 @@ impl Fish {
         )
     }
 
+    pub fn to_json_bytes(&self) -> YRes<Vec<u8>> {
+        let v = json!(self);
+        serde_json::to_vec(&v).map_err(|e|
+            err!(ParseError::"parse fish to json bytes", e)
+        )
+    }
+
 }
 
 #[derive(Serialize, Debug, EnumString, Display, PartialEq, Eq, Hash, Clone, Copy)]
@@ -34,20 +44,16 @@ pub enum FishType {
     Image,
 }
 
+#[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DataInfo {
     pub byte_count: Option<usize>,
     // Text
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub char_count: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub word_count: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub row_count: Option<usize>,
     // Image
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub width: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<usize>,
 }
 
