@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use serde_with::skip_serializing_none;
 use strum_macros::{Display, EnumString};
 use yfunc_rust::{YBytes, YTime, prelude::*};
@@ -9,7 +8,6 @@ pub struct Fish {
     pub identity: String,
     pub count: i32,
     pub fish_type: FishType,
-    // #[serde(skip_serializing)] 
     pub fish_data: YBytes,
     pub data_info: DataInfo,
     pub desc: String,
@@ -23,17 +21,54 @@ pub struct Fish {
 
 impl Fish {
 
-    pub fn to_json_string(&self) -> YRes<String> {
+    pub fn json_with_data(&self) -> YRes<String> {
         serde_json::to_string(self).map_err(|e|
             err!(ParseError::"parse fish to json string", e)
         )
     }
 
-    pub fn to_json_bytes(&self) -> YRes<Vec<u8>> {
-        let v = json!(self);
-        serde_json::to_vec(&v).map_err(|e|
-            err!(ParseError::"parse fish to json bytes", e)
+    pub fn json_with_preview(&self) -> YRes<String> {
+        serde_json::to_string_pretty(&FishPreview::from_fish(self)?).map_err(|e|
+            err!(ParseError::"parse fish preview to json string", e)
         )
+    }
+
+}
+
+#[derive(Serialize, Debug)]
+pub struct FishPreview {
+    pub identity: String,
+    pub count: i32,
+    pub fish_type: FishType,
+    pub data_preview: Option<String>,
+    pub data_info: DataInfo,
+    pub desc: String,
+    pub tags: Vec<String>,
+    pub is_marked: bool,
+    pub is_locked: bool,
+    pub extra_info: String,
+    pub create_time: String,
+    pub update_time: String,
+}
+
+impl FishPreview {
+
+    pub fn from_fish(fish: &Fish) -> YRes<FishPreview> {
+        let data_preview = match fish.fish_type {
+            FishType::Text => {
+                let preview = fish.fish_data.to_str()?;
+                Some(preview.chars().take(80).collect())
+            },
+            _ => None,
+        };
+        let create_time = fish.create_time.east8();
+        let update_time = fish.update_time.east8();
+        Ok(FishPreview { 
+            identity: fish.identity.clone(), count: fish.count, fish_type: fish.fish_type,
+            data_preview, data_info: fish.data_info.clone(), desc: fish.desc.clone(), tags: fish.tags.clone(),
+            is_marked: fish.is_marked, is_locked: fish.is_locked, extra_info: fish.extra_info.clone(),
+            create_time, update_time,
+        })
     }
 
 }
@@ -45,7 +80,7 @@ pub enum FishType {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DataInfo {
     pub byte_count: Option<usize>,
     // Text
