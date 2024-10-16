@@ -1,9 +1,9 @@
-mod fish;
-mod storage;
-mod service;
 mod core;
+mod domain;
+mod infra;
+mod service;
 
-pub use fish::*;
-pub use storage::*;
-pub use service::*;
-pub use core::*;
+pub use core::TouchFishCore;
+pub use domain::*;
+pub use infra::FishStorage;
+pub use service::FishService;
