@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use image::GenericImageView;
 use yfunc_rust::{prelude::*, Page, Unique, YBytes};
 
 use crate::{DataInfo, Fish, FishStorage, FishType};
@@ -82,7 +83,14 @@ impl<S> FishService<S> where S: FishStorage {
                 data_info.word_count = Some(s.split_whitespace().collect::<Vec<_>>().len());
                 data_info.row_count = Some(s.split('\n').collect::<Vec<_>>().len());
             },
-            FishType::Image => {},
+            FishType::Image => {
+                let m = image::load_from_memory(&fish_data.clone().into_vec()).map_err(|e|
+                    err!(ParseError::"add image fish": "parse fish_data to image failed", e)
+                )?;
+                let (w, h) = m.dimensions();
+                data_info.width = Some(w as usize);
+                data_info.height = Some(h as usize);
+            },
         };
         self.storage.add_fish(
             identity, 1, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info,
