@@ -219,5 +219,13 @@ impl<S> FishService<S> where S: FishStorage {
         )
     }
 
+    pub fn detect_fish(
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
+        fish_type: Option<Vec<FishType>>, desc: Option<String>,
+        tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
+    ) -> YRes<Vec<String>> {
+        self.storage.detect_fish(fuzzy, identity, None, fish_type, desc, tags, is_marked, is_locked)
+    }
+
 }
 

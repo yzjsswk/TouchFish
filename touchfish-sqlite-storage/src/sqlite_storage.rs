@@ -63,6 +63,38 @@ impl SqliteStorage {
         Ok(selected)
     }
 
+    fn fish__select_identity(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<String>, Error> {
+        let mut query = fish::dsl::fish.into_boxed();
+        if let Some(fuzzy) = &pager.fuzzy {
+            query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        }
+        if let Some(identity) = &pager.identity {
+            query = query.filter(fish::identity.eq_any(identity));
+        }
+        if let Some(count) = pager.count {
+            query = query.filter(fish::count.eq(count));
+        }
+        if let Some(fish_type) = &pager.fish_type {
+            query = query.filter(fish::fish_type.eq_any(fish_type));
+        }
+        if let Some(desc) = &pager.desc {
+            query = query.filter(fish::desc.like(desc));
+        }
+        if let Some(tags) = &pager.tags {
+            query = query.filter(fish::tags.like(tags));
+        }
+        if let Some(is_marked) = pager.is_marked {
+            query = query.filter(fish::is_marked.eq(is_marked));
+        }
+        if let Some(is_locked) = pager.is_locked {
+            query = query.filter(fish::is_locked.eq(is_locked));
+        }
+        let selected: Vec<String> = query
+            .select(fish::identity)
+            .load(conn)?;
+        Ok(selected)
+    }
+
     fn fish__page(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<FishModel>, Error> {
         let mut query = fish::dsl::fish.into_boxed();
         if let Some(fuzzy) = &pager.fuzzy {
@@ -303,6 +335,21 @@ impl FishStorage for SqliteStorage {
             .map(|x| Fish::try_from(x))
             .collect::<YRes<Vec<_>>>()?;
         Ok(Page { total_count, page_num, page_size, data })
+    }
+    
+    fn detect_fish(
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
+        fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
+        is_marked: Option<bool>, is_locked: Option<bool>,
+    ) -> YRes<Vec<String>> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"find fish": "fetch connection from pool failed", e),
+        )?;
+        // reuse FishPager for para, ignore page_num and page_size
+        let pager = FishPager::new(
+            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, 1, 1
+        )?;
+        self.fish__select_identity(&mut conn, &pager).map_err(|e| err!(DataBaseError::"find fish", e))
     }
 
 }

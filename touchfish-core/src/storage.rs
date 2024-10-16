@@ -37,4 +37,10 @@ pub trait FishStorage {
         is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>>;
 
+    fn detect_fish(
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
+        fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
+        is_marked: Option<bool>, is_locked: Option<bool>,
+    ) -> YRes<Vec<String>>;
+
 }
