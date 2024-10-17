@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use diesel::prelude::*;
 use touchfish_core::{FishType, DataInfo, Fish};
 use yfunc_rust::{ctx, err, Trace, Unique, YBytes, YError, YRes, YTime};
