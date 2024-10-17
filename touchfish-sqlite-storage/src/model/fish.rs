@@ -31,8 +31,8 @@ impl TryFrom<FishModel> for Fish {
     type Error = YError;
 
     fn try_from(model: FishModel) -> YRes<Self> {
-        let fish_type = FishType::from_str(&model.fish_type).map_err(|err|
-            err!(ParseError::"try from FishModel to Fish": "parse fish_type failed", model.fish_type, model.id, err)
+        let fish_type = FishType::new(&model.fish_type).trace(
+            ctx!("try from FishModel to Fish": "parse fish_type failed", model.fish_type, model.id)
         )?;
         let fish_data = YBytes::new(model.fish_data);
         let tags = if model.tags.len() > 0 {
@@ -156,7 +156,7 @@ impl FishUpdater {
 
 }
 
-pub struct FishPager {
+pub struct FishSelecter {
     pub fuzzy: Option<String>,
     pub identity: Option<Vec<String>>,
     pub count: Option<i32>,
@@ -165,23 +165,17 @@ pub struct FishPager {
     pub tags: Option<String>,
     pub is_marked: Option<bool>,
     pub is_locked: Option<bool>,
-    pub limit: i64,
-    pub offset: i64,
+    pub limit: Option<i32>,
+    pub offset: Option<i32>,
 }
 
-impl FishPager {
+impl FishSelecter {
     
     pub fn new(
         fuzzy: Option<String>, identity: Option<Vec<String>>, count: Option<i32>,
         fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
-        is_marked: Option<bool>, is_locked: Option<bool>, page_num: i32, page_size: i32,
-    ) -> YRes<FishPager> {
-        if page_num <= 0 {
-            return Err(err!(BusinessError::"build fish pager": "page num must be a positive number", page_num))
-        }
-        if page_size <= 0 {
-            return Err(err!(BusinessError::"build fish pager": "page size must be a positive number", page_size))
-        }
+        is_marked: Option<bool>, is_locked: Option<bool>, page: Option<(i32, i32)>,
+    ) -> YRes<FishSelecter> {
         let fuzzy = match fuzzy {
             Some(x) => Some(format!("%{}%", x)),
             None => None,
@@ -207,11 +201,45 @@ impl FishPager {
             }
             None => None,
         };
-        let limit = page_size.into();
-        let offset = ((page_num-1) * page_size).into();
-        Ok(FishPager {
+        let (limit, offset) = if let Some((page_num, page_size)) = page {
+            if page_num <= 0 {
+                return Err(err!(BusinessError::"build fish selecter": "page num must be a positive number", page_num))
+            }
+            if page_size <= 0 {
+                return Err(err!(BusinessError::"build fish selecter": "page size must be a positive number", page_size))
+            }
+            (Some(page_size), Some((page_num-1) * page_size))
+        } else {
+            (None, None)
+        };
+        Ok(FishSelecter {
             fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, limit, offset,
         })
+    }
+
+    pub fn empty() -> FishSelecter {
+        FishSelecter {
+            fuzzy: None, identity: None, count: None, fish_type: None,
+            desc: None, tags: None, is_marked: None, is_locked: None,
+            limit: None, offset: None,
+        }
+    }
+
+    pub fn set_page(&mut self, page: Option<(i32, i32)>) -> YRes<()> {
+        let (limit, offset) = if let Some((page_num, page_size)) = page {
+            if page_num <= 0 {
+                return Err(err!(BusinessError::"set page of fish selecter": "page num must be a positive number", page_num))
+            }
+            if page_size <= 0 {
+                return Err(err!(BusinessError::"set page of fish selecter": "page size must be a positive number", page_size))
+            }
+            (Some(page_size), Some((page_num-1) * page_size))
+        } else {
+            (None, None)
+        };
+        self.limit = limit;
+        self.offset = offset;
+        Ok(())
     }
 
 }

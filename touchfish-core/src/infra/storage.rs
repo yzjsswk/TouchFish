@@ -1,6 +1,6 @@
 use yfunc_rust::{Page, YBytes, YRes};
 
-use crate::{FishType, DataInfo, Fish};
+use crate::{DataInfo, Fish, FishType, Statistics};
 
 pub trait FishStorage {
 
@@ -42,5 +42,7 @@ pub trait FishStorage {
         fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
         is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>>;
+
+    fn count_fish(&self) -> YRes<Statistics>;
 
 }

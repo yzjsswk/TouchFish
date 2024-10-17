@@ -79,6 +79,10 @@ pub enum Commands {
         #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
         original_data: bool,
     },
+    Count {
+        #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
+        original_data: bool,
+    },
 }
 
 pub enum CliOutput {
@@ -203,6 +207,10 @@ impl Cli {
                     None => Ok(CliOutput::None),
                 }
             },
+            Commands::Count { original_data } => {
+                let stats = core.count_fish()?;
+                Ok(CliOutput::Text(stats.to_json(!original_data)?))
+            }
         }
     }
 

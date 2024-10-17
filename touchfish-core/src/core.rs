@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use yfunc_rust::{Page, YBytes, YRes};
 
-use crate::{Fish, FishService, FishStorage, FishType};
+use crate::{Fish, FishService, FishStorage, FishType, Statistics};
 
 pub struct TouchFishCore<S> where S: FishStorage {
     fish_service: FishService<S>,
@@ -72,6 +72,10 @@ impl<S> TouchFishCore<S> where S: FishStorage {
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>> {
         self.fish_service.detect_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked)
+    }
+
+    pub fn count_fish(&self) -> YRes<Statistics> {
+        self.fish_service.count_fish()
     }
 
 }

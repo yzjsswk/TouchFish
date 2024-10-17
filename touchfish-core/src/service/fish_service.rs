@@ -3,7 +3,7 @@ use std::rc::Rc;
 use image::GenericImageView;
 use yfunc_rust::{prelude::*, Page, Unique, YBytes};
 
-use crate::{DataInfo, Fish, FishStorage, FishType};
+use crate::{DataInfo, Fish, FishStorage, FishType, Statistics};
 
 const FISH_DATA_LEN_LIMIT: usize = 10485760;
 
@@ -225,6 +225,10 @@ impl<S> FishService<S> where S: FishStorage {
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>> {
         self.storage.detect_fish(fuzzy, identity, None, fish_type, desc, tags, is_marked, is_locked)
+    }
+
+    pub fn count_fish(&self) -> YRes<Statistics> {
+        self.storage.count_fish()
     }
 
 }

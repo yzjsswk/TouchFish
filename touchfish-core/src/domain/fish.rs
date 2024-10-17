@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use strum_macros::{Display, EnumString};
@@ -77,6 +79,16 @@ impl FishPreview {
 pub enum FishType {
     Text,
     Image,
+}
+
+impl FishType {
+
+    pub fn new(s: &str) -> YRes<FishType> {
+        FishType::from_str(s).map_err(|e|
+            err!(ParseError::"build FishType from str", s, e)
+        )
+    }
+
 }
 
 #[skip_serializing_none]

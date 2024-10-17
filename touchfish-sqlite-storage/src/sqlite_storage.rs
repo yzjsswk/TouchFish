@@ -1,13 +1,15 @@
+use std::collections::HashMap;
+
 use diesel::dsl::sql;
-use diesel::prelude::*;
+use diesel::{prelude::*, sql_query};
 use diesel::result::Error;
 use diesel::sql_types::{Bool, Text};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use r2d2::Pool;
-use touchfish_core::{DataInfo, Fish, FishStorage, FishType};
+use touchfish_core::{DataInfo, Fish, FishStorage, FishType, Statistics};
 use yfunc_rust::{prelude::*, Page, YBytes};
 
-use crate::model::{FishExpiredInserter, FishExpiredModel, FishInserter, FishModel, FishPager, FishUpdater};
+use crate::model::{CountByDay, CountByTag, CountByType, FishExpiredInserter, FishExpiredModel, FishInserter, FishModel, FishSelecter, FishUpdater};
 use crate::schema::{fish, fish_expired};
 
 pub struct SqliteStorage {
@@ -63,66 +65,38 @@ impl SqliteStorage {
         Ok(selected)
     }
 
-    fn fish__select_identity(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<String>, Error> {
+    fn fish__select(&self, conn: &mut SqliteConnection, selecter: &FishSelecter) -> Result<Vec<FishModel>, Error> {
         let mut query = fish::dsl::fish.into_boxed();
-        if let Some(fuzzy) = &pager.fuzzy {
+        if let Some(fuzzy) = &selecter.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
         }
-        if let Some(identity) = &pager.identity {
+        if let Some(identity) = &selecter.identity {
             query = query.filter(fish::identity.eq_any(identity));
         }
-        if let Some(count) = pager.count {
+        if let Some(count) = selecter.count {
             query = query.filter(fish::count.eq(count));
         }
-        if let Some(fish_type) = &pager.fish_type {
+        if let Some(fish_type) = &selecter.fish_type {
             query = query.filter(fish::fish_type.eq_any(fish_type));
         }
-        if let Some(desc) = &pager.desc {
+        if let Some(desc) = &selecter.desc {
             query = query.filter(fish::desc.like(desc));
         }
-        if let Some(tags) = &pager.tags {
+        if let Some(tags) = &selecter.tags {
             query = query.filter(fish::tags.like(tags));
         }
-        if let Some(is_marked) = pager.is_marked {
+        if let Some(is_marked) = selecter.is_marked {
             query = query.filter(fish::is_marked.eq(is_marked));
         }
-        if let Some(is_locked) = pager.is_locked {
+        if let Some(is_locked) = selecter.is_locked {
             query = query.filter(fish::is_locked.eq(is_locked));
         }
-        let selected: Vec<String> = query
-            .select(fish::identity)
-            .load(conn)?;
-        Ok(selected)
-    }
-
-    fn fish__page(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<Vec<FishModel>, Error> {
-        let mut query = fish::dsl::fish.into_boxed();
-        if let Some(fuzzy) = &pager.fuzzy {
-            query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        if let Some(limit) = selecter.limit {
+            query = query.limit(limit as i64);
         }
-        if let Some(identity) = &pager.identity {
-            query = query.filter(fish::identity.eq_any(identity));
+        if let Some(offset) = selecter.offset {
+            query = query.offset(offset as i64);
         }
-        if let Some(count) = pager.count {
-            query = query.filter(fish::count.eq(count));
-        }
-        if let Some(fish_type) = &pager.fish_type {
-            query = query.filter(fish::fish_type.eq_any(fish_type));
-        }
-        if let Some(desc) = &pager.desc {
-            query = query.filter(fish::desc.like(desc));
-        }
-        if let Some(tags) = &pager.tags {
-            query = query.filter(fish::tags.like(tags));
-        }
-        if let Some(is_marked) = pager.is_marked {
-            query = query.filter(fish::is_marked.eq(is_marked));
-        }
-        if let Some(is_locked) = pager.is_locked {
-            query = query.filter(fish::is_locked.eq(is_locked));
-        }
-        query = query.limit(pager.limit);
-        query = query.offset(pager.offset);
         // println!("{}", diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query));
         let selected: Vec<FishModel> = query
             .select(FishModel::as_select())
@@ -130,31 +104,113 @@ impl SqliteStorage {
         Ok(selected)
     }
 
-    fn fish__count(&self, conn: &mut SqliteConnection, pager: &FishPager) -> Result<i64, Error> {
+    fn fish__select_identity(&self, conn: &mut SqliteConnection, selecter: &FishSelecter) -> Result<Vec<String>, Error> {
         let mut query = fish::dsl::fish.into_boxed();
-        if let Some(fuzzy) = &pager.fuzzy {
+        if let Some(fuzzy) = &selecter.fuzzy {
             query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
         }
-        if let Some(identity) = &pager.identity {
+        if let Some(identity) = &selecter.identity {
             query = query.filter(fish::identity.eq_any(identity));
         }
-        if let Some(count) = pager.count {
+        if let Some(count) = selecter.count {
             query = query.filter(fish::count.eq(count));
         }
-        if let Some(fish_type) = &pager.fish_type {
+        if let Some(fish_type) = &selecter.fish_type {
             query = query.filter(fish::fish_type.eq_any(fish_type));
         }
-        if let Some(desc) = &pager.desc {
+        if let Some(desc) = &selecter.desc {
             query = query.filter(fish::desc.like(desc));
         }
-        if let Some(tags) = &pager.tags {
+        if let Some(tags) = &selecter.tags {
             query = query.filter(fish::tags.like(tags));
         }
-        if let Some(is_marked) = pager.is_marked {
+        if let Some(is_marked) = selecter.is_marked {
             query = query.filter(fish::is_marked.eq(is_marked));
         }
-        if let Some(is_locked) = pager.is_locked {
+        if let Some(is_locked) = selecter.is_locked {
             query = query.filter(fish::is_locked.eq(is_locked));
+        }
+        if let Some(limit) = selecter.limit {
+            query = query.limit(limit as i64);
+        }
+        if let Some(offset) = selecter.offset {
+            query = query.offset(offset as i64);
+        }
+        let selected: Vec<String> = query
+            .select(fish::identity)
+            .load(conn)?;
+        Ok(selected)
+    }
+
+    fn fish__count(&self, conn: &mut SqliteConnection, selecter: &FishSelecter) -> Result<i64, Error> {
+        let mut query = fish::dsl::fish.into_boxed();
+        if let Some(fuzzy) = &selecter.fuzzy {
+            query = query.filter(fish::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        }
+        if let Some(identity) = &selecter.identity {
+            query = query.filter(fish::identity.eq_any(identity));
+        }
+        if let Some(count) = selecter.count {
+            query = query.filter(fish::count.eq(count));
+        }
+        if let Some(fish_type) = &selecter.fish_type {
+            query = query.filter(fish::fish_type.eq_any(fish_type));
+        }
+        if let Some(desc) = &selecter.desc {
+            query = query.filter(fish::desc.like(desc));
+        }
+        if let Some(tags) = &selecter.tags {
+            query = query.filter(fish::tags.like(tags));
+        }
+        if let Some(is_marked) = selecter.is_marked {
+            query = query.filter(fish::is_marked.eq(is_marked));
+        }
+        if let Some(is_locked) = selecter.is_locked {
+            query = query.filter(fish::is_locked.eq(is_locked));
+        }
+        if let Some(limit) = selecter.limit {
+            query = query.limit(limit as i64);
+        }
+        if let Some(offset) = selecter.offset {
+            query = query.offset(offset as i64);
+        }
+        let cnt: i64 = query
+            .count()
+            .get_result(conn)?;
+        Ok(cnt)
+    }
+
+    fn expired_fish__count(&self, conn: &mut SqliteConnection, selecter: &FishSelecter) -> Result<i64, Error> {
+        let mut query = fish_expired::dsl::fish_expired.into_boxed();
+        if let Some(fuzzy) = &selecter.fuzzy {
+            query = query.filter(fish_expired::desc.like(fuzzy).or(sql::<Bool>("fish_data LIKE ").bind::<Text, _>(fuzzy)))
+        }
+        if let Some(identity) = &selecter.identity {
+            query = query.filter(fish_expired::identity.eq_any(identity));
+        }
+        if let Some(count) = selecter.count {
+            query = query.filter(fish_expired::count.eq(count));
+        }
+        if let Some(fish_type) = &selecter.fish_type {
+            query = query.filter(fish_expired::fish_type.eq_any(fish_type));
+        }
+        if let Some(desc) = &selecter.desc {
+            query = query.filter(fish_expired::desc.like(desc));
+        }
+        if let Some(tags) = &selecter.tags {
+            query = query.filter(fish_expired::tags.like(tags));
+        }
+        if let Some(is_marked) = selecter.is_marked {
+            query = query.filter(fish_expired::is_marked.eq(is_marked));
+        }
+        if let Some(is_locked) = selecter.is_locked {
+            query = query.filter(fish_expired::is_locked.eq(is_locked));
+        }
+        if let Some(limit) = selecter.limit {
+            query = query.limit(limit as i64);
+        }
+        if let Some(offset) = selecter.offset {
+            query = query.offset(offset as i64);
         }
         let cnt: i64 = query
             .count()
@@ -168,6 +224,55 @@ impl SqliteStorage {
             .returning(FishExpiredModel::as_returning())
             .get_result(conn)?;
         Ok(inserted)
+    }
+
+    fn fish__count_by_type(&self, conn: &mut SqliteConnection) -> Result<Vec<CountByType>, Error> {
+        let query = sql_query("select fish_type, count(*) as count from fish group by fish_type;");
+        query.load::<CountByType>(conn)
+    }
+
+    fn fish__count_by_tag(&self, conn: &mut SqliteConnection) -> Result<Vec<CountByTag>, Error> {
+        let query = sql_query(r#"
+WITH RECURSIVE split(tag, rest) AS (
+    SELECT 
+        substr(tags, 1, instr(tags || ',', ',') - 1) AS tag,
+        substr(tags, instr(tags || ',', ',') + 1) AS rest
+    FROM fish
+    UNION ALL
+    SELECT 
+        substr(rest, 1, instr(rest || ',', ',') - 1) AS tag,
+        substr(rest, instr(rest || ',', ',') + 1) AS rest
+    FROM split
+    WHERE rest != ''
+)
+SELECT tag, COUNT(*) AS count
+FROM split
+GROUP BY tag
+ORDER BY count DESC;
+        "#);
+        query.load::<CountByTag>(conn)
+    }
+
+    fn fish__count_by_day(&self, conn: &mut SqliteConnection) -> Result<Vec<CountByDay>, Error> {
+        let query = sql_query(r#"
+SELECT strftime('%Y-%m-%d', create_time) AS day,
+       COUNT(*) AS count
+FROM fish
+GROUP BY strftime('%Y-%m-%d', create_time)
+ORDER BY day DESC;
+        "#);
+        query.load::<CountByDay>(conn)
+    }
+
+    fn fish_expired__count_by_day(&self, conn: &mut SqliteConnection) -> Result<Vec<CountByDay>, Error> {
+        let query = sql_query(r#"
+SELECT strftime('%Y-%m-%d', create_time) AS day,
+       COUNT(*) AS count
+FROM fish_expired
+GROUP BY strftime('%Y-%m-%d', create_time)
+ORDER BY day DESC;
+        "#);
+        query.load::<CountByDay>(conn)
     }
 
 }
@@ -323,12 +428,13 @@ impl FishStorage for SqliteStorage {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"page fish": "fetch connection from pool failed", e),
         )?;
-        let pager = FishPager::new(
-            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, page_num, page_size
+        let mut selecter = FishSelecter::new(
+            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, Some((page_num, page_size),)
         )?;
-        let total_count = self.fish__count(&mut conn, &pager)
+        let fish_list = self.fish__select(&mut conn, &selecter)
             .map_err(|e| err!(DataBaseError::"page fish", e))?;
-        let fish_list = self.fish__page(&mut conn, &pager)
+        selecter.set_page(None)?;
+        let total_count = self.fish__count(&mut conn, &selecter)
             .map_err(|e| err!(DataBaseError::"page fish", e))?;
         let data = fish_list
             .into_iter()
@@ -343,13 +449,71 @@ impl FishStorage for SqliteStorage {
         is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>> {
         let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"find fish": "fetch connection from pool failed", e),
+            |e| err!(DataBaseError::"detect fish": "fetch connection from pool failed", e),
         )?;
-        // reuse FishPager for para, ignore page_num and page_size
-        let pager = FishPager::new(
-            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, 1, 1
+        let selecter = FishSelecter::new(
+            fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, None,
         )?;
-        self.fish__select_identity(&mut conn, &pager).map_err(|e| err!(DataBaseError::"find fish", e))
+        self.fish__select_identity(&mut conn, &selecter).map_err(|e| err!(DataBaseError::"detect fish", e))
+    }
+    
+    fn count_fish(&self) -> YRes<Statistics> {
+        let mut conn = self.pool.get().map_err(
+            |e| err!(DataBaseError::"count fish": "fetch connection from pool failed", e),
+        )?;
+        let mut selecter = FishSelecter::empty();
+        let count__active = self.fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count active fish failed", e)
+        )? as i32;
+        let count__expired = self.expired_fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count expired fish failed", e)
+        )? as i32;
+        let count__by_type = self.fish__count_by_type(&mut conn).map_err(|e|
+            err!(DataBaseError::"count fish": "count by type failed", e)
+        )?;
+        let count__by_type = count__by_type.into_iter()
+            .map(|x| FishType::new(&x.fish_type).map(|y|(y, x.count)))
+            .collect::<YRes<HashMap<FishType, i32>>>()?;
+        let count__by_tag = self.fish__count_by_tag(&mut conn).map_err(|e| 
+            err!(DataBaseError::"count fish": "count by tag failed", e)
+        )?;
+        let count__by_tag: HashMap<String, i32> = count__by_tag.into_iter()
+            .map(|x| (x.tag, x.count)).collect();
+        selecter.is_marked = Some(true);
+        let count__marked = self.fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count marked failed", e)
+        )? as i32;
+        selecter.is_marked = Some(false);
+        let count__unmarked = self.fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count unmarked failed", e)
+        )? as i32;
+        selecter.is_marked = None;
+        selecter.is_locked = Some(true);
+        let count__locked = self.fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count locked failed", e)
+        )? as i32;
+        selecter.is_locked = Some(false);
+        let count__unlocked = self.fish__count(& mut conn, &selecter).map_err(|e| 
+            err!(DataBaseError::"count fish": "count unlocked failed", e)
+        )? as i32;
+        let count_fish_by_day = self.fish__count_by_day(&mut conn).map_err(|e| 
+            err!(DataBaseError::"count fish": "count fish by day failed", e)
+        )?;
+        let count_expired_fish_by_day = self.fish_expired__count_by_day(&mut conn).map_err(|e| 
+            err!(DataBaseError::"count fish": "count expired fish by day failed", e)
+        )?;
+        let mut count__by_day: HashMap<String, i32> = HashMap::new();
+        for cnt in count_fish_by_day {
+            *count__by_day.entry(cnt.day).or_insert(0) += cnt.count;
+        }
+        for cnt in count_expired_fish_by_day {
+            *count__by_day.entry(cnt.day).or_insert(0) += cnt.count;
+        }
+        Ok(Statistics {
+            count__active, count__expired, count__by_type, count__by_tag,
+            count__marked, count__unmarked, count__locked, count__unlocked,
+            count__by_day,
+        })
     }
 
 }
