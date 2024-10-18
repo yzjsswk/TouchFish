@@ -74,6 +74,22 @@ pub enum Commands {
         #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
         original_data: bool,
     },
+    Delect {
+        #[arg(long = "fuzzy")]
+        fuzzy: Option<String>,
+        #[arg(long = "identitys", use_value_delimiter = true)]
+        identitys: Option<Vec<String>>,
+        #[arg(long = "types", use_value_delimiter = true)]
+        fish_types: Option<Vec<String>>,
+        #[arg(long = "desc")]
+        desc: Option<String>,
+        #[arg(long = "tags", use_value_delimiter = true)]
+        tags: Option<Vec<String>>,
+        #[arg(long = "mark")]
+        is_marked: Option<bool>,
+        #[arg(long = "lock")]
+        is_locked: Option<bool>,
+    },
     Pick {
         identity: String,
         #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
@@ -176,7 +192,7 @@ impl Cli {
                 let fish_types = match fish_types {
                     None => None,
                     Some(x) => Some(x.into_iter().map(|y| FishType::from_str(&y.Aabb()).map_err(|e|
-                            err!(ParseError::"handle add command": "parse fish_type failed", y, e)
+                            err!(ParseError::"handle search command": "parse fish_type failed", y, e)
                     )).collect::<YRes<Vec<_>>>()?),
                 };
                 let res = core.search_fish(
@@ -196,6 +212,21 @@ impl Cli {
                     Ok(CliOutput::Text(preview_page.to_json(true)?))
                 }
             },
+            Commands::Delect { 
+                fuzzy, identitys, fish_types, 
+                desc, tags, is_marked, is_locked,
+            } => {
+                let fish_types = match fish_types {
+                    None => None,
+                    Some(x) => Some(x.into_iter().map(|y| FishType::from_str(&y.Aabb()).map_err(|e|
+                            err!(ParseError::"handle delect command": "parse fish_type failed", y, e)
+                    )).collect::<YRes<Vec<_>>>()?),
+                };
+                let res = core.detect_fish(
+                    fuzzy, identitys, fish_types, desc, tags, is_marked, is_locked, 
+                )?;
+                Ok(CliOutput::Text(res.join(",")))
+            }
             Commands::Pick { identity , original_data} => {
                 let fish = core.pick_fish(&identity)?;
                 match fish {

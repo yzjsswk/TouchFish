@@ -13,7 +13,7 @@ fn main() -> YRes<()> {
     let storage = SqliteStorage::connect("/Users/yzjsswk/WorkSpace/touchfish.db")?;
     let core = TouchFishCore::new(std::rc::Rc::new(storage))?;
     loop {
-        write_str_to_stdout("> ")?;
+        // write_str_to_stdout("> ")?;
         let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)
