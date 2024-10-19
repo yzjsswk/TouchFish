@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use image::GenericImageView;
 use yfunc_rust::{prelude::*, Page, Unique, YBytes};
 
@@ -8,12 +6,12 @@ use crate::{DataInfo, Fish, FishStorage, FishType, Statistics};
 const FISH_DATA_LEN_LIMIT: usize = 10485760;
 
 pub struct FishService<S> where S: FishStorage {
-    storage: Rc<S>,
+    storage: S,
 }
 
 impl<S> FishService<S> where S: FishStorage {
 
-    pub fn new(storage: Rc<S>) -> FishService<S> {
+    pub fn new(storage: S) -> FishService<S> {
         FishService { storage }
     }
 

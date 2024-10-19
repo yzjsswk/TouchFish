@@ -75,7 +75,7 @@ impl FishPreview {
 
 }
 
-#[derive(Serialize, Debug, EnumString, Display, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, EnumString, Display, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum FishType {
     Text,
     Image,

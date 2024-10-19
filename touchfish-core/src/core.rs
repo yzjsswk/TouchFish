@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use yfunc_rust::{Page, YBytes, YRes};
 
 use crate::{Fish, FishService, FishStorage, FishType, Statistics};
@@ -10,9 +8,9 @@ pub struct TouchFishCore<S> where S: FishStorage {
 
 impl<S> TouchFishCore<S> where S: FishStorage {
 
-    pub fn new(storage: Rc<S>) -> YRes<TouchFishCore<S>> {
+    pub fn new(storage: S) -> YRes<TouchFishCore<S>> {
         Ok(TouchFishCore {
-            fish_service: FishService::new(storage.clone()),
+            fish_service: FishService::new(storage),
         })
     }
 

@@ -14,11 +14,11 @@ mod cli;
 fn main() -> YRes<()> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        println!("database url is required, usage: ./.../touchfish-cli <DATABASE_URL>");
+        println!("database url is required");
         return Ok(());
     }
     let storage = SqliteStorage::connect(&args[1])?;
-    let core = TouchFishCore::new(std::rc::Rc::new(storage))?;
+    let core = TouchFishCore::new(storage)?;
     loop {
         write_str_to_stdout("> ")?;
         let mut input = String::new();
