@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
+use std::env;
+
 use clap::Parser;
 use cli::Cli;
 use touchfish_core::TouchFishCore;
@@ -10,10 +12,15 @@ use yfunc_rust::{prelude::*, write_str_to_stdout};
 mod cli;
 
 fn main() -> YRes<()> {
-    let storage = SqliteStorage::connect("/Users/yzjsswk/WorkSpace/touchfish.db")?;
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        println!("database url is required, usage: ./.../touchfish-cli <DATABASE_URL>");
+        return Ok(());
+    }
+    let storage = SqliteStorage::connect(&args[1])?;
     let core = TouchFishCore::new(std::rc::Rc::new(storage))?;
     loop {
-        // write_str_to_stdout("> ")?;
+        write_str_to_stdout("> ")?;
         let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)

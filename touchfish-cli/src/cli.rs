@@ -22,6 +22,8 @@ pub enum Commands {
         extra_info: Option<String>,
         #[arg(short = 'f', action = clap::ArgAction::SetTrue)]
         use_file: bool,
+        #[arg(short = 'b', action = clap::ArgAction::SetTrue)]
+        base64_input: bool,
         #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
         original_data: bool,
     },
@@ -36,6 +38,8 @@ pub enum Commands {
         tags: Option<Vec<String>>,
         #[arg(long = "extra")]
         extra_info: Option<String>,
+        #[arg(short = 'b', action = clap::ArgAction::SetTrue)]
+        base64_input: bool,
     },
     Mark {
         identity: String,
@@ -71,6 +75,8 @@ pub enum Commands {
         page_num: Option<i32>,
         #[arg(long = "size")]
         page_size: Option<i32>,
+        #[arg(short = 'b', action = clap::ArgAction::SetTrue)]
+        base64_input: bool,
         #[arg(short = 'o', action = clap::ArgAction::SetTrue)]
         original_data: bool,
     },
@@ -89,6 +95,8 @@ pub enum Commands {
         is_marked: Option<bool>,
         #[arg(long = "lock")]
         is_locked: Option<bool>,
+        #[arg(short = 'b', action = clap::ArgAction::SetTrue)]
+        base64_input: bool,
     },
     Pick {
         identity: String,
@@ -133,19 +141,40 @@ impl Cli {
             Commands::Add { 
                 fish_type, fish_data, desc, 
                 tags, is_marked, is_locked,
-                extra_info, use_file, original_data,
+                extra_info, use_file, base64_input, original_data,
             } => {
                 let fish_type = fish_type.Aabb();
                 let fish_type = FishType::from_str(&fish_type).map_err(|e|
                     err!(ParseError::"handle add command": "parse fish_type failed", fish_type, e)
                 )?;
-                let fish_data: YBytes = match use_file {
-                    true => {
-                        YBytes::open_file(&fish_data)?
-                    },
-                    false => {
+                let fish_data: YBytes = if use_file {
+                    YBytes::open_file(&fish_data)?
+                } else {  
+                    if base64_input {
+                        YBytes::from_base64(&fish_data)?
+                    } else {
                         YBytes::new(fish_data.into_bytes())
-                    },
+                    }
+                };
+                let desc = match desc {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
+                let extra_info = match extra_info {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
                 };
                 let fish = core.add_fish(
                     fish_type, fish_data, desc, tags, is_marked, is_locked, extra_info,
@@ -160,7 +189,29 @@ impl Cli {
                 core.expire_fish(&identity)?;
                 Ok(CliOutput::Ok)
             },
-            Commands::Modify { identity, desc, tags, extra_info } => {
+            Commands::Modify { 
+                identity, desc, tags, extra_info, base64_input,
+            } => {
+                let desc = match desc {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
+                let extra_info = match extra_info {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
                 core.modify_fish(&identity, desc, tags, extra_info)?;
                 Ok(CliOutput::Ok)
             },
@@ -187,8 +238,28 @@ impl Cli {
             Commands::Search {
                 fuzzy, identitys, fish_types, 
                 desc, tags, is_marked, is_locked,
-                page_num, page_size, original_data,
+                page_num, page_size, base64_input, original_data,
             } => {
+                let fuzzy = match fuzzy {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
+                let desc = match desc {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
                 let fish_types = match fish_types {
                     None => None,
                     Some(x) => Some(x.into_iter().map(|y| FishType::from_str(&y.Aabb()).map_err(|e|
@@ -215,7 +286,28 @@ impl Cli {
             Commands::Delect { 
                 fuzzy, identitys, fish_types, 
                 desc, tags, is_marked, is_locked,
+                base64_input,
             } => {
+                let fuzzy = match fuzzy {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
+                let desc = match desc {
+                    None => None,
+                    Some(x) => {
+                        if base64_input {
+                            Some(YBytes::from_base64(&x)?.to_str()?)
+                        } else {
+                            Some(x)
+                        }
+                    }
+                };
                 let fish_types = match fish_types {
                     None => None,
                     Some(x) => Some(x.into_iter().map(|y| FishType::from_str(&y.Aabb()).map_err(|e|

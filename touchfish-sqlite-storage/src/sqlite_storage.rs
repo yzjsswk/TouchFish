@@ -19,6 +19,9 @@ pub struct SqliteStorage {
 impl SqliteStorage {
 
     pub fn connect(db_url: &str) -> YRes<Self> {
+        if !std::path::Path::new(db_url).exists() {
+            return Err(err!(DataBaseError::"connect to sqlite": "db url is not exists", db_url))
+        }
         let manager = ConnectionManager::<SqliteConnection>::new(db_url);
         let pool = r2d2::Pool::builder()
             .build(manager)
