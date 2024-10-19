@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchFishReq {
     pub fuzzy: Option<String>,
-    pub identitys: Option<Vec<String>>, 
+    pub identity: Option<Vec<String>>, 
     pub fish_type: Option<Vec<FishType>>,
     pub desc: Option<String>,
     pub tags: Option<Vec<String>>,

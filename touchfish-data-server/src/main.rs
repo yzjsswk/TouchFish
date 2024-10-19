@@ -23,7 +23,7 @@ static CORE: Lazy<TouchFishCore<SqliteStorage>> = Lazy::new(|| {
 #[get("/search")]
 async fn search_fish(req: Json<SearchFishReq>) -> impl Responder {
     CORE.search_fish(
-        req.fuzzy.clone(), req.identitys.clone(), req.fish_type.clone(), req.desc.clone(),
+        req.fuzzy.clone(), req.identity.clone(), req.fish_type.clone(), req.desc.clone(),
         req.tags.clone(), req.is_marked, req.is_locked, req.page_num, req.page_size
     ).to_resp()
 }

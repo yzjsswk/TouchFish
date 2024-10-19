@@ -56,20 +56,20 @@ impl<S> TouchFishCore<S> where S: FishStorage {
     }
 
     pub fn search_fish(
-        &self, fuzzy: Option<String>, identitys: Option<Vec<String>>, 
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
         fish_type: Option<Vec<FishType>>, desc: Option<String>,
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>, 
         page_num: Option<i32>, page_size: Option<i32>,
     ) -> YRes<Page<Fish>> {
-        self.fish_service.search_fish(fuzzy, identitys, fish_type, desc, tags, is_marked, is_locked, page_num, page_size)
+        self.fish_service.search_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked, page_num, page_size)
     }
 
     pub fn detect_fish(
-        &self, fuzzy: Option<String>, identitys: Option<Vec<String>>, 
+        &self, fuzzy: Option<String>, identity: Option<Vec<String>>, 
         fish_type: Option<Vec<FishType>>, desc: Option<String>,
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>> {
-        self.fish_service.detect_fish(fuzzy, identitys, fish_type, desc, tags, is_marked, is_locked)
+        self.fish_service.detect_fish(fuzzy, identity, fish_type, desc, tags, is_marked, is_locked)
     }
 
     pub fn count_fish(&self) -> YRes<Statistics> {
