@@ -2,15 +2,11 @@ import SwiftUI
 
 struct MainView: View {
     
-    @State var fishs: [String:Fish] = [:]
     @State var recipeList: [Recipe] = []
+    @State var activeRecipeBundleId: String?
     
     @State var commandText = ""
     @State var commandCell: [String] = []
-    
-    @State var activeRecipeBundleId: String?
-    
-    @State var isEditing: Bool = false // todo: remove
     
     var body: some View {
         ZStack {
@@ -20,7 +16,7 @@ struct MainView: View {
                 if let activeRecipeBundleId = activeRecipeBundleId {
                     switch activeRecipeBundleId {
                     case "com.touchfish.FishRepository":
-                        FishRepositoryView(fishs: $fishs, isEditing: $isEditing)
+                        FishRepositoryView()
                     case "com.touchfish.AddFish":
                         FishAddView()
                     case "com.touchfish.Statistics":
@@ -49,6 +45,12 @@ struct MainView: View {
         }
         .cornerRadius(10)
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
+        .onAppear {
+            withAnimation {
+                RecipeManager.refresh()
+                recipeList = RecipeManager.orderedRecipeList
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
             if let recipe = RecipeManager.activeRecipe {
                 activeRecipeBundleId = recipe.bundleId
@@ -69,12 +71,6 @@ struct MainView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
             TouchFishApp.deactivate()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .CacheRefreshed)) { _ in
-            withAnimation {
-                fishs = Storage.getFishOfSearchCondition()
-                recipeList = RecipeManager.orderedRecipeList
-            }
         }
     }
     

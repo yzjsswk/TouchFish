@@ -147,7 +147,7 @@ struct RecipeAction: Codable {
             TouchFishApp.deactivate()
         case .copy:
             if let data = arguments.first?.getValue().data(using: .utf8) {
-                Functions.copyDataToClipboard(data: data, type: .txt)
+                Functions.copyDataToClipboard(data: data, type: .Text)
             } else {
                 Log.warning("run recipe action: skip copy action: to copy data=nil, recipe=\(RecipeManager.activeRecipe?.bundleId ?? "nil")")
             }

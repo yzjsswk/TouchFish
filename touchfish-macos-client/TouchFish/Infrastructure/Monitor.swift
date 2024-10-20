@@ -106,18 +106,18 @@ struct MonitorManager {
                             if !Config.autoImportedFromClipboard {
                                 return
                             }
-                            var extraInfo = ExtraInfo()
+                            var extraInfo = Fish.ExtraInfo()
                             if let sourceApp = NSWorkspace.shared.frontmostApplication,
                                let sourceAppName = sourceApp.localizedName {
                                 extraInfo.sourceAppName = sourceAppName
                             }
                             let ex = extraInfo
                             Task {
-                                let ok = await Storage.addOrPinFish(
-                                    value: clipboardData.1, type: clipboardData.0, extraInfo: ex, pin: true
+                                let newFish = await Storage.addFish(
+                                    clipboardData.0, clipboardData.1, extraInfo: ex
                                 )
-                                if !ok {
-                                    Log.error("save fish from clipboard - fail: Storage.addOrPinFish return false")
+                                if newFish == nil {
+                                    Log.error("save fish from clipboard - fail: Storage.addFish return nil")
                                 }
                             }
                         }

@@ -205,12 +205,12 @@ struct DataServiceConfigItemView: View {
                 Text("Remove")
             }
             Button(action:{
-                Task {
-                    let timeCost = await DataService.tryConnect(host: host, port: port)
-                    withAnimation {
-                        self.timeCost = timeCost ?? -1
-                    }
-                }
+//                Task {
+//                    let timeCost = await DataService.tryConnect(host: host, port: port)
+//                    withAnimation {
+//                        self.timeCost = timeCost ?? -1
+//                    }
+//                }
             }) {
                 Text("Try Connect")
             }

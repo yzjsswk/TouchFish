@@ -25,7 +25,6 @@
 		99AC05EA2BB2BD720046E8C5 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C22BB2BD720046E8C5 /* MainView.swift */; };
 		99AC05ED2BB2BD720046E8C5 /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C52BB2BD720046E8C5 /* KeyboardShortcut.swift */; };
 		99AC05F02BB2BD720046E8C5 /* AppleScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05C92BB2BD720046E8C5 /* AppleScript.swift */; };
-		99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CA2BB2BD720046E8C5 /* Cache.swift */; };
 		99AC05F22BB2BD720046E8C5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CB2BB2BD720046E8C5 /* Configuration.swift */; };
 		99AC05F42BB2BD720046E8C5 /* Definition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CD2BB2BD720046E8C5 /* Definition.swift */; };
 		99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC05CE2BB2BD720046E8C5 /* Log.swift */; };
@@ -47,6 +46,7 @@
 		99C614FE2C45094400A99567 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C614FD2C45094400A99567 /* Task.swift */; };
 		99C615012C45590F00A99567 /* MessageCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C615002C45590F00A99567 /* MessageCenterView.swift */; };
 		99C615032C45691900A99567 /* MessageCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C615022C45691900A99567 /* MessageCenter.swift */; };
+		99EDC3362CC4FE8F0023CDF0 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */; };
 		99EF7A282BF3C0EC00675CC2 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EF7A272BF3C0EC00675CC2 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,7 +70,6 @@
 		99AC05C22BB2BD720046E8C5 /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		99AC05C52BB2BD720046E8C5 /* KeyboardShortcut.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardShortcut.swift; sourceTree = "<group>"; };
 		99AC05C92BB2BD720046E8C5 /* AppleScript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleScript.swift; sourceTree = "<group>"; };
-		99AC05CA2BB2BD720046E8C5 /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		99AC05CB2BB2BD720046E8C5 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		99AC05CD2BB2BD720046E8C5 /* Definition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Definition.swift; sourceTree = "<group>"; };
 		99AC05CE2BB2BD720046E8C5 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
@@ -91,6 +90,7 @@
 		99C614FD2C45094400A99567 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		99C615002C45590F00A99567 /* MessageCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCenterView.swift; sourceTree = "<group>"; };
 		99C615022C45691900A99567 /* MessageCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCenter.swift; sourceTree = "<group>"; };
+		99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 		99EF7A272BF3C0EC00675CC2 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				99EF7A272BF3C0EC00675CC2 /* StatsView.swift */,
+				99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */,
 			);
 			path = Statistics;
 			sourceTree = "<group>";
@@ -199,7 +200,6 @@
 			isa = PBXGroup;
 			children = (
 				99AC05C92BB2BD720046E8C5 /* AppleScript.swift */,
-				99AC05CA2BB2BD720046E8C5 /* Cache.swift */,
 				99AC05CB2BB2BD720046E8C5 /* Configuration.swift */,
 				99AC05CD2BB2BD720046E8C5 /* Definition.swift */,
 				99AC05CE2BB2BD720046E8C5 /* Log.swift */,
@@ -345,7 +345,7 @@
 				99AC05E42BB2BD720046E8C5 /* FishDetailView.swift in Sources */,
 				99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */,
 				99AC05E22BB2BD720046E8C5 /* MainWindow.swift in Sources */,
-				99AC05F12BB2BD720046E8C5 /* Cache.swift in Sources */,
+				99EDC3362CC4FE8F0023CDF0 /* PieChartView.swift in Sources */,
 				9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */,
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,

@@ -27,23 +27,23 @@ struct FishEditView: View {
                 Spacer()
                 SaveButtonView()
                     .onTapGesture {
-                        Task {
-                            let res = await Storage.modifyFish(
-                                identity,
-                                description: description,
-                                tags: tags.filter {!$0.isEmpty}
-                            )
-                            switch res {
-                            case .success:
-                                isEditing = false
-                            case .skip:
-                                showSaveAlert = true
-                                alertMessage = "save skipped"
-                            case .fail:
-                                showSaveAlert = true
-                                alertMessage = "save failed"
-                            }
-                        }
+//                        Task {
+//                            let res = await Storage.modifyFish(
+//                                identity,
+//                                description: description,
+//                                tags: tags.filter {!$0.isEmpty}
+//                            )
+//                            switch res {
+//                            case .success:
+//                                isEditing = false
+//                            case .skip:
+//                                showSaveAlert = true
+//                                alertMessage = "save skipped"
+//                            case .fail:
+//                                showSaveAlert = true
+//                                alertMessage = "save failed"
+//                            }
+//                        }
                     }
                     .alert(isPresented: $showSaveAlert) {
                         Alert(
@@ -227,7 +227,8 @@ struct TagEditView: View {
                 TextField("Search", text: $tagSearchText)
                 .frame(width: 100, height: 20)
                 .onChange(of: tagSearchText) {
-                    let allTags = Array(Cache.tagCount.keys)
+//                    let allTags = Array(Cache.tagCount.keys)
+                    let allTags: [String] = []
                     tagPreviewList = allTags.filter { tg in
                         return tg.lowercased().contains(tagSearchText.lowercased())
                     }

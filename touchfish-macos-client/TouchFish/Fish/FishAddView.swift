@@ -26,22 +26,22 @@ struct FishAddView: View {
                     AddButtonView(addFileCount: toAddFiles.count) {
                         for (url, info) in toAddFiles {
                             if let data = FileManager.default.contents(atPath: url.path) {
-                                if let type = FishType(rawValue: info.selectedType) {
-                                    Task {
-                                        let res = await Storage.addFish(
-                                            value: data,
-                                            description: info.description,
-                                            type: type,
-                                            tags: info.tags,
-                                            extraInfo: ExtraInfo(sourceAppName: "TouchFish")
-                                        )
-                                        if res == .fail {
-                                            Log.error("click button to add fish - fail to add a fish: storage.addFish returns fail, url=\(url.path)")
-                                        }
-                                        if res == .skip {
-                                            Log.error("click button to add fish - skip to add a fish: storage.addFish returns skip, url=\(url.path)")
-                                        }
-                                    }
+                                if let type = Fish.FishType(rawValue: info.selectedType) {
+//                                    Task {
+//                                        let res = await Storage.addFish(
+//                                            value: data,
+//                                            description: info.description,
+//                                            type: type,
+//                                            tags: info.tags,
+//                                            extraInfo: ExtraInfo(sourceAppName: "TouchFish")
+//                                        )
+//                                        if res == .fail {
+//                                            Log.error("click button to add fish - fail to add a fish: storage.addFish returns fail, url=\(url.path)")
+//                                        }
+//                                        if res == .skip {
+//                                            Log.error("click button to add fish - skip to add a fish: storage.addFish returns skip, url=\(url.path)")
+//                                        }
+//                                    }
                                 } else {
                                     Log.error("click button to add fish - skip a fish: parse type=nil, url=\(url.path), type=\(info.selectedType)")
                                 }
@@ -78,7 +78,7 @@ struct FishAddView: View {
                         if ext == "jpeg" {
                             ext = "jpg"
                         }
-                        if let type = FishType(rawValue: ext) {
+                        if let type = Fish.FishType(rawValue: ext) {
                             addInfo.selectedType = type.rawValue
                         }
                         addInfo.description = url.lastPathComponent
@@ -139,7 +139,7 @@ struct AddInfoView: View {
                     .font(.title2)
                     .bold()
                 Picker("", selection: $addInfo.selectedType) {
-                    ForEach(FishType.allCases, id: \.rawValue) { type in
+                    ForEach(Fish.FishType.allCases, id: \.rawValue) { type in
                         Text(type.rawValue)
                     }
                 }

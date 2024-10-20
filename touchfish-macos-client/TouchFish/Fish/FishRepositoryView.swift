@@ -2,12 +2,17 @@ import SwiftUI
 
 struct FishRepositoryView: View {
     
-    @Binding var fishs: [String:Fish]
-    
+    @State var fishs: [String:Fish] = [:]
     @State var selectedFishIdentity: String?
     
-    @Binding var isEditing: Bool
+    @State var isEditing: Bool = false
     
+    @State var fuzzy: String? = nil
+    @State var identitys: [String]? = nil
+    @State var fishTypes: [Fish.FishType]? = nil
+    @State var tags: [String]? = nil
+    @State var isMarked: Bool? = nil
+    @State var isLocked: Bool? = nil
     @State var sortField: String = ""
     
     var body: some View {
@@ -19,25 +24,27 @@ struct FishRepositoryView: View {
                     isEditing: $isEditing,
                     identity: editingFish.identity,
                     description: editingFish.description,
-                    tags: editingFish.tags
+                    tags: [editingFish.tags]
                 )
-                .frame(width: Constant.mainWidth - 30)
+                .frame(width: Constant.mainWidth-30)
             } else {
                 FishListView(
                     fishList: fishs.values.sorted(by: {
-                        if sortField.lowercased() == "update" {
-                            return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
+                        if sortField.lowercased() == "create" {
+                            return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
                         }
                         if sortField.lowercased() == "type" {
-                            return $0.type == $1.type ? $0.identity > $1.identity : $0.type.rawValue > $1.type.rawValue
+                            return $0.fishType == $1.fishType ? $0.identity > $1.identity : $0.fishType.rawValue > $1.fishType.rawValue
                         }
                         if sortField.lowercased() == "size" {
-                            return $0.byteCount == $1.byteCount ? $0.identity > $1.identity : $0.byteCount > $1.byteCount
+                            let size0 = $0.dataInfo.byteCount ?? -1
+                            let size1 = $1.dataInfo.byteCount ?? -1
+                            return size0 == $1.dataInfo.byteCount ? $0.identity > $1.identity : size0 > size1
                         }
-                        return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
+                        return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
                     }),
-                    isEditing: $isEditing,
-                    selectedFishIdentity: $selectedFishIdentity
+                    selectedFishIdentity: $selectedFishIdentity,
+                    isEditing: $isEditing
                 )
                 .frame(width: (Constant.mainWidth - 30)/2)
                 VStack {
@@ -47,54 +54,72 @@ struct FishRepositoryView: View {
             }
         }
         .padding(.horizontal, 5)
-        .onAppear() {
+        .onAppear {
             isEditing = false
-            Cache.refresh()
+            // TODO: appear animation
+            NotificationCenter.default.post(name: .ShouldRefreshFish, object: nil, userInfo: nil)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .CommandBarEndEditing)) { notification in
-            if let commandText = notification.userInfo?["commandText"] as? String, !isEditing {
-                Cache.fuzzys = commandText
+        .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFish)) { _ in
+            Task {
+                let fishs = await Storage.searchFish(
+                    fuzzy: fuzzy, identitys: identitys, fishTypes: fishTypes, tags: tags, isMarked: isMarked, isLocked: isLocked
+                )
+                NotificationCenter.default.post(name: .FishRefreshed, object: nil, userInfo: ["fish":fishs])
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .FishRefreshed)) { notification in
+            if let fish = notification.userInfo?["fish"] as? [String:Fish] {
+                withAnimation(.spring(duration: 0.4)) {
+                    self.fishs = fish
+                }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .CommandBarEndEditing)) { notification in
+            fuzzy = nil
+            if let commandText = notification.userInfo?["commandText"] as? String, !isEditing {
+                fuzzy = commandText
+            }
+            NotificationCenter.default.post(name: .ShouldRefreshFish, object: nil, userInfo: nil)
+        }
         .onReceive(NotificationCenter.default.publisher(for: .RecipeStatusChanged)) { _ in
-            // todo: do not refresh cache 
-            Cache.identity = nil
-            Cache.type = nil
-            Cache.tags = nil
-            Cache.isMarked = nil
-            Cache.isLocked = nil
+            identitys = nil
+            fishTypes = nil
+            tags = nil
+            isMarked = nil
+            isLocked = nil
             sortField = ""
             for (argName, argValue) in RecipeManager.activeRecipeArg {
-                if argName == "identity", argValue.count > 0 {
-                    Cache.identity = argValue[0]
+                if argName == "identity" {
+                    identitys = argValue
                 }
                 if argName == "type" {
-                    Cache.type = argValue.compactMap { FishType(rawValue: $0) }
+                    fishTypes = argValue.compactMap { Fish.FishType(rawValue: $0.capitalized) }
                 }
                 if argName == "tag" {
                     // todo: mult tag search may work uncorrert
-                    Cache.tags = [argValue]
+                    tags = argValue
                 }
                 if argName == "marked", argValue.count > 0 {
                     if argValue[0].lowercased() == "true" || argValue[0] == "1" {
-                        Cache.isMarked = true
+                        isMarked = true
                     }
                     if argValue[0].lowercased() == "false" || argValue[0] == "0" {
-                        Cache.isMarked = false
+                        isMarked = false
                     }
                 }
                 if argName == "locked", argValue.count > 0 {
                     if argValue[0].lowercased() == "true" || argValue[0] == "1" {
-                        Cache.isLocked = true
+                        isLocked = true
                     }
                     if argValue[0].lowercased() == "false" || argValue[0] == "0" {
-                        Cache.isLocked = false
+                        isLocked = false
                     }
                 }
                 if argName == "sort", argValue.count > 0 {
-                    sortField = argValue[0]
+                    sortField = argValue[0].lowercased()
                 }
             }
+            NotificationCenter.default.post(name: .ShouldRefreshFish, object: nil, userInfo: nil)
         }
     }
 

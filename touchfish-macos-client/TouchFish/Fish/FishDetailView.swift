@@ -81,26 +81,26 @@ struct DetailTagView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
-                    ForEach(tagGroup, id: \.self) { tg in
-                        Text(tg)
-                            .frame(minWidth: 40)
-                            .background(
-                                GeometryReader { geometry in
-                                    Rectangle()
-                                        .cornerRadius(10)
-                                        .foregroundColor(String(Functions.getMD5(of: tg).suffix(6)).color)
-                                        .frame(width: geometry.size.width+5, height: geometry.size.height+8)
-                                        .offset(x: -2.5, y: -4)
-                                }
-                            )
-                            .foregroundColor(.white)
-                    }
-                    if idx < fish.tags.count-1 {
-                        Divider()
-                    }
-                }
-                Spacer()
+//                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
+//                    ForEach(tagGroup, id: \.self) { tg in
+//                        Text(tg)
+//                            .frame(minWidth: 40)
+//                            .background(
+//                                GeometryReader { geometry in
+//                                    Rectangle()
+//                                        .cornerRadius(10)
+//                                        .foregroundColor(String(Functions.getMD5(of: tg).suffix(6)).color)
+//                                        .frame(width: geometry.size.width+5, height: geometry.size.height+8)
+//                                        .offset(x: -2.5, y: -4)
+//                                }
+//                            )
+//                            .foregroundColor(.white)
+//                    }
+//                    if idx < fish.tags.count-1 {
+//                        Divider()
+//                    }
+//                }
+//                Spacer()
             }
             .frame(height: 20)
             .padding(3)
@@ -131,10 +131,10 @@ struct DetailValueView: View {
     var fish: Fish
     
     var body: some View {
-        switch fish.type {
-        case .txt:
+        switch fish.fishType {
+        case .Text:
                 VStack {
-                    if let textValue = fish.textPreview {
+                    if let textValue = fish.textData {
                         Text(textValue.prefix(Config.textFishDetailPreviewLength))
                             .font(.callout)
                         if textValue.count > Config.textFishDetailPreviewLength {
@@ -149,8 +149,8 @@ struct DetailValueView: View {
                             .foregroundColor(Color.red)
                     }
                 }
-        case .tiff, .png, .jpg, .pdf:
-                if let image = fish.imagePreview {
+        case .Image:
+                if let image = fish.imageData {
                     Image(nsImage: image)
                         .resizable()
                         .scaledToFit()
@@ -177,22 +177,22 @@ struct DetailExtraInfoView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
-                DetailItemView(itemName: "Type", itemValue: fish.type.rawValue)
+                DetailItemView(itemName: "Type", itemValue: fish.fishType.rawValue)
                 DetailItemView(itemName: "Source Application", itemValue: fish.extraInfo.sourceAppName)
-                switch fish.type {
-                case .txt:
-                    DetailItemView(itemName: "Char Count", itemValue: fish.extraInfo.charCount)
-                    DetailItemView(itemName: "Word Count", itemValue: fish.extraInfo.wordCount)
-                    DetailItemView(itemName: "Row Count", itemValue: fish.extraInfo.rowCount)
-                case .tiff, .png, .jpg:
-                    DetailItemView(itemName: "Width", itemValue: fish.extraInfo.width)
-                    DetailItemView(itemName: "Height", itemValue: fish.extraInfo.height)
-                case .pdf:
-                    DetailItemView(itemName: "Page Count", itemValue: fish.extraInfo.pageCount)
+                switch fish.fishType {
+                case .Text:
+                    DetailItemView(itemName: "Char Count", itemValue: fish.dataInfo.charCount)
+                    DetailItemView(itemName: "Word Count", itemValue: fish.dataInfo.wordCount)
+                    DetailItemView(itemName: "Row Count", itemValue: fish.dataInfo.rowCount)
+                case .Image:
+                    DetailItemView(itemName: "Width", itemValue: fish.dataInfo.width)
+                    DetailItemView(itemName: "Height", itemValue: fish.dataInfo.height)
                 default:
                     EmptyView()
                 }
-                DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(fish.byteCount))
+                if let byteCount = fish.dataInfo.byteCount {
+                    DetailItemView(itemName: "Size", itemValue: Functions.descByteCount(byteCount))
+                }
                 DetailItemView(itemName: "Create Time", itemValue: fish.createTime)
                 DetailItemView(itemName: "Update Time", itemValue: fish.updateTime)
             }

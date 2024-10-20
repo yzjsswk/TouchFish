@@ -1,57 +1,116 @@
 import AppKit
 import SwiftUI
 
-// todo: sub type ?
-enum FishType: String, CaseIterable {
-    case txt
-    case tiff
-    case png
-    case jpg
-    case pdf
-    case other
-}
+class Fish {
+    
+    enum FishType: String, CaseIterable {
+        case Text
+        case Image
+    }
+    
+    struct DataInfo: Codable {
+        let byteCount: Int?
+        let charCount: Int?
+        let wordCount: Int?
+        let rowCount: Int?
+        let width: Int?
+        let height: Int?
+    }
+    
+    struct ExtraInfo: Codable {
+        
+        var sourceAppName: String?
 
-struct Fish {
-    
-    var id: Int
-    var identity: String
-    var type: FishType
-    var byteCount: Int
-    var description: String
-    var tags: [[String]]
-    var isMarked: Bool
-    var isLocked: Bool
-    var extraInfo: ExtraInfo
-    var createTime: String
-    var updateTime: String
-    
-    var preview: Data? {
-        return Storage.getPreviewOfFish(self.identity)
+        enum CodingKeys: String, CodingKey {
+            case sourceAppName = "source_app_name"
+        }
+        
+        static func from_json_string(json_str: String) -> ExtraInfo? {
+            if json_str.isEmpty {
+                return ExtraInfo()
+            }
+            let decoder = JSONDecoder()
+            let data = json_str.data(using: .utf8)
+            if let data = data {
+                do {
+                    return try decoder.decode(ExtraInfo.self, from: data)
+                } catch {
+                    Log.error("parse extraInfo from json string - failed, err=\(error)")
+                }
+            }
+            return nil;
+        }
+        
+        func to_json_string() -> String? {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            do {
+                let data = try encoder.encode(self)
+                return String(data: data, encoding: .utf8)
+            } catch {
+                Log.error("parse extraInfo to json string - failed, err=\(error)")
+            }
+            return nil
+        }
+        
     }
+
+    let identity: String
+    let count: Int
+    let fishType: FishType
+    let fishData: Data
+    let dataInfo: DataInfo
+    let description: String
+    let tags: [String]
+    let isMarked: Bool
+    let isLocked: Bool
+    let extraInfo: ExtraInfo
+    let createTime: String
+    let updateTime: String
     
-    var textPreview: String? {
-        return Storage.getTextPreviewByIdentity(self.identity)
-    }
+    let textData: String?
+    let imageData: NSImage?
     
-    var imagePreview: NSImage? {
-        return Storage.getImagePreviewByIdentity(self.identity)
+    init(identity: String, count: Int, fishType: FishType, fishData: Data, dataInfo: DataInfo, description: String, tags: [String], isMarked: Bool, isLocked: Bool, extraInfo: ExtraInfo, createTime: String, updateTime: String) {
+        self.identity = identity
+        self.count = count
+        self.fishType = fishType
+        self.fishData = fishData
+        self.dataInfo = dataInfo
+        self.description = description
+        self.tags = tags
+        self.isMarked = isMarked
+        self.isLocked = isLocked
+        self.extraInfo = extraInfo
+        self.createTime = createTime
+        self.updateTime = updateTime
+        
+        switch fishType {
+        case .Text:
+            self.textData = String(data: fishData, encoding: .utf8)
+            self.imageData = nil
+        case .Image:
+            self.textData = nil
+            self.imageData = NSImage(data: fishData)
+        }
+        
     }
     
     var defaultLinePreview: String {
-        return "\(self.type.rawValue):\(self.identity)"
+        return "\(self.fishType.rawValue):\(self.identity)"
     }
     
     var linePreview: String {
-        switch type {
-        case .txt:
+        switch self.fishType {
+        case .Text:
             if self.description.count > 0 {
                 return Functions.getLinePreview(self.description)
             }
-            if let textPreview = self.textPreview {
-                return Functions.getLinePreview(textPreview)
+            if let textData = self.textData {
+                return Functions.getLinePreview(textData)
             }
             return self.defaultLinePreview
-        case .tiff, .png, .jpg:
+        case .Image:
             if self.description.count > 0 {
                 return Functions.getLinePreview(self.description)
             }
@@ -65,90 +124,29 @@ struct Fish {
     }
     
     var fishIcon: Image {
-        switch type {
-        case .txt:
+        switch self.fishType {
+        case .Text:
             return Image(systemName: "doc.plaintext")
-        case .tiff, .png, .jpg:
+        case .Image:
             return Image(systemName: "photo")
-        case .pdf:
-            return Image(systemName: "book.pages")
         default:
             return Image(systemName: "fish")
         }
     }
     
     var fishIconColor: Color {
-        switch type {
-        case .txt:
+        switch self.fishType {
+        case .Text:
             return .black
-        case .tiff, .png, .jpg:
+        case .Image:
             return .blue
-        case .pdf:
-            return .red
         default:
             return .black
         }
     }
     
     func copyToClipboard() {
-        guard let fishData = self.preview else {
-            Log.warning("copy fishdata to clipboard - fail: fish.value return nil, fish.identity=\(self.identity)")
-            return
-        }
-        Functions.copyDataToClipboard(data: fishData, type: self.type)
+        Functions.copyDataToClipboard(data: self.fishData, type: self.fishType)
     }
     
 }
-
-struct ExtraInfo: Codable {
-    
-    static func load(from jsonStr: String) -> ExtraInfo? {
-        if jsonStr.isEmpty {
-            return ExtraInfo()
-        }
-        let decoder = JSONDecoder()
-        let data = jsonStr.data(using: .utf8)
-        if let data = data {
-            do {
-                return try decoder.decode(ExtraInfo.self, from: data)
-            } catch {
-                Log.error("parse extraInfo from json str - fail, err=\(error)")
-            }
-        }
-        return nil;
-    }
-    
-    func toJsonString() -> String? {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        do {
-            let data = try encoder.encode(self)
-            return String(data: data, encoding: .utf8)
-        } catch {
-            Log.error("parse extraInfo to json str - fail, err=\(error)")
-        }
-        return nil
-    }
-    
-    // extra info
-    
-    var sourceAppName: String?
-    var charCount: Int?
-    var wordCount: Int?
-    var rowCount: Int?
-    var width: Int?
-    var height: Int?
-    var pageCount: Int?
-
-    enum CodingKeys: String, CodingKey {
-        case sourceAppName = "source_app_name"
-        case charCount = "char_count"
-        case wordCount = "word_count"
-        case rowCount = "row_count"
-        case width = "width"
-        case height = "height"
-        case pageCount = "page_count"
-    }
-    
-}
-

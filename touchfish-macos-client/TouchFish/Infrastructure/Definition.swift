@@ -34,15 +34,15 @@ struct Constant {
 
 struct Functions {
     
-    static func getDataFromClipboard() -> (FishType, Data, Any)? {
+    static func getDataFromClipboard() -> (Fish.FishType, Data, Any)? {
         if let types = NSPasteboard.general.types, types.count > 0 {
             if let str = NSPasteboard.general.string(forType: .string),
                let data = str.data(using: .utf8) {
-                return (.txt, data, str)
+                return (.Text, data, str)
             }
             if let data = NSPasteboard.general.data(forType: types[0]) {
                 if let img = NSImage(data: data) {
-                    return (.tiff, data, img)
+                    return (.Image, data, img)
                 }
             }
             // reach here would repeat logging
@@ -51,12 +51,12 @@ struct Functions {
         return nil
     }
     
-    static func copyDataToClipboard(data: Data, type: FishType) {
+    static func copyDataToClipboard(data: Data, type: Fish.FishType) {
         switch type {
-        case .txt:
+        case .Text:
             NSPasteboard.general.declareTypes([.string], owner: nil)
             NSPasteboard.general.setData(data, forType: .string)
-        case .tiff, .png, .jpg: // todo: ok?
+        case .Image:
             NSPasteboard.general.declareTypes([.tiff], owner: nil)
             NSPasteboard.general.setData(data, forType: .tiff)
         default:
@@ -104,17 +104,6 @@ struct Functions {
         }
         let GBCount = Double(MBCount) / 1024
         return "\(GBCount)GB"
-    }
-    
-    static func tagParseStr(_ tags: [[String]]?) -> String? {
-        guard let tags = tags else {
-            return nil
-        }
-        var tagPara: [String] = []
-        for tagGroup in tags {
-            tagPara.append(tagGroup.joined(separator: ","))
-        }
-        return tagPara.joined(separator: "|")
     }
     
     static func runCommand(cmd: String, args: [String] = []) -> String? {
@@ -207,6 +196,19 @@ struct Functions {
         return dateString
     }
     
+    static func convertIsoDateToE8(_ isoDateString: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        guard let date = dateFormatter.date(from: isoDateString) else {
+            Log.error("convert iso date to e8 date - failed: parse input date string failed, input=\(isoDateString)")
+            return nil
+        }
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        return dateFormatter.string(from: date)
+    }
+    
     static func getAllFiles(in directory: URL) -> [URL] {
         var fileURLs: [URL] = []
         do {
@@ -269,10 +271,12 @@ extension String {
             return Image(systemName: systemIconName)
         }
         if self.hasPrefix("fish:") {
-            let fishIdentity = String(self.dropFirst(5))
-            // todo: use resource
-            if let fishImage = Storage.getImagePreviewByIdentity(fishIdentity) {
-                return Image(nsImage: fishImage)
+            let identity = String(self.dropFirst(5))
+            Task {
+                guard let imageData = await Storage.pickFish(identity: identity)?.imageData else {
+                    return Image?(nil)
+                }
+                return Image(nsImage: imageData)
             }
         }
         return nil
@@ -294,6 +298,8 @@ extension Notification.Name {
     static let ShouldDeleteClipboardHistoryItem = Notification.Name("ShouldDeleteClipboardHistoryItem")
     static let ShouldDeleteClipboardHistory = Notification.Name("ShouldDeleteClipboardHistory")
     static let CacheRefreshed = Notification.Name("CacheRefreshed")
+    static let ShouldRefreshFish = Notification.Name("ShouldRefreshFish")
+    static let FishRefreshed = Notification.Name("FishRefreshed")
     static let RecipeStatusChanged = Notification.Name("RecipeStatusChanged")
     static let CommandTextChanged = Notification.Name("CommandTextChanged")
     static let CommandBarEndEditing = Notification.Name("CommandBarEndEditing")

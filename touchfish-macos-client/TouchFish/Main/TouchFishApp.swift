@@ -25,13 +25,12 @@ class TouchFishApp {
         TouchFishApp.createAppSupportPathIfNotExists()
         TFLogger.prepare()
         MessageCenter.readFromFile()
-        Cache.start()
         Monitor.start(type: .showOrHideMainWindowWhenKeyShortCutPressed)
         Monitor.start(type: .openFishRepositoryWhenKeyShortCutPressed)
         Monitor.start(type: .hideMainWindowWhenClickOutside)
         Monitor.start(type: .saveFishWhenClipboardChanges)
         Monitor.start(type: .localKeyBoardPressedAsyncEvent)
-        TFTask.start()
+//        TFTask.start()
         TouchFishApp.statusBar = StatusBar()
         TouchFishApp.mainWindow = MainWindow()
         TouchFishApp.activate()
@@ -67,6 +66,7 @@ class TouchFishApp {
     }
     
     static func quit() {
+//        TouchFishApp.localStorage.close()
         NSApp.terminate(nil)
     }
 

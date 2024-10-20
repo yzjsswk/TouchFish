@@ -51,7 +51,7 @@ struct Configuration: Codable {
         var host: String
         var port: String
     }
-    var dataServiceConfigs: [String:DataServiceConfiguration] = ["local": DataServiceConfiguration(host: "127.0.0.1", port: "2233")]
+    var dataServiceConfigs: [String:DataServiceConfiguration] = ["local": DataServiceConfiguration(host: "127.0.0.1", port: "8080")]
     var enableDataServiceConfigName = "local"
     var enableDataServiceConfig: DataServiceConfiguration? {
         return dataServiceConfigs[enableDataServiceConfigName]

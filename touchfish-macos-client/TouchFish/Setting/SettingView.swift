@@ -67,7 +67,7 @@ struct SettingView: View {
                     if ok {
                         Config = Configuration.read()
                         RecipeManager.goToRecipe(recipeId: nil)
-                        Cache.refresh()
+//                        Cache.refresh()
                     } else {
                         Functions.doAlert(type: .warning, title: "Warning", message: "Save Failed")
                     }

@@ -3,14 +3,12 @@ import SwiftUI
 struct FishListView: View {
     
     var fishList: [Fish]
+    @Binding var selectedFishIdentity: String?
+    @State var hoveringFishIdentity: String?
+    @State var lastHoverTs: TimeInterval = Date().timeIntervalSince1970
     
     @Binding var isEditing: Bool
     
-    @Binding var selectedFishIdentity: String?
-    
-    @State var hoveringFishIdentity: String?
-    
-    @State var lastHoverTs: TimeInterval = Date().timeIntervalSince1970
     
     var body: some View {
         VStack {
@@ -19,10 +17,11 @@ struct FishListView: View {
                     ForEach(fishList, id: \.identity) { fish in
                         FishListItemView(
                             fish: fish,
-                            isEditing: $isEditing,
                             selectedFishIdentity: $selectedFishIdentity,
-                            hoveringFishIdentity: $hoveringFishIdentity
+                            hoveringFishIdentity: $hoveringFishIdentity,
+                            isEditing: $isEditing
                         )
+//                        .transition(.move(edge: .top).combined(with: .opacity))
                         .onHover { isHovered in
                             if isHovered {
                                 selectedFishIdentity = fish.identity

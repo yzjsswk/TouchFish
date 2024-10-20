@@ -1,106 +1,69 @@
 import Foundation
 import Alamofire
 
-enum OperateResult: String, Codable {
-    case success
-    case skip
-    case fail
-}
-
 struct DataServiceResponse<T: Codable>: Codable {
     
-    let timeCost: Int
-    let code: String
-    let status: OperateResult
-    let msg: String
+    let status: String
     let data: T?
     
+    func isOk() -> Bool {
+        return self.status == "Ok"
+    }
+    
+}
+
+struct NoDataResp: Codable {}
+
+struct SearchFishResp: Codable {
+    let totalCount: Int
+    let pageNum: Int
+    let pageSize: Int
+    let data: [FishResp]
+    
     enum CodingKeys: String, CodingKey {
-        case timeCost = "time_cost"
-        case code = "code"
-        case status = "status"
-        case msg = "msg"
+        case totalCount = "total_count"
+        case pageNum = "page_num"
+        case pageSize = "page_size"
         case data = "data"
     }
     
     func getFish() -> [Fish]? {
-        if !(data is SearchFishResp) {
-            Log.warning("DataServiceResponse.getFish - return nil: is not a searchFishResp")
-            return nil
-        }
-        if status != .success {
-            Log.warning("DataServiceResponse.getFish - return nil: DataServiceResponse.status != success")
-            return nil
-        }
-        guard let fishRespList = (data as? SearchFishResp)?.fish else {
-            Log.warning("DataServiceResponse.getFish - return nil: DataServiceResponse.data.fish = nil")
-            return nil
-        }
-        return fishRespList.compactMap { fishResp in
+        return self.data.compactMap { fishResp in
             if let fish = fishResp.toFish() {
                 return fish
             }
-            Log.warning("DataServiceResponse.getFish - ignore a fish: fishResp.toFish return nil, fishResp.identity = \(fishResp.identity)")
+            Log.warning("SearchFishResp.getFish - ignore a fish: fishResp.toFish return nil, fishResp.identity = \(fishResp.identity)")
             return nil
         }
-    }
-}
-
-struct NoDataResp: Codable {
-    
-}
-
-struct ClearFishResp: Codable {
-    
-    let clearedIdentitys: [String]
-    
-    enum CodingKeys: String, CodingKey {
-        case clearedIdentitys = "cleared_identitys"
-    }
-    
-}
-
-struct StatsResp: Codable {
-    let totalCount: Int
-    let type: [String: Int]
-    let tag: [String: Int]
-    let mark: [String: Int]
-    let lock: [String: Int]
-    
-    enum CodingKeys: String, CodingKey {
-        case totalCount = "total_count"
-        case type = "type"
-        case tag = "tag"
-        case mark = "mark"
-        case lock = "lock"
-    }
-}
-
-struct SearchFishResp: Codable {
-    let pageNum: Int
-    let pageSize: Int
-    let totalPage: Int
-    let totalCount: Int
-    let fish: [FishResp]
-    
-    enum CodingKeys: String, CodingKey {
-        case pageNum = "page_num"
-        case pageSize = "page_size"
-        case totalPage = "total_page"
-        case totalCount = "total_count"
-        case fish = "fish"
     }
     
 }
 
 struct FishResp: Codable {
     
-    let id: Int
+    struct DataInfo: Codable {
+        let byte_count: Int?
+        let char_count: Int?
+        let word_count: Int?
+        let row_count: Int?
+        let width: Int?
+        let height: Int?
+        
+        func toDataInfo() -> Fish.DataInfo {
+            Fish.DataInfo(
+                byteCount: self.byte_count, charCount: self.char_count, wordCount: self.word_count,
+                rowCount: self.row_count, width: self.width, height: self.height
+            )
+        }
+    }
+    
     let identity: String
-    let type: String
-    let byteCount: Int
+    let count: Int
+    let fishType: String
+    let fishData: String
+    let dataInfo: DataInfo
     let description: String
-    let tags: [[String]]
+    let tags: [String]
     let isMarked: Bool
     let isLocked: Bool
     let extraInfo: String
@@ -108,11 +71,12 @@ struct FishResp: Codable {
     let updateTime: String
     
     enum CodingKeys: String, CodingKey {
-        case id = "id"
         case identity = "identity"
-        case type = "type"
-        case byteCount = "byte_count"
-        case description = "description"
+        case count = "count"
+        case fishType = "fish_type"
+        case fishData = "fish_data"
+        case dataInfo = "data_info"
+        case description = "desc"
         case tags = "tags"
         case isMarked = "is_marked"
         case isLocked = "is_locked"
@@ -122,27 +86,52 @@ struct FishResp: Codable {
     }
     
     func toFish() -> Fish? {
-        guard let type = FishType(rawValue: type) else {
-            Log.warning("FishResp.toFish - return nil: no such fishType, fishResp.type=\(type), fishResp.identity=\(identity)")
+        guard let fishType = Fish.FishType(rawValue: self.fishType) else {
+            Log.warning("FishResp.toFish - return nil: no such fishType, fishResp.fishType=\(self.fishType), fishResp.identity=\(self.identity)")
             return nil
         }
-        guard let extraInfo = ExtraInfo.load(from: extraInfo) else {
-            Log.warning("FishResp.toFish - return nil: ExtraInfo.load return nil, fishResp.extraInfo=\(extraInfo), fishResp.identity=\(identity)")
+        guard let fishData = Data(base64Encoded: self.fishData) else {
+            Log.warning("FishResp.toFish - return nil: decode fish data failed, fishResp.identity=\(self.identity)")
             return nil
         }
+        guard let extraInfo = Fish.ExtraInfo.from_json_string(json_str: extraInfo) else {
+            Log.warning("FishResp.toFish - return nil: parse extra info failed, fishResp.extraInfo=\(self.extraInfo), fishResp.identity=\(self.identity)")
+            return nil
+        }
+        let createTime = Functions.convertIsoDateToE8(self.createTime) ?? self.createTime
+        let updateTime = Functions.convertIsoDateToE8(self.updateTime) ?? self.updateTime
         return Fish(
-            id: id,
-            identity: identity,
-            type: type,
-            byteCount: byteCount,
-            description: description,
-            tags: tags,
-            isMarked: isMarked,
-            isLocked: isLocked,
-            extraInfo: extraInfo,
-            createTime: createTime,
-            updateTime: updateTime
+            identity: self.identity, count: self.count, fishType: fishType, fishData: fishData,
+            dataInfo: self.dataInfo.toDataInfo(), description: self.description, tags: self.tags,
+            isMarked: self.isMarked, isLocked: self.isLocked, extraInfo: extraInfo,
+            createTime: createTime, updateTime: updateTime
         )
+    }
+    
+}
+
+struct CountFishResp: Codable {
+    
+    let activeCount: Int
+    let expiredCount: Int
+    let typeCount: [String:Int]
+    let tagCount: [String:Int]
+    let markedCount: Int
+    let unmarkedCount: Int
+    let lockedCount: Int
+    let unlockedCount: Int
+    let dayCount: [String:Int]
+    
+    enum CodingKeys: String, CodingKey {
+        case activeCount = "count__active"
+        case expiredCount = "count__expired"
+        case typeCount = "count__by_type"
+        case tagCount = "count__by_tag"
+        case markedCount = "count__marked"
+        case unmarkedCount = "count__unmarked"
+        case lockedCount = "count__locked"
+        case unlockedCount = "count__unlocked"
+        case dayCount = "count__by_day"
     }
     
 }
@@ -172,162 +161,127 @@ struct DataService {
     }
     
     static func searchFish(
-        fuzzys: String? = nil,
-        value: String? = nil,
+        fuzzy: String? = nil,
+        identitys: [String]? = nil,
+        fishTypes: [Fish.FishType]? = nil,
         description: String? = nil,
-        identity: String? = nil,
-        type: [FishType]? = nil,
-        tags: [[String]]? = nil,
+        tags: [String]? = nil,
         isMarked: Bool? = nil,
         isLocked: Bool? = nil,
         pageNum: Int? = 1,
         pageSize: Int? = 10
     ) async -> Result<DataServiceResponse<SearchFishResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/search"
+        let url = DataService.urlPrefix + "/search"
         let para: [String:Any?] = [
-            "fuzzys": fuzzys,
-            "value": value,
-            "description": description,
-            "identity": identity,
-            "type": type?.map { $0.rawValue }.joined(separator: ","),
-            "tags": Functions.tagParseStr(tags),
+            "fuzzy": fuzzy,
+            "identity": identitys,
+            "fish_type": fishTypes?.map { $0.rawValue },
+            "desc": description,
+            "tags": tags,
             "is_marked": isMarked,
             "is_locked": isLocked,
             "page_num": pageNum,
             "page_size": pageSize,
-            "with_preview": false
         ]
         return await AF.request(
-            url, parameters: para.compactMapValues { $0 }
+            url, method: .post, parameters: para.compactMapValues { $0 }, encoding: JSONEncoding.default
         ).serializingDecodable(DataServiceResponse.self).result
     }
     
-    // todo: support upload path version
-    static func addFish(
-        value: Data, description: String?, type: FishType, tags: [[String]]?, extraInfo: ExtraInfo?
-    ) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/add"
+    static func delectFish(
+        fuzzy: String? = nil,
+        identitys: [String]? = nil,
+        fishTypes: [Fish.FishType]? = nil,
+        description: String? = nil,
+        tags: [String]? = nil,
+        isMarked: Bool? = nil,
+        isLocked: Bool? = nil
+    ) async -> Result<DataServiceResponse<[String]>, AFError> {
+        let url = DataService.urlPrefix + "/delect"
         let para: [String:Any?] = [
-            "description": description,
-            "type": type.rawValue,
-            "tags": Functions.tagParseStr(tags),
-            "extra_info": (extraInfo ?? ExtraInfo()).toJsonString()
+            "fuzzy": fuzzy,
+            "identity": identitys,
+            "fish_type": fishTypes?.map { $0.rawValue },
+            "desc": description,
+            "tags": tags,
+            "is_marked": isMarked,
+            "is_locked": isLocked,
         ]
-        return await AF.upload(
-            multipartFormData: { multipartFormData in
-                for (key, value) in para {
-                    if let data = (value as? String)?.data(using: .utf8) {
-                        multipartFormData.append(data, withName: key)
-                    }
-                }
-                multipartFormData.append(value, withName: "value", fileName: "file", mimeType: "application/octet-stream")
-            },
-            to: url
+        return await AF.request(
+            url, method: .post, parameters: para.compactMapValues { $0 }, encoding: JSONEncoding.default
+        ).serializingDecodable(DataServiceResponse.self).result
+    }
+    
+    static func pickFish(identity: String) async -> Result<DataServiceResponse<FishResp>, AFError> {
+        let url = DataService.urlPrefix + "/pick/\(identity)"
+        return await AF.request(url).serializingDecodable(DataServiceResponse.self).result
+    }
+    
+    static func addFish(
+        fishType: Fish.FishType, fishData: Data, description: String?, tags: [String]?,
+        isMarked: Bool?, isLocked: Bool?, extraInfo: String?
+    ) async -> Result<DataServiceResponse<FishResp>, AFError> {
+        let url = DataService.urlPrefix + "/add"
+        let data = fishData.base64EncodedString()
+        let para: [String:Any?] = [
+            "fish_type": fishType.rawValue,
+            "fish_data": data,
+            "description": description,
+            "tags": tags,
+            "extra_info": extraInfo,
+        ]
+        return await AF.request(
+            url, method: .post, parameters: para.compactMapValues { $0 }, encoding: JSONEncoding.default
         ).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func modifyFish(
-        identity: String, description: String? = nil, tags: [[String]]? = nil, extraInfo: ExtraInfo? = nil
+        identity: String, description: String? = nil, tags: [String]? = nil, extraInfo: String? = nil
     ) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/modify"
+        let url = DataService.urlPrefix + "/modify"
         let para: [String:Any?] = [
             "identity": identity,
-            "description": description,
-            "tags": Functions.tagParseStr(tags),
-            "extra_info": extraInfo?.toJsonString()
+            "desc": description,
+            "tags": tags,
+            "extra_info": extraInfo,
         ]
         return await AF.request(
-            url, method: .post, parameters: para.compactMapValues { $0 }
+            url, method: .post, parameters: para.compactMapValues { $0 }, encoding: JSONEncoding.default
         ).serializingDecodable(DataServiceResponse.self).result
     }
     
-    static func removeFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/remove"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+    static func expireFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
+        let url = DataService.urlPrefix + "/expire/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func markFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/mark"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+        let url = DataService.urlPrefix + "/mark/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func unMarkFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/unmark"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+        let url = DataService.urlPrefix + "/unmark/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func lockFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/lock"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+        let url = DataService.urlPrefix + "/lock/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func unLockFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/unlock"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+        let url = DataService.urlPrefix + "/unlock/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
     
     static func pinFish(identity: String) async -> Result<DataServiceResponse<NoDataResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/pin"
-        let para: [String:String] = ["identity": identity]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
+        let url = DataService.urlPrefix + "/pin/\(identity)"
+        return await AF.request(url, method: .post).serializingDecodable(DataServiceResponse.self).result
     }
-    
-    static func clearFish(secondDelta: Int) async -> Result<DataServiceResponse<ClearFishResp>, AFError> {
-        let url = DataService.urlPrefix + "/fish/clear"
-        let para: [String:String] = ["second_delta": String(secondDelta)]
-        return await AF.request(
-            url, method: .post, parameters: para
-        ).serializingDecodable(DataServiceResponse.self).result
-    }
-    
-    static func fetchResource(identity: String, savePath: URL) async -> Result<URL, AFError> {
-        let url = DataService.urlPrefix + "/resource/fetch"
-        let para: [String:String] = ["identity": identity]
-        let destination: DownloadRequest.Destination = { _, _ in
-            return (
-                savePath,
-                [.removePreviousFile, .createIntermediateDirectories]
-            )
-        }
-        return await AF.download(
-            url, parameters: para, to: destination
-        ).serializingDownloadedFileURL().result
-    }
-    
-    static func fetchPreview(identity: String, savePath: URL) async -> Result<URL, AFError> {
-        let url = DataService.urlPrefix + "/resource/preview"
-        let para: [String:String] = ["identity": identity]
-        let destination: DownloadRequest.Destination = { _, _ in
-            return (
-                savePath,
-                [.removePreviousFile, .createIntermediateDirectories]
-            )
-        }
-        // todo: when response return not 200, also download a error file
-        return await AF.download(
-            url, parameters: para, to: destination
-        ).serializingDownloadedFileURL().result
-    }
-    
-    static func statistic() async -> Result<DataServiceResponse<StatsResp>, AFError> {
-        let url = DataService.urlPrefix + "/stats"
+        
+    static func countFish() async -> Result<DataServiceResponse<CountFishResp>, AFError> {
+        let url = DataService.urlPrefix + "/count"
         return await AF.request(url).serializingDecodable(DataServiceResponse.self).result
     }
     
