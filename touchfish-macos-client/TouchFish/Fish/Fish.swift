@@ -101,26 +101,28 @@ class Fish {
     }
     
     var linePreview: String {
+        var ret: String = self.defaultLinePreview
         switch self.fishType {
         case .Text:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                ret = Functions.getLinePreview(self.description)
             }
             if let textData = self.textData {
-                return Functions.getLinePreview(textData)
+                ret = Functions.getLinePreview(textData)
             }
-            return self.defaultLinePreview
         case .Image:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                ret = Functions.getLinePreview(self.description)
             }
-            return self.defaultLinePreview
         default:
             if self.description.count > 0 {
-                return Functions.getLinePreview(self.description)
+                ret = Functions.getLinePreview(self.description)
             }
-            return self.defaultLinePreview
         }
+        if self.count > 1 {
+            ret = "(\(self.count))" + ret
+        }
+        return ret
     }
     
     var fishIcon: Image {

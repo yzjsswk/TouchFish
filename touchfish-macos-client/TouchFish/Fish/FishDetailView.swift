@@ -24,19 +24,10 @@ struct FishDetailView: View {
                     if selectedFish.tags.count > 0 {
                         DetailTagView(fish: selectedFish)
                     }
-                    if selectedFish.tags.count > 0 && selectedFish.description.count > 0 {
-                        Divider().background(Color.gray.opacity(0.2))
-                    }
                     if selectedFish.description.count > 0 {
                         DetailDescView(fish: selectedFish)
-//                            .frame(minHeight: 50, maxHeight: Config.mainHeight.get()*0.2)
                     }
                 }
-                .padding()
-                .overlay(
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                )
             }
             if let selectedFish = self.selectedFish {
                 ScrollView {
@@ -81,26 +72,21 @@ struct DetailTagView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-//                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tagGroup) in
-//                    ForEach(tagGroup, id: \.self) { tg in
-//                        Text(tg)
-//                            .frame(minWidth: 40)
-//                            .background(
-//                                GeometryReader { geometry in
-//                                    Rectangle()
-//                                        .cornerRadius(10)
-//                                        .foregroundColor(String(Functions.getMD5(of: tg).suffix(6)).color)
-//                                        .frame(width: geometry.size.width+5, height: geometry.size.height+8)
-//                                        .offset(x: -2.5, y: -4)
-//                                }
-//                            )
-//                            .foregroundColor(.white)
-//                    }
-//                    if idx < fish.tags.count-1 {
-//                        Divider()
-//                    }
-//                }
-//                Spacer()
+                ForEach(Array(fish.tags.enumerated()), id: \.0) { (idx, tg) in
+                    Text(tg)
+                        .frame(minWidth: 40)
+                        .background(
+                            GeometryReader { geometry in
+                                Rectangle()
+                                    .cornerRadius(10)
+                                    .foregroundColor(String(Functions.getMD5(of: tg).suffix(6)).color)
+                                    .frame(width: geometry.size.width+5, height: geometry.size.height+8)
+                                    .offset(x: -2.5, y: -4)
+                            }
+                        )
+                        .foregroundColor(.white)
+                }
+                Spacer()
             }
             .frame(height: 20)
             .padding(3)
@@ -119,7 +105,7 @@ struct DetailDescView: View {
             Text(fish.description)
                 .font(.title3)
                 .bold()
-                .padding(.top, 3)
+                .padding([.top, .horizontal], 3)
             Spacer()
         }
     }
@@ -178,6 +164,7 @@ struct DetailExtraInfoView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
                 DetailItemView(itemName: "Type", itemValue: fish.fishType.rawValue)
+                DetailItemView(itemName: "Repeats Number", itemValue: fish.count)
                 DetailItemView(itemName: "Source Application", itemValue: fish.extraInfo.sourceAppName)
                 switch fish.fishType {
                 case .Text:

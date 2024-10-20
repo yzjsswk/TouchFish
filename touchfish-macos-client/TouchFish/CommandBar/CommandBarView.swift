@@ -49,6 +49,9 @@ struct CommandBarView: View {
         .background(Constant.commandBarBackgroundColor.color)
         .cornerRadius(10)
         .padding(10)
+        .onReceive(NotificationCenter.default.publisher(for: .CommandBarShouldFocus)) { _ in
+            isFocused = true
+        }
         .onReceive(NotificationCenter.default.publisher(for: .DeleteKeyWasPressed)) { _ in
             if isFocused && commandText.count == 0 {
                 CommandManager.removeCell()

@@ -144,11 +144,11 @@ struct Storage {
     
     static func modifyFish(
         _ identity: String, description: String? = nil, tags: [String]? = nil, extraInfo: Fish.ExtraInfo? = nil
-    ) async {
+    ) async -> Bool {
         let extraInfo = extraInfo ?? Fish.ExtraInfo()
         guard let extraInfo = extraInfo.to_json_string() else {
             Log.error("Storage.modifyFish - failed: parse extraInfo to string failed, extraInfo=\(extraInfo)")
-            return
+            return false
         }
         let result = await DataService.modifyFish(
             identity: identity, description: description, tags: tags, extraInfo: extraInfo
@@ -157,14 +157,17 @@ struct Storage {
         case .success(let resp):
             if !resp.isOk() {
                 Log.error("Storage.modifyFish - fail: resp is not ok, resp.status=\(resp.status)")
+                return false
             }
             fishCache.removeValue(forKey: identity)
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .ShouldRefreshFish, object: nil, userInfo: nil)
             }
+            return true
         case .failure(let err):
             Log.error("Storage.modifyFish - fail: request data service fail, err=\(err)")
             Functions.sendDataServiceErrorMessage()
+            return false
         }
     }
     

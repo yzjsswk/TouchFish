@@ -57,6 +57,7 @@ struct FishRepositoryView: View {
         .onAppear {
             isEditing = false
             // TODO: appear animation
+            NotificationCenter.default.post(name: .CommandBarShouldFocus, object: nil, userInfo: nil)
             NotificationCenter.default.post(name: .ShouldRefreshFish, object: nil, userInfo: nil)
         }
         .onReceive(NotificationCenter.default.publisher(for: .ShouldRefreshFish)) { _ in
@@ -69,8 +70,14 @@ struct FishRepositoryView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .FishRefreshed)) { notification in
             if let fish = notification.userInfo?["fish"] as? [String:Fish] {
-                withAnimation(.spring(duration: 0.4)) {
-                    self.fishs = fish
+                if self.fishs.isEmpty || fish.isEmpty {
+                    withAnimation(.easeIn(duration: 0.2)) {
+                        self.fishs = fish
+                    }
+                } else {
+                    withAnimation(.spring(duration: 0.4)) {
+                        self.fishs = fish
+                    }
                 }
             }
         }
@@ -96,7 +103,6 @@ struct FishRepositoryView: View {
                     fishTypes = argValue.compactMap { Fish.FishType(rawValue: $0.capitalized) }
                 }
                 if argName == "tag" {
-                    // todo: mult tag search may work uncorrert
                     tags = argValue
                 }
                 if argName == "marked", argValue.count > 0 {

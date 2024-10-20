@@ -19,6 +19,7 @@ struct FishEditView: View {
                 BackButtonView()
                     .onTapGesture {
                         isEditing = false
+                        NotificationCenter.default.post(name: .CommandBarShouldFocus, object: nil, userInfo: nil)
                     }
                 Spacer()
                 Text("Editing of \(identity)")
@@ -27,29 +28,23 @@ struct FishEditView: View {
                 Spacer()
                 SaveButtonView()
                     .onTapGesture {
-//                        Task {
-//                            let res = await Storage.modifyFish(
-//                                identity,
-//                                description: description,
-//                                tags: tags.filter {!$0.isEmpty}
-//                            )
-//                            switch res {
-//                            case .success:
-//                                isEditing = false
-//                            case .skip:
-//                                showSaveAlert = true
-//                                alertMessage = "save skipped"
-//                            case .fail:
-//                                showSaveAlert = true
-//                                alertMessage = "save failed"
-//                            }
-//                        }
+                        Task {
+                            let ok = await Storage.modifyFish(identity, description: description, tags: tagsFlatten)
+                            if ok {
+                                isEditing = false
+                                NotificationCenter.default.post(name: .CommandBarShouldFocus, object: nil, userInfo: nil)
+                            } else {
+                                showSaveAlert = true
+                                alertMessage = "save failed"
+                            }
+
+                        }
                     }
                     .alert(isPresented: $showSaveAlert) {
                         Alert(
-                            title: Text("modify fish"),
+                            title: Text("Modify Fish"),
                             message: Text(alertMessage),
-                            dismissButton: .default(Text("ok"))
+                            dismissButton: .default(Text("Ok"))
                         )
                     }
             }
