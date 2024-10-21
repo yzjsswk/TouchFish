@@ -112,12 +112,23 @@ struct MonitorManager {
                                 extraInfo.sourceAppName = sourceAppName
                             }
                             let ex = extraInfo
+                            let identity = Functions.getMD5(of: clipboardData.1)
                             Task {
-                                let newFish = await Storage.addFish(
-                                    clipboardData.0, clipboardData.1, extraInfo: ex
-                                )
-                                if newFish == nil {
-                                    Log.error("save fish from clipboard - fail: Storage.addFish return nil")
+                                if let fish = await Storage.pickFish(identity: identity) {
+                                    let newFish = await Storage.addFish(
+                                        fish.fishType, fish.fishData, description: fish.description, tags: fish.tags,
+                                        isMarked: fish.isMarked, isLocked: fish.isLocked, extraInfo: fish.extraInfo
+                                    )
+                                    if newFish == nil {
+                                        Log.error("save fish from clipboard - fail: Storage.addFish return nil")
+                                    }
+                                } else {
+                                    let newFish = await Storage.addFish(
+                                        clipboardData.0, clipboardData.1, extraInfo: ex
+                                    )
+                                    if newFish == nil {
+                                        Log.error("save fish from clipboard - fail: Storage.addFish return nil")
+                                    }
                                 }
                             }
                         }

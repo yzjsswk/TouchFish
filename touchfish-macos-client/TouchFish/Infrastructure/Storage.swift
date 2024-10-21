@@ -82,7 +82,6 @@ struct Storage {
                 return nil
             }
             guard let data = resp.data else {
-                Log.error("Storage.pickFish - failed: pickFish.resp.data=nil, resp.status=\(resp.status), fish.identity=\(identity)")
                 return nil
             }
             guard let fish = data.toFish() else {

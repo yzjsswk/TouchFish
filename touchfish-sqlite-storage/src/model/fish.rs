@@ -152,6 +152,15 @@ impl FishUpdater {
         })
     }
 
+    pub fn empty() -> FishUpdater {
+        let update_time = YTime::now().to_str();
+        FishUpdater { 
+            identity: None, count: None, fish_type: None, fish_data: None,
+            data_info: None, desc: None, tags: None, is_marked: None,
+            is_locked: None, extra_info: None, update_time,
+        }
+    }
+
 }
 
 pub struct FishSelecter {

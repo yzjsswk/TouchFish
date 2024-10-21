@@ -20,43 +20,45 @@ impl<S> FishService<S> where S: FishStorage {
         is_marked: Option<bool>, is_locked: Option<bool>, extra_info: Option<String>,
     ) -> YRes<Fish> {
         if fish_data.length() > FISH_DATA_LEN_LIMIT {
-            return Err(err!(BusinessError::"add fish": "fish data too long", fish_data.length(), FISH_DATA_LEN_LIMIT))
+            return Err(err!(BusinessError::"add fish -> check data length": "fish data too long", fish_data.length(), FISH_DATA_LEN_LIMIT))
         }
         let identity = fish_data.md5();
-        if let Some(mut existed_fish) = self.storage.pick_fish(&identity)? {
+        if let Some(existed_fish) = self.storage.pick_fish(&identity)? {
             if fish_type != existed_fish.fish_type {
-                return Err(err!(BusinessError::"add fish": "fish data exists and fish type not consistent", identity))
+                return Err(err!(BusinessError::"add fish -> fish data exists -> check data consistent": "fish type not consistent", identity))
             }
             if let Some(desc) = &desc {
                 if *desc != existed_fish.desc {
-                    return Err(err!(BusinessError::"add fish": "fish data exists and desc not consistent", identity))
+                    return Err(err!(BusinessError::"add fish -> fish data exists -> check data consistent": "desc not consistent", identity))
                 }
             }
             if let Some(tags) = &tags {
                 let mut tags = tags.unique();
                 tags.sort();
                 if tags != existed_fish.tags {
-                    return Err(err!(BusinessError::"add fish": "fish data exists and tags not consistent", identity))
+                    return Err(err!(BusinessError::"add fish -> fish data exists -> check data consistent": "tags not consistent", identity))
                 }
             }
             if let Some(is_marked) = is_marked {
                 if is_marked != existed_fish.is_marked {
-                    return Err(err!(BusinessError::"add fish": "fish data exists and is_marked not consistent", identity))
+                    return Err(err!(BusinessError::"add fish -> fish data exists -> check data consistent": "is_marked not consistent", identity))
                 }
             }
             if let Some(is_locked) = is_locked {
                 if is_locked != existed_fish.is_locked {
-                    return Err(err!(BusinessError::"add fish": "fish data exists and is_locked not consistent", identity))
+                    return Err(err!(BusinessError::"add fis -> fish data exists -> check data consistenth": "is_locked not consistent", identity))
                 }
             }
             if let Some(extra_info) = &extra_info {
                 if *extra_info != existed_fish.extra_info {
-                    return Err(err!(BusinessError::"add fish": "fish data exists and extra_info not consistent", identity))
+                    return Err(err!(BusinessError::"add fish -> fish data exists -> check data consistent": "extra_info not consistent", identity))
                 }
             }
             self.storage.increase_count(&identity)?;
-            existed_fish.count += 1;
-            return Ok(existed_fish)
+            let new_fish = self.storage.pick_fish(&identity)?.ok_or(
+                err!(ConsistentError::"add fish -> consistent data exists -> increase count -> query new fish to return": "new fish not found", identity)
+            )?;
+            return Ok(new_fish)
         }
         let desc = desc.unwrap_or("".to_string());
         let extra_info = extra_info.unwrap_or("".to_string());
@@ -75,7 +77,7 @@ impl<S> FishService<S> where S: FishStorage {
         match fish_type {
             FishType::Text => {
                 let s= fish_data.to_str().trace(
-                    ctx!("add text fish": "parse fish_data to string failed")
+                    ctx!("add text fish -> parse fish data to string": "parse failed")
                 )?;
                 data_info.char_count = Some(s.len());
                 data_info.word_count = Some(s.split_whitespace().collect::<Vec<_>>().len());
@@ -83,7 +85,7 @@ impl<S> FishService<S> where S: FishStorage {
             },
             FishType::Image => {
                 let m = image::load_from_memory(&fish_data.clone().into_vec()).map_err(|e|
-                    err!(ParseError::"add image fish": "parse fish_data to image failed", e)
+                    err!(ParseError::"add image fish -> parse fish data to image": "parse failed", e)
                 )?;
                 let (w, h) = m.dimensions();
                 data_info.width = Some(w as usize);
@@ -99,11 +101,11 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"expire fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"expire fish -> check fish exists": "fish not exist", identity))
             },
             Some(x) => {
                 if x.is_locked {
-                    return Err(err!(BusinessError::"expire fish": "fish is locked", identity))
+                    return Err(err!(BusinessError::"expire fish -> check fish is not locked": "fish is locked", identity))
                 } else {
                     self.storage.expire_fish(identity)
                 }
@@ -117,11 +119,11 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"modify fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"modify fish -> check fish exists": "fish not exist", identity))
             },
             Some(x) => {
                 if x.is_locked {
-                    return Err(err!(BusinessError::"modify fish": "fish is locked", identity))
+                    return Err(err!(BusinessError::"modify fish -> check fish is not locked": "fish is locked", identity))
                 } else {
                     self.storage.modify_fish(identity, desc, tags, extra_info)
                 }
@@ -133,11 +135,11 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"mark fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"mark fish -> check fish exists": "fish not exist", identity))
             },
             Some(x) => {
                 if x.is_locked {
-                    return Err(err!(BusinessError::"mark fish": "fish is locked", identity))
+                    return Err(err!(BusinessError::"mark fish -> check fish is not locked": "fish is locked", identity))
                 } else {
                     self.storage.mark_fish(identity)
                 }
@@ -149,11 +151,11 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"unmark fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"unmark fish -> check fish exists": "fish not exist", identity))
             },
             Some(x) => {
                 if x.is_locked {
-                    return Err(err!(BusinessError::"unmark fish": "fish is locked", identity))
+                    return Err(err!(BusinessError::"unmark fish -> check fish is not locked": "fish is locked", identity))
                 } else {
                     self.storage.unmark_fish(identity)
                 }
@@ -165,7 +167,7 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"lock fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"lock fish -> check fish exists": "fish not exist", identity))
             },
             Some(_) => {
                 self.storage.lock_fish(identity)
@@ -177,7 +179,7 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"unlock fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"unlock fish -> check fish exists": "fish not exist", identity))
             },
             Some(_) => {
                 self.storage.unlock_fish(identity)
@@ -189,11 +191,11 @@ impl<S> FishService<S> where S: FishStorage {
         let fish = self.storage.pick_fish(identity)?;
         match fish {
             None => {
-                return Err(err!(BusinessError::"pin fish": "fish not exist", identity))
+                return Err(err!(BusinessError::"pin fish -> check fish exists": "fish not exist", identity))
             },
             Some(x) => {
                 if x.is_locked {
-                    return Err(err!(BusinessError::"pin fish": "fish is locked", identity))
+                    return Err(err!(BusinessError::"pin fish -> check fish is not locked": "fish is locked", identity))
                 } else {
                     self.storage.pin_fish(identity)
                 }

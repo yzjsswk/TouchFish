@@ -382,10 +382,8 @@ impl FishStorage for SqliteStorage {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"pin fish": "fetch connection from pool failed", e),
         )?;
-        self.fish__update(&mut conn, identity, &FishUpdater::new(
-            None, None, None, None, None,
-            None, None, None, None, None,
-        )?).map_err(|e| err!(DataBaseError::"pin fish", identity, e))?;
+        self.fish__update(&mut conn, identity, &FishUpdater::empty())
+            .map_err(|e| err!(DataBaseError::"pin fish", identity, e))?;
         Ok(())
     }
 
@@ -393,7 +391,11 @@ impl FishStorage for SqliteStorage {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"increase fish count": "fetch connection from pool failed", e),
         )?;
-        self.fish__inc_cnt(&mut conn, identity).map_err(|e| err!(DataBaseError::"increase fish count", identity, e))?;
+        conn.transaction::<_, Error, _>(|conn| {
+            self.fish__inc_cnt(conn, identity)?;
+            self.fish__update(conn, identity, &FishUpdater::empty())?;
+            Ok(())
+        }).map_err(|e| err!(DataBaseError::"increase fish count": "execute transaction failed", e))?;
         Ok(())
     }
 
@@ -401,7 +403,11 @@ impl FishStorage for SqliteStorage {
         let mut conn = self.pool.get().map_err(
             |e| err!(DataBaseError::"decrease fish count": "fetch connection from pool failed", e),
         )?;
-        self.fish__dec_cnt(&mut conn, identity).map_err(|e| err!(DataBaseError::"decrease fish count", identity, e))?;
+        conn.transaction::<_, Error, _>(|conn| {
+            self.fish__dec_cnt(conn, identity)?;
+            self.fish__update(conn, identity, &FishUpdater::empty())?;
+            Ok(())
+        }).map_err(|e| err!(DataBaseError::"decrease fish count": "execute transaction failed", e))?;
         Ok(())
     }
     

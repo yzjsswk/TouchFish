@@ -6,7 +6,7 @@ struct StatsView: View {
     @State var statistics: CountFishResp? = nil
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             if let statistics = statistics {
                 VStack {
                     Text("Fish")
