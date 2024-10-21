@@ -17,6 +17,7 @@ class TouchFishApp {
     static let previewPath = TouchFishApp.appSupportPath.appendingPathComponent("preview")
     static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
     static let messagePath = TouchFishApp.appSupportPath.appendingPathComponent("message")
+    static let metricsPath = TouchFishApp.appSupportPath.appendingPathComponent("metrics")
     
     static var statusBar: StatusBar!
     static var mainWindow: MainWindow!

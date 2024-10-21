@@ -76,6 +76,12 @@ struct MainView: View {
         .onReceive(NotificationCenter.default.publisher(for: .EscapeKeyWasPressed)) { _ in
             TouchFishApp.deactivate()
         }
+        .onChange(of: activeRecipeBundleId) {
+            if let activeRecipeBundleId = activeRecipeBundleId {
+                Metrics.recipeUseCount[activeRecipeBundleId, default: 0] += 1
+                Metrics.save()
+            }
+        }
     }
     
 }

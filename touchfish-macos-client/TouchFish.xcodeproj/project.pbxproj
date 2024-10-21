@@ -48,6 +48,9 @@
 		99C615032C45691900A99567 /* MessageCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C615022C45691900A99567 /* MessageCenter.swift */; };
 		99EDC3362CC4FE8F0023CDF0 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */; };
 		99EDC3382CC630420023CDF0 /* BarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC3372CC630420023CDF0 /* BarChartView.swift */; };
+		99EDC33C2CC69FD90023CDF0 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC33B2CC69FD90023CDF0 /* Metrics.swift */; };
+		99EDC33E2CC6A5540023CDF0 /* FishStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC33D2CC6A5540023CDF0 /* FishStatsView.swift */; };
+		99EDC3402CC6A5620023CDF0 /* RecipeStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EDC33F2CC6A5620023CDF0 /* RecipeStatsView.swift */; };
 		99EF7A282BF3C0EC00675CC2 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EF7A272BF3C0EC00675CC2 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +96,9 @@
 		99C615022C45691900A99567 /* MessageCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCenter.swift; sourceTree = "<group>"; };
 		99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 		99EDC3372CC630420023CDF0 /* BarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartView.swift; sourceTree = "<group>"; };
+		99EDC33B2CC69FD90023CDF0 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
+		99EDC33D2CC6A5540023CDF0 /* FishStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishStatsView.swift; sourceTree = "<group>"; };
+		99EDC33F2CC6A5620023CDF0 /* RecipeStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeStatsView.swift; sourceTree = "<group>"; };
 		99EF7A272BF3C0EC00675CC2 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -137,6 +143,8 @@
 				99EF7A272BF3C0EC00675CC2 /* StatsView.swift */,
 				99EDC3352CC4FE8F0023CDF0 /* PieChartView.swift */,
 				99EDC3372CC630420023CDF0 /* BarChartView.swift */,
+				99EDC33D2CC6A5540023CDF0 /* FishStatsView.swift */,
+				99EDC33F2CC6A5620023CDF0 /* RecipeStatsView.swift */,
 			);
 			path = Statistics;
 			sourceTree = "<group>";
@@ -211,6 +219,7 @@
 				99AC05D02BB2BD720046E8C5 /* Storage.swift */,
 				996FEE482BC3E2E50047EB82 /* DataService.swift */,
 				99C614FD2C45094400A99567 /* Task.swift */,
+				99EDC33B2CC69FD90023CDF0 /* Metrics.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -327,6 +336,7 @@
 				99AC05E32BB2BD720046E8C5 /* Fish.swift in Sources */,
 				99C615032C45691900A99567 /* MessageCenter.swift in Sources */,
 				99AC05FF2BB2BD720046E8C5 /* RecipeListView.swift in Sources */,
+				99EDC33C2CC69FD90023CDF0 /* Metrics.swift in Sources */,
 				99AC05F52BB2BD720046E8C5 /* Log.swift in Sources */,
 				99C615012C45590F00A99567 /* MessageCenterView.swift in Sources */,
 				99AC06022BB2BD720046E8C5 /* StatusBar.swift in Sources */,
@@ -349,8 +359,10 @@
 				99AC05E82BB2BD720046E8C5 /* FishListView.swift in Sources */,
 				99AC05E22BB2BD720046E8C5 /* MainWindow.swift in Sources */,
 				99EDC3362CC4FE8F0023CDF0 /* PieChartView.swift in Sources */,
+				99EDC3402CC6A5620023CDF0 /* RecipeStatsView.swift in Sources */,
 				9991B00C2C0C88B000EFE02C /* FishAddView.swift in Sources */,
 				99AC05A92BB2BCD90046E8C5 /* TouchFishApp.swift in Sources */,
+				99EDC33E2CC6A5540023CDF0 /* FishStatsView.swift in Sources */,
 				99AC05F62BB2BD720046E8C5 /* Monitor.swift in Sources */,
 				99EDC3382CC630420023CDF0 /* BarChartView.swift in Sources */,
 				99C614FA2C43C38B00A99567 /* BasicSettingView.swift in Sources */,

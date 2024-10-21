@@ -114,14 +114,12 @@ struct SettingTabView: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            
             ForEach(SettingTab.allCases, id:\.self) { tab in
                 SettingTabItemView(title: tab.tabName, isSelected: selectedTab == tab)
                     .onTapGesture {
                         selectedTab = tab
                     }
             }
-            
         }
     }
     
