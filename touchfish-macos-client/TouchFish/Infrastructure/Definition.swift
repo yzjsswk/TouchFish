@@ -210,6 +210,22 @@ struct Functions {
         return dateFormatter.string(from: date)
     }
     
+    static func convertDateToWeek(_ dateString: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        guard let date = dateFormatter.date(from: dateString) else {
+            return nil
+        }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        guard let year = components.year, let month = components.month else {
+            return nil
+        }
+        let weekOfMonth = calendar.component(.weekOfMonth, from: date)
+        return String(format: "%04d-%02d-W%d", year, month, weekOfMonth)
+    }
+    
     static func getAllFiles(in directory: URL) -> [URL] {
         var fileURLs: [URL] = []
         do {

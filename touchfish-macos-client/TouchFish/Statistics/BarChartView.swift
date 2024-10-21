@@ -20,23 +20,32 @@ struct BarSlice {
 struct BarChartView: View {
     
     @State var title: String
-    @State var slices: [BarSlice]
-    @State var heights: [CGFloat]
+    @State var slices: [[BarSlice]]
+    @State var heights: [[CGFloat]]
+    @State var series: [String]
+    @State var selectedSeriesIdx = 0
     
-    var maxHeights: [CGFloat]
+    var maxHeights: [[CGFloat]] = []
     
-    init(title: String, slices: [BarSlice], maxHeight: Int) {
+    init(title: String, data: [[BarSlice]], seriesName: [String], maxHeight: Int) {
         self.title = title
-        self.slices = slices
-        let maxValue: Int = slices.reduce(0) { max($0, $1.value) }
-        var heights: [CGFloat] = []
-        var maxHeights: [CGFloat] = []
-        for slice in slices {
-            heights.append(0)
-            maxHeights.append(Double(slice.value * maxHeight / maxValue))
+        var slices: [[BarSlice]] = []
+        var heights: [[CGFloat]] = []
+        for curSlices in data {
+            slices.append(curSlices)
+            var curHeights: [CGFloat] = []
+            var curMaxHeights: [CGFloat] = []
+            let maxValue: Int = curSlices.reduce(0) { max($0, $1.value) }
+            for slice in curSlices {
+                curHeights.append(0)
+                curMaxHeights.append(Double(slice.value * maxHeight / maxValue))
+            }
+            self.maxHeights.append(curMaxHeights)
+            heights.append(curHeights)
         }
+        self.series = seriesName
+        self.slices = slices
         self.heights = heights
-        self.maxHeights = maxHeights
     }
     
     
@@ -51,21 +60,31 @@ struct BarChartView: View {
                         .font(.title2)
                         .padding()
                     Spacer()
+                    if series.count > 1 {
+                        Picker("", selection: $selectedSeriesIdx) {
+                            ForEach(Array(series.enumerated()), id: \.0) { (idx, ser) in
+                                Text(ser).tag(idx)
+                            }
+                        }
+                        .frame(width: CGFloat(series.count*50))
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding()
+                    }
                 }
                 Spacer()
-                if slices.count > 12 {
+                if slices[selectedSeriesIdx].count > 12 {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(alignment: .bottom, spacing: 16) {
-                            ForEach(Array(slices.enumerated()), id: \.0) { (idx, slice) in
-                                BarSliceView(slice: slice, height: $heights[idx])
+                            ForEach(Array(slices[selectedSeriesIdx].enumerated()), id: \.0) { (idx, slice) in
+                                BarSliceView(slice: $slices[selectedSeriesIdx][idx], height: $heights[selectedSeriesIdx][idx])
                             }
                         }
                     }
                     .padding(.horizontal, 5)
                 } else {
                     HStack(alignment: .bottom, spacing: 16) {
-                        ForEach(Array(slices.enumerated()), id: \.0) { (idx, slice) in
-                            BarSliceView(slice: slice, height: $heights[idx])
+                        ForEach(Array(slices[selectedSeriesIdx].enumerated()), id: \.0) { (idx, slice) in
+                            BarSliceView(slice: $slices[selectedSeriesIdx][idx], height: $heights[selectedSeriesIdx][idx])
                         }
                     }
                 }
@@ -73,9 +92,19 @@ struct BarChartView: View {
             }
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: Double.random(in: 0.2...0.8))) {
-                for i in 0..<slices.count {
-                    heights[i] = maxHeights[i]
+            withAnimation(.easeInOut(duration: 0.8)) {
+                for i in 0..<heights[selectedSeriesIdx].count {
+                    heights[selectedSeriesIdx][i] = maxHeights[selectedSeriesIdx][i]
+                }
+            }
+        }
+        .onChange(of: selectedSeriesIdx) { oldValue, newValue in
+            for i in 0..<heights[oldValue].count {
+                heights[oldValue][i] = 0
+            }
+            withAnimation(.easeInOut(duration: 0.8)) {
+                for i in 0..<heights[newValue].count {
+                    heights[newValue][i] = maxHeights[newValue][i]
                 }
             }
         }
@@ -84,7 +113,7 @@ struct BarChartView: View {
 
 struct BarSliceView: View {
     
-    @State var slice: BarSlice
+    @Binding var slice: BarSlice
     @Binding var height: CGFloat
     
     @State var isSelected: Bool = false

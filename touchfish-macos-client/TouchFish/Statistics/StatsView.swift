@@ -15,7 +15,7 @@ struct StatsView: View {
                         .padding(10)
                     HStack {
                         PieChartView(
-                            title: "Historical Total Count: \(statistics.activeCount+statistics.expiredCount)",
+                            title: "Historical Total Count",
                             slices: [
                                 PieSlice(
                                     label: "Active",
@@ -99,14 +99,30 @@ struct StatsView: View {
                     }
                     BarChartView(
                         title: "Count By Tag",
-                        slices: statistics.tagCount.map {
-                            BarSlice(
-                                label: $0.key == "" ? "NO TAG" : $0.key,
-                                value: $0.value,
-                                color: String(Functions.getMD5(of: $0.key).suffix(6)).color
-                            )
-                        }.sorted {$0.value > $1.value},
-                         maxHeight: 120
+                        data: [
+                                statistics.tagCount.map {
+                                    BarSlice(
+                                        label: $0.key == "" ? "NO TAG" : $0.key,
+                                        value: $0.value,
+                                        color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+                                    )
+                                }.sorted {$0.value > $1.value}
+                        ],
+                        seriesName: ["default"],
+                        maxHeight: 120
+                    )
+                    .frame(width: Constant.mainWidth-60, height: 300)
+                    .padding()
+                    BarChartView(
+                        title: "Count By Create Time",
+                        data: [
+                            buildDaySlices(data: statistics.dayCount),
+                            buildWeekSlices(data: statistics.dayCount),
+                            buildMonthSlices(data: statistics.dayCount),
+                            buildYearSlices(data: statistics.dayCount),
+                        ],
+                        seriesName: ["Day", "Week", "Month", "Year"],
+                        maxHeight: 120
                     )
                     .frame(width: Constant.mainWidth-60, height: 300)
                     .padding()
@@ -122,3 +138,60 @@ struct StatsView: View {
     
 }
 
+func buildDaySlices(data: [String:Int]) -> [BarSlice] {
+    data.map {
+        BarSlice(
+            label: $0.key,
+            value: $0.value,
+            color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+        )
+    }.sorted {$0.label < $1.label}
+}
+
+func buildWeekSlices(data: [String:Int]) -> [BarSlice] {
+    var countByWeek: [String:Int] = [:]
+    for (date, cnt) in data {
+        guard let curWeek = Functions.convertDateToWeek(date) else {
+            Log.warning("compute fish statistics of create week - some data is skipped: parse data string to week failed, date=\(date), cnt=\(cnt)")
+            continue
+        }
+        countByWeek[curWeek, default: 0] += cnt
+    }
+    return countByWeek.map {
+        BarSlice(
+            label: $0.key,
+            value: $0.value,
+            color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+        )
+    }.sorted {$0.label < $1.label}
+}
+
+func buildMonthSlices(data: [String:Int]) -> [BarSlice] {
+    var countByMonth: [String:Int] = [:]
+    for (date, cnt) in data {
+        let curMonth = String(date.prefix(7))
+        countByMonth[curMonth, default: 0] += cnt
+    }
+    return countByMonth.map {
+        BarSlice(
+            label: $0.key,
+            value: $0.value,
+            color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+        )
+    }.sorted {$0.label < $1.label}
+}
+
+func buildYearSlices(data: [String:Int]) -> [BarSlice] {
+    var countByYear: [String:Int] = [:]
+    for (date, cnt) in data {
+        let curYear = String(date.prefix(4))
+        countByYear[curYear, default: 0] += cnt
+    }
+    return countByYear.map {
+        BarSlice(
+            label: $0.key,
+            value: $0.value,
+            color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+        )
+    }.sorted {$0.label < $1.label}
+}

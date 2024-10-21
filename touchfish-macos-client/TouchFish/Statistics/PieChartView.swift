@@ -21,21 +21,23 @@ struct PieChartView: View {
     @State var title: String
     @State var slices: [PieSlice]
     @State var radius: [CGFloat]
+    @State var isHovered: Bool = false
     
+    var total: Int
     var maxRadius: CGFloat
     var angles: [Angle]
     
     init(title: String, slices: [PieSlice], radius: CGFloat) {
         self.title = title
         self.slices = slices
-        let total: Double = Double(slices.reduce(0) { $0 + $1.value })
+        self.total = slices.reduce(0) { $0 + $1.value }
         var sum: Double = 0
         var angles: [Angle] = []
         var radiuses: [CGFloat] = []
         angles.append(Angle(degrees: 0))
         for slice in slices {
             sum += Double(slice.value)
-            angles.append(Angle(degrees: sum/total*360))
+            angles.append(Angle(degrees: sum/Double(self.total)*360))
             radiuses.append(0)
         }
         self.angles = angles
@@ -50,9 +52,17 @@ struct PieChartView: View {
                 .shadow(radius: 10)
             VStack {
                 HStack {
-                    Text(title)
-                        .font(.title2)
-                        .padding()
+                    VStack(alignment: .leading) {
+                        Text(title)
+                            .font(.title2)
+                        Text("total: \(total)")
+                            .font(isHovered ? .title3 : .callout)
+                            .foregroundStyle(.gray)
+                            .padding(.leading, 5)
+                            .opacity(isHovered ? 1 : 0)
+                    }
+                    .padding(.top)
+                    .padding(.horizontal)
                     Spacer()
                 }
                 HStack {
@@ -60,6 +70,14 @@ struct PieChartView: View {
                         ForEach(Array(slices.enumerated()), id: \.0) { (idx, slice) in
                             PieSliceShape(startAngle: angles[idx], endAngle: angles[idx+1], radius: radius[idx])
                                 .fill(LinearGradient(colors: slice.colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                        }
+                    }
+                    .onHover { isHovered in
+                        withAnimation(.spring(duration: 0.4)) {
+                            self.isHovered = isHovered
+                            for i in 0..<slices.count {
+                                radius[i] = isHovered ? (maxRadius+8) : maxRadius
+                            }
                         }
                     }
                     VStack(alignment: .leading) {
