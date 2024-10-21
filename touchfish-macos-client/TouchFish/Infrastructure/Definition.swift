@@ -18,6 +18,7 @@ struct Constant {
     static let fishDetailItemHeight: CGFloat = 10
     static let messageItemHeight: CGFloat = 60
     
+    static let backgroundColor = LinearGradient(colors: ["ECEEF1".color, "F1FAF1".color, "ECEEF1".color], startPoint: .leading, endPoint: .trailing)
     static let mainBackgroundColor: String = "ECEEF1"
     static let commandBarBackgroundColor: String = "D8D8DB"
     static let selectedItemBackgroundColor: String = "502A70"

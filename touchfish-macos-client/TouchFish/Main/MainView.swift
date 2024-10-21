@@ -44,7 +44,11 @@ struct MainView: View {
             }
         }
         .cornerRadius(10)
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 1))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                .shadow(radius: 5)
+        )
         .onAppear {
             withAnimation {
                 RecipeManager.refresh()

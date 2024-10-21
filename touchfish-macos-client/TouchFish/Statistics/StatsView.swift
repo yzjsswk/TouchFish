@@ -35,7 +35,7 @@ struct StatsView: View {
                         .frame(width: 350, height: 250)
                         .padding()
                         PieChartView(
-                            title: "Count By Fish Type",
+                            title: "Count By Type",
                             slices: [
                                 PieSlice(
                                     label: "Text",
@@ -97,6 +97,19 @@ struct StatsView: View {
                         .frame(width: 350, height: 250)
                         .padding()
                     }
+                    BarChartView(
+                        title: "Count By Tag",
+                        slices: statistics.tagCount.map {
+                            BarSlice(
+                                label: $0.key == "" ? "NO TAG" : $0.key,
+                                value: $0.value,
+                                color: String(Functions.getMD5(of: $0.key).suffix(6)).color
+                            )
+                        }.sorted {$0.value > $1.value},
+                         maxHeight: 120
+                    )
+                    .frame(width: Constant.mainWidth-60, height: 300)
+                    .padding()
                 }
             }
         }
