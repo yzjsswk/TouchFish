@@ -6,6 +6,8 @@ struct FishRepositoryView: View {
     @State var selectedFishIdentity: String?
     
     @State var isEditing: Bool = false
+    @State var isMultSelecting: Bool = false
+    @State var multSelectedFishIdentitys: Set<String> = []
     
     @State var fuzzy: String? = nil
     @State var identitys: [String]? = nil
@@ -15,11 +17,36 @@ struct FishRepositoryView: View {
     @State var isLocked: Bool? = nil
     @State var sortField: String = ""
     
+    var isAllMultSelected: Bool {
+        for identity in fishs.keys {
+            if !multSelectedFishIdentitys.contains(identity) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    var isAllMultSelectedLocked: Bool {
+        for identity in multSelectedFishIdentitys {
+            if let fish = fishs[identity], fish.isLocked == false {
+                return false
+            }
+        }
+        return true
+    }
+    
+    var isAllMultSelectedMarked: Bool {
+        for identity in multSelectedFishIdentitys {
+            if let fish = fishs[identity], fish.isMarked == false {
+                return false
+            }
+        }
+        return true
+    }
+    
     var body: some View {
         HStack {
-            if isEditing, 
-                let identity = selectedFishIdentity,
-               let editingFish = fishs[identity] {
+            if isEditing, let identity = selectedFishIdentity, let editingFish = fishs[identity] {
                 FishEditView(
                     isEditing: $isEditing,
                     identity: editingFish.identity,
@@ -28,29 +55,121 @@ struct FishRepositoryView: View {
                 )
                 .frame(width: Constant.mainWidth-30)
             } else {
-                FishListView(
-                    fishList: fishs.values.sorted(by: {
-                        if sortField.lowercased() == "create" {
-                            return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
+                VStack {
+                    if isMultSelecting {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Constant.selectedItemBackgroundColor.color)
+                            HStack(spacing: 3) {
+                                if isAllMultSelected {
+                                    HStack {
+                                        Image(systemName: "checkmark.square")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundStyle(.white)
+                                            .onTapGesture {
+                                                multSelectedFishIdentitys.removeAll()
+                                            }
+                                    }
+                                    .frame(width: 25, height: 20)
+                                } else {
+                                    HStack {
+                                        Image(systemName: "square")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundStyle(.white)
+                                            .onTapGesture {
+                                                for identity in fishs.keys {
+                                                    multSelectedFishIdentitys.insert(identity)
+                                                }
+                                            }
+                                    }
+                                    .frame(width: 25, height: 20)
+                                }
+                                Spacer()
+                                // todo: icon move anima when lock
+                                if isAllMultSelectedLocked {
+                                    UnLockButtonView()
+                                        .onTapGesture {
+                                            Task {
+                                                for identity in multSelectedFishIdentitys {
+                                                    await Storage.unLockFish(identity)
+                                                }
+                                            }
+                                        }
+                                } else {
+                                    LockButtonView()
+                                        .onTapGesture {
+                                            Task {
+                                                for identity in multSelectedFishIdentitys {
+                                                    await Storage.lockFish(identity)
+                                                }
+                                            }
+                                        }
+                                    if isAllMultSelectedMarked {
+                                        UnMarkButtonView()
+                                            .onTapGesture {
+                                                Task {
+                                                    for identity in multSelectedFishIdentitys {
+                                                        await Storage.unMarkFish(identity)
+                                                    }
+                                                }
+                                            }
+                                    } else {
+                                        MarkButtonView()
+                                            .onTapGesture {
+                                                Task {
+                                                    for identity in multSelectedFishIdentitys {
+                                                        await Storage.markFish(identity)
+                                                    }
+                                                }
+                                            }
+                                    }
+                                    DeleteButtonView()
+                                        .onTapGesture {
+                                            Task {
+                                                for identity in multSelectedFishIdentitys {
+                                                    await Storage.removeFish(identity)
+                                                }
+                                            }
+                                            multSelectedFishIdentitys.removeAll()
+                                        }
+                                }
+                            }
+                            .padding(.horizontal, 5)
                         }
-                        if sortField.lowercased() == "type" {
-                            return $0.fishType == $1.fishType ? $0.identity > $1.identity : $0.fishType.rawValue > $1.fishType.rawValue
-                        }
-                        if sortField.lowercased() == "size" {
-                            let size0 = $0.dataInfo.byteCount ?? -1
-                            let size1 = $1.dataInfo.byteCount ?? -1
-                            return size0 == $1.dataInfo.byteCount ? $0.identity > $1.identity : size0 > size1
-                        }
-                        return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
-                    }),
+                        .padding(.horizontal, 3)
+                        .frame(height: 40)
+                    }
+                    FishListView(
+                        fishList: fishs.values.sorted(by: {
+                            if sortField.lowercased() == "create" {
+                                return $0.createTime == $1.createTime ? $0.identity > $1.identity : $0.createTime > $1.createTime
+                            }
+                            if sortField.lowercased() == "type" {
+                                return $0.fishType == $1.fishType ? $0.identity > $1.identity : $0.fishType.rawValue > $1.fishType.rawValue
+                            }
+                            if sortField.lowercased() == "size" {
+                                let size0 = $0.dataInfo.byteCount ?? -1
+                                let size1 = $1.dataInfo.byteCount ?? -1
+                                return size0 == $1.dataInfo.byteCount ? $0.identity > $1.identity : size0 > size1
+                            }
+                            return $0.updateTime == $1.updateTime ? $0.identity > $1.identity : $0.updateTime > $1.updateTime
+                        }),
+                        selectedFishIdentity: $selectedFishIdentity,
+                        isEditing: $isEditing,
+                        isMultSelecting: $isMultSelecting,
+                        multSelectedFishIdentitys: $multSelectedFishIdentitys
+                    )
+                    .frame(width: (Constant.mainWidth - 30)/2)
+                }
+                FishDetailView(
+                    fishs: $fishs,
                     selectedFishIdentity: $selectedFishIdentity,
-                    isEditing: $isEditing
+                    isMultSelecting: $isMultSelecting,
+                    multSelectedFishIdentitys: $multSelectedFishIdentitys
                 )
                 .frame(width: (Constant.mainWidth - 30)/2)
-                VStack {
-                    FishDetailView(fishs: fishs, selectedFishIdentity: $selectedFishIdentity)
-                        .frame(width: (Constant.mainWidth - 30)/2)
-                }
             }
         }
         .padding(.horizontal, 5)

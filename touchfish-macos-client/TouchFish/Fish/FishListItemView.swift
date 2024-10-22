@@ -7,6 +7,8 @@ struct FishListItemView: View {
     @Binding var hoveringFishIdentity: String?
     
     @Binding var isEditing: Bool
+    @Binding var isMultSelecting: Bool
+    @Binding var multSelectedFishIdentitys: Set<String>
     
     @State var showCopyed: Bool = false
     
@@ -15,23 +17,37 @@ struct FishListItemView: View {
     }
     
     var isHovering: Bool {
-        hoveringFishIdentity == fish.identity
+        !isMultSelecting && hoveringFishIdentity == fish.identity
     }
     
     var body: some View {
         HStack() {
             HStack {
-                fish.fishIcon
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(isSelected ? Color.white: fish.fishIconColor)
+                if isMultSelecting {
+                    if multSelectedFishIdentitys.contains(fish.identity) {
+                        Image(systemName: "checkmark.square")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(isSelected ? Color.white: Color.black)
+                    } else {
+                        Image(systemName: "square")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(isSelected ? Color.white: Color.black)
+                    }
+                } else {
+                    fish.fishIcon
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(isSelected ? Color.white: fish.fishIconColor)
+                }
             }
             .frame(width: Constant.fishItemIconWidth)
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     if fish.isMarked {
                         Text(fish.linePreview)
-                            .font(.title2)
+                            .font(.title3)
                             .foregroundColor(isSelected ? Color.white: Color.black)
                     } else {
                         Text(fish.linePreview)
@@ -115,16 +131,35 @@ struct FishListItemView: View {
             }
         }
         .onTapGesture {
-            fish.copyToClipboard()
-            if Config.fastPasteToFrontmostApplication {
-                TouchFishApp.deactivate()
-                pasteToFrontmostApp()
-            } else {
-                showCopyed = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    showCopyed = false
+            if isMultSelecting {
+                if multSelectedFishIdentitys.contains(fish.identity) {
+                    multSelectedFishIdentitys.remove(fish.identity)
+                } else {
+                    multSelectedFishIdentitys.insert(fish.identity)
                 }
+            } else {
+                fish.copyToClipboard()
+                if Config.fastPasteToFrontmostApplication {
+                    TouchFishApp.deactivate()
+                    pasteToFrontmostApp()
+                } else {
+                    showCopyed = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showCopyed = false
+                    }
+                }
+
             }
+        }
+        .onLongPressGesture(minimumDuration: 1.0) { isPressing in
+//            if isPressing {
+//                print("Pressing...")
+//            }
+        } perform: {
+            withAnimation {
+                isMultSelecting = true
+            }
+            multSelectedFishIdentitys.insert(fish.identity)
         }
 
     }

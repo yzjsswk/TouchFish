@@ -2,9 +2,10 @@ import SwiftUI
 
 struct FishDetailView: View {
     
-    var fishs: [String:Fish]
-    
+    @Binding var fishs: [String:Fish]
     @Binding var selectedFishIdentity: String?
+    @Binding var isMultSelecting: Bool
+    @Binding var multSelectedFishIdentitys: Set<String>
     
     var selectedFish: Fish? {
         if let identity = selectedFishIdentity {
@@ -60,6 +61,12 @@ struct FishDetailView: View {
                         showDetail = true
                     }
             }
+        }
+        .onTapGesture {
+            withAnimation {
+                isMultSelecting = false
+            }
+            multSelectedFishIdentitys.removeAll()
         }
     }
     

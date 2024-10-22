@@ -8,7 +8,8 @@ struct FishListView: View {
     @State var lastHoverTs: TimeInterval = Date().timeIntervalSince1970
     
     @Binding var isEditing: Bool
-    
+    @Binding var isMultSelecting: Bool
+    @Binding var multSelectedFishIdentitys: Set<String>
     
     var body: some View {
         VStack {
@@ -19,7 +20,9 @@ struct FishListView: View {
                             fish: fish,
                             selectedFishIdentity: $selectedFishIdentity,
                             hoveringFishIdentity: $hoveringFishIdentity,
-                            isEditing: $isEditing
+                            isEditing: $isEditing,
+                            isMultSelecting: $isMultSelecting,
+                            multSelectedFishIdentitys: $multSelectedFishIdentitys
                         )
 //                        .transition(.move(edge: .top).combined(with: .opacity))
                         .onHover { isHovered in

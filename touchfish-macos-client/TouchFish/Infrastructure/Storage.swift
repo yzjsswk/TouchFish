@@ -283,7 +283,7 @@ struct Storage {
                 Log.error("Storage.countFish - fail: resp.data=nil, resp.status=\(resp.status)")
                 return nil
             }
-            return resp.data
+            return data
         case .failure(let err):
             Log.error("Storage.countFish - fail: request data service fail, err=\(err)")
             Functions.sendDataServiceErrorMessage()
