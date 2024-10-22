@@ -24,7 +24,7 @@ struct FishRepositoryView: View {
                     isEditing: $isEditing,
                     identity: editingFish.identity,
                     description: editingFish.description,
-                    tags: [editingFish.tags]
+                    tags: editingFish.tags
                 )
                 .frame(width: Constant.mainWidth-30)
             } else {

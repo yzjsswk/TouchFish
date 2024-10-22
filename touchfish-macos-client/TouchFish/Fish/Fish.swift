@@ -6,6 +6,7 @@ class Fish {
     enum FishType: String, CaseIterable {
         case Text
         case Image
+        case Other
     }
     
     struct DataInfo: Codable {
@@ -85,15 +86,18 @@ class Fish {
         self.createTime = createTime
         self.updateTime = updateTime
         
+        var textData: String? = nil
+        var imageData: NSImage? = nil
         switch fishType {
         case .Text:
-            self.textData = String(data: fishData, encoding: .utf8)
-            self.imageData = nil
+            textData = String(data: fishData, encoding: .utf8)
         case .Image:
-            self.textData = nil
-            self.imageData = NSImage(data: fishData)
+            imageData = NSImage(data: fishData)
+        default:
+            break
         }
-        
+        self.textData = textData
+        self.imageData = imageData
     }
     
     var defaultLinePreview: String {
@@ -106,6 +110,7 @@ class Fish {
         case .Text:
             if self.description.count > 0 {
                 ret = Functions.getLinePreview(self.description)
+                break
             }
             if let textData = self.textData {
                 ret = Functions.getLinePreview(textData)

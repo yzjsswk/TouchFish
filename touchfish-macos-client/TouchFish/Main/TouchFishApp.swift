@@ -2,20 +2,9 @@ import SwiftUI
 
 class TouchFishApp {
     
-    /**
-        Application Support Path:
-            - /log: log
-            - /preview: preview of fish
-            - /resource: downloaded fishdata
-            - config.json: user configuration
-            - message: messages from message center
-            - tf.db: fish data
-     */
     static let appSupportPath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TouchFish")
     static let logPath = TouchFishApp.appSupportPath.appendingPathComponent("log")
-    static let resourcePath = TouchFishApp.appSupportPath.appendingPathComponent("resource")
-    static let previewPath = TouchFishApp.appSupportPath.appendingPathComponent("preview")
-    static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config.json")
+    static let configPath = TouchFishApp.appSupportPath.appendingPathComponent("config")
     static let messagePath = TouchFishApp.appSupportPath.appendingPathComponent("message")
     static let metricsPath = TouchFishApp.appSupportPath.appendingPathComponent("metrics")
     
@@ -42,8 +31,6 @@ class TouchFishApp {
         for path in [
             TouchFishApp.appSupportPath,
             TouchFishApp.logPath,
-            TouchFishApp.resourcePath,
-            TouchFishApp.previewPath
         ] {
             if !FileManager.default.fileExists(atPath: path.path) {
                 do {

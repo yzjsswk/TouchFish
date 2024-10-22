@@ -27,25 +27,26 @@ struct FishAddView: View {
                         for (url, info) in toAddFiles {
                             if let data = FileManager.default.contents(atPath: url.path) {
                                 if let type = Fish.FishType(rawValue: info.selectedType) {
-//                                    Task {
-//                                        let res = await Storage.addFish(
-//                                            value: data,
-//                                            description: info.description,
-//                                            type: type,
-//                                            tags: info.tags,
-//                                            extraInfo: ExtraInfo(sourceAppName: "TouchFish")
-//                                        )
-//                                        if res == .fail {
-//                                            Log.error("click button to add fish - fail to add a fish: storage.addFish returns fail, url=\(url.path)")
-//                                        }
-//                                        if res == .skip {
-//                                            Log.error("click button to add fish - skip to add a fish: storage.addFish returns skip, url=\(url.path)")
-//                                        }
-//                                    }
+                                    Task {
+                                        let newFish = await Storage.addFish(
+                                            type,
+                                            data,
+                                            description: info.description,
+                                            tags: info.tags,
+                                            isMarked: true,
+                                            extraInfo: Fish.ExtraInfo(sourceAppName: "TouchFish")
+                                        )
+                                        if newFish == nil {
+                                            MessageCenter.send(level: .error, title: "Add Fish From File", content: "file \(url.path) add failed, check if there had been one same fish", source: "com.touchfish.AddFish")
+                                            Log.error("click button to add fish - one fish add failed: storage.addFish returns nil, url=\(url.path)")
+                                        }
+                                    }
                                 } else {
+                                    MessageCenter.send(level: .error, title: "Add Fish From File", content: "file \(url.path) add failed, type \(info.selectedType) invalid", source: "com.touchfish.AddFish")
                                     Log.error("click button to add fish - skip a fish: parse type=nil, url=\(url.path), type=\(info.selectedType)")
                                 }
                             } else {
+                                MessageCenter.send(level: .error, title: "Add Fish From File", content: "file \(url.path) add failed, read file data failed", source: "com.touchfish.AddFish")
                                 Log.error("click button to add fish - skip a fish: got file data=nil, url=\(url.path)")
                             }
                         }
@@ -72,14 +73,15 @@ struct FishAddView: View {
                             Log.warning("select file to add fish - skip a file: size out of limited, url=\(url.path), size=\(fileSize), limited=\(Constant.maxDataSizeAddFish)")
                             continue
                         }
-                        var addInfo = AddInfo(fileSize: Int(fileSize))
-                        // todo: sub type management
-                        var ext = url.pathExtension.lowercased()
-                        if ext == "jpeg" {
-                            ext = "jpg"
-                        }
-                        if let type = Fish.FishType(rawValue: ext) {
-                            addInfo.selectedType = type.rawValue
+                        let addInfo = AddInfo(fileSize: Int(fileSize))
+                        let ext = url.pathExtension.lowercased()
+                        switch ext {
+                        case "txt", "json", "cpp", "go", "py":
+                            addInfo.selectedType = "Text"
+                        case "png", "jpg", "jpeg":
+                            addInfo.selectedType = "Image"
+                        default:
+                            addInfo.selectedType = "Other"
                         }
                         addInfo.description = url.lastPathComponent
                         toAddFiles[url] = addInfo
@@ -127,6 +129,7 @@ struct AddInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            
             HStack(spacing: 10) {
                 Text("Data")
                     .font(.title2)
@@ -134,6 +137,7 @@ struct AddInfoView: View {
                 Text("\(selectedFile.path) (\(Functions.descByteCount(addInfo.fileSize)))")
                     .font(.title3)
             }
+            
             HStack(spacing: 10) {
                 Text("Type")
                     .font(.title2)
@@ -146,24 +150,17 @@ struct AddInfoView: View {
                 .frame(width: Constant.mainWidth*0.1)
                 .pickerStyle(.menu)
             }
-            HStack(spacing: 10) {
+            
+            HStack(spacing: 12) {
                 Text("Tag")
                     .font(.title2)
                     .bold()
-                AddTagGroupView(tags: $addInfo.tags)
-            }
-            
-            ForEach(Array(addInfo.tags.enumerated()), id: \.0) { (idx, tagGroup) in
-                HStack {
-                    Text("Group\(idx+1)")
-                        .font(.system(.body, design: .monospaced))
-                        .bold()
-                        .padding(.horizontal, 10)
-                    ForEach(tagGroup, id: \.self) { tg in
-                        TagView(label: tg, tags: $addInfo.tags[idx])
-                    }
-                    TagEditView(tags: $addInfo.tags[idx], allTags: $addInfo.tagsFlatten)
+                ForEach(addInfo.tags, id: \.self) { tg in
+                    TagView(label: tg, tags: $addInfo.tags)
                 }
+                .offset(y: 1)
+                TagEditView(tags: $addInfo.tags)
+                .offset(y: 1)
             }
             
             Text("Description")
@@ -180,17 +177,6 @@ struct AddInfoView: View {
                 .background(Color.white)
                 .cornerRadius(5)
                 .frame(height: Constant.mainWidth*0.3)
-
-        }
-        .onAppear {
-            addInfo.tagsFlatten = addInfo.tags.reduce(into: []) { (res, cur) in
-                res.append(contentsOf: cur)
-            }
-        }
-        .onChange(of: addInfo.tags) {
-            addInfo.tagsFlatten = addInfo.tags.reduce(into: []) { (res, cur) in
-                res.append(contentsOf: cur)
-            }
         }
     }
     
@@ -198,9 +184,8 @@ struct AddInfoView: View {
 
 class AddInfo: ObservableObject {
     @Published var description: String = ""
-    @Published var tags: [[String]] = []
-    @Published var tagsFlatten: [String] = []
-    @Published var selectedType = "other"
+    @Published var tags: [String] = []
+    @Published var selectedType = "Other"
     var fileSize: Int
     
     init(fileSize: Int) {

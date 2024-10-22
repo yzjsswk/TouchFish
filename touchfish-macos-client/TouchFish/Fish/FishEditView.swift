@@ -5,10 +5,9 @@ struct FishEditView: View {
     @Binding var isEditing: Bool
     
     var identity: String
-    @State var description: String
-    @State var tags: [[String]]
     
-    @State var tagsFlatten: [String] = []
+    @State var description: String
+    @State var tags: [String]
     
     @State var showSaveAlert = false
     @State var alertMessage = ""
@@ -29,7 +28,7 @@ struct FishEditView: View {
                 SaveButtonView()
                     .onTapGesture {
                         Task {
-                            let ok = await Storage.modifyFish(identity, description: description, tags: tagsFlatten)
+                            let ok = await Storage.modifyFish(identity, description: description, tags: tags)
                             if ok {
                                 isEditing = false
                                 NotificationCenter.default.post(name: .CommandBarShouldFocus, object: nil, userInfo: nil)
@@ -37,7 +36,6 @@ struct FishEditView: View {
                                 showSaveAlert = true
                                 alertMessage = "save failed"
                             }
-
                         }
                     }
                     .alert(isPresented: $showSaveAlert) {
@@ -51,24 +49,18 @@ struct FishEditView: View {
             Divider().background(Color.gray.opacity(0.2))
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: 12) {
                         Text("Tag")
                             .font(.title2)
                             .bold()
-                        AddTagGroupView(tags: $tags)
-                    }
-                    ForEach(Array(tags.enumerated()), id: \.0) { (idx, tagGroup) in
-                        HStack {
-                            Text("Group\(idx+1)")
-                                .font(.system(.body, design: .monospaced))
-                                .bold()
-                                .padding(.horizontal, 10)
-                            ForEach(tagGroup, id: \.self) { tg in
-                                TagView(label: tg, tags: $tags[idx])
-                            }
-                            TagEditView(tags: $tags[idx], allTags: $tagsFlatten)
+                        ForEach(tags, id: \.self) { tg in
+                            TagView(label: tg, tags: $tags)
                         }
+                        .offset(y: 1)
+                        TagEditView(tags: $tags)
+                        .offset(y: 1)
                     }
+                    .padding(.top)
                     Text("Description")
                         .font(.title2)
                         .bold()
@@ -87,16 +79,6 @@ struct FishEditView: View {
                 }
             }
             .padding()
-        }
-        .onAppear() {
-            tagsFlatten = tags.reduce(into: []) { (res, cur) in
-                res.append(contentsOf: cur)
-            }
-        }
-        .onChange(of: tags) {
-            tagsFlatten = tags.reduce(into: []) { (res, cur) in
-                res.append(contentsOf: cur)
-            }
         }
     }
     
@@ -166,29 +148,6 @@ struct TagView: View {
     
 }
 
-struct AddTagGroupView: View {
-    
-    @State private var isHovered = false
-    
-    @Binding var tags: [[String]]
-    
-    var body: some View {
-        Image(systemName: "plus.circle")
-        .resizable()
-        .frame(width: 20, height: 20)
-        .foregroundColor(isHovered ? Constant.selectedItemBackgroundColor.color : .gray)
-        .onHover { isHovered in
-            self.isHovered = isHovered
-        }
-        .onTapGesture {
-            withAnimation {
-                tags.append([])
-            }
-        }
-    }
-}
-
-
 struct TagEditView: View {
     
     @State private var isOpening = false
@@ -202,7 +161,6 @@ struct TagEditView: View {
     @State private var tagPreviewList: [String] = []
     
     @Binding var tags: [String]
-    @Binding var allTags: [String]
     
     var body: some View {
         
@@ -222,7 +180,6 @@ struct TagEditView: View {
                 TextField("Search", text: $tagSearchText)
                 .frame(width: 100, height: 20)
                 .onChange(of: tagSearchText) {
-//                    let allTags = Array(Cache.tagCount.keys)
                     let allTags: [String] = []
                     tagPreviewList = allTags.filter { tg in
                         return tg.lowercased().contains(tagSearchText.lowercased())
@@ -244,7 +201,7 @@ struct TagEditView: View {
                     self.isHovered2 = isHovered
                 }
                 .onTapGesture {
-                    if !allTags.contains(tagSearchText) {
+                    if !tags.contains(tagSearchText) {
                         tags.append(tagSearchText)
                     }
                     isOpening = false

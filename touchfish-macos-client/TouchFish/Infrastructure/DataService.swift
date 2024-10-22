@@ -226,8 +226,10 @@ struct DataService {
         let para: [String:Any?] = [
             "fish_type": fishType.rawValue,
             "fish_data": data,
-            "description": description,
+            "desc": description,
             "tags": tags,
+            "is_marked": isMarked,
+            "is_locked": isLocked,
             "extra_info": extraInfo,
         ]
         return await AF.request(
