@@ -82,24 +82,24 @@ struct PieChartView: View {
                     }
                     VStack(alignment: .leading) {
                         ForEach(Array(slices.enumerated()), id: \.0) { (idx, slice) in
-                            VStack {
-                                HStack {
-                                    Circle()
-                                        .fill(LinearGradient(colors: slice.colors, startPoint: .topLeading, endPoint: .bottomTrailing))
-                                        .frame(width: 20, height: 20)
+                            HStack(alignment: .top) {
+                                Circle()
+                                    .fill(LinearGradient(colors: slice.colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                                    .frame(width: 20, height: 20)
+                                    .offset(y: 5)
+                                VStack(alignment: .leading) {
                                     Text(slice.label)
                                         .font(.title3)
                                         .foregroundStyle(.gray)
-                                        .padding(5)
+                                        .padding(slices.count > 2 ? 1 : 5)
+                                    Text(String(slice.value))
+                                        .font(.title3)
+                                        .padding(slices.count > 2 ? 0 : 3)
                                 }
-                                Text(String(slice.value))
-                                    .font(.title3)
-                                    .padding(3)
-                                    .offset(x: -CGFloat(idx)*3)
                             }
-                            .offset(x: -CGFloat(idx)*2)
                         }
                     }
+                    .padding()
                 }
             }
             

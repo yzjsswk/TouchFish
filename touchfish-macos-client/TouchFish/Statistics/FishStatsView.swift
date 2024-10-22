@@ -39,8 +39,14 @@ struct FishStatsView: View {
                         PieSlice(
                             label: "Image",
                             value: statistics.typeCount["Image", default: 0],
-                            color: "#4172CE".color,
-                            extraColor: ["#707BBA".color]
+                            color: "#5291C3".color,
+                            extraColor: ["#E9F7FD".color]
+                        ),
+                        PieSlice(
+                            label: "Other",
+                            value: statistics.typeCount["Other", default: 0],
+                            color: "#6F5AA2".color,
+                            extraColor: ["#D7A9C4".color]
                         ),
                     ],
                     radius: 80
@@ -74,13 +80,13 @@ struct FishStatsView: View {
                     slices: [
                         PieSlice(
                             label: "Locked",
-                            value: statistics.markedCount,
+                            value: statistics.lockedCount,
                             color: "#E24A42".color,
                             extraColor: ["#E3C180".color]
                         ),
                         PieSlice(
                             label: "Unlocked",
-                            value: statistics.unmarkedCount,
+                            value: statistics.unlockedCount,
                             color: "#FDF5E6".color,
                             extraColor: ["#FDF6EE".color]
                         ),

@@ -119,39 +119,39 @@ struct DetailValueView: View {
     var body: some View {
         switch fish.fishType {
         case .Text:
-                VStack {
-                    if let textValue = fish.textData {
-                        Text(textValue.prefix(Config.textFishDetailPreviewLength))
-                            .font(.callout)
-                        if textValue.count > Config.textFishDetailPreviewLength {
-                            Text("...")
-                                .font(.callout)
-                                .bold()
-                        }
-                    } else {
-                        Text("No Preview")
+            VStack {
+                if let textValue = fish.textData {
+                    Text(textValue.prefix(Config.textFishDetailPreviewLength))
+                        .font(.callout)
+                    if textValue.count > Config.textFishDetailPreviewLength {
+                        Text("...")
                             .font(.callout)
                             .bold()
-                            .foregroundColor(Color.red)
                     }
-                }
-        case .Image:
-                if let image = fish.imageData {
-                    Image(nsImage: image)
-                        .resizable()
-                        .scaledToFit()
                 } else {
-                    Text("No Preview")
+                    Text("No Preview (This may be dirty data)")
                         .font(.callout)
                         .bold()
-                        .foregroundColor(.red)
+                        .foregroundColor(.gray)
                 }
+            }
+        case .Image:
+            if let image = fish.imageData {
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                Text("No Preview (This may be dirty data)")
+                    .font(.callout)
+                    .bold()
+                    .foregroundColor(.gray)
+            }
         default:
             Text("Not Supported To Preview")
                 .font(.callout)
                 .bold()
-                .foregroundColor(.red)
-            }
+                .foregroundColor(.gray)
+        }
     }
     
 }

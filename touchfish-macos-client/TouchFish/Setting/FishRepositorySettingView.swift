@@ -43,7 +43,7 @@ struct FishRepositorySettingView: View {
             }
             .padding(.vertical, 2)
             HStack{
-                Text("if enabled, when something (support text/image currently) copyed to clipboard, it will also be imported to fish repository")
+                Text("if enabled, when something (support text/image currently) copyed to clipboard, it will be imported to fish repository automatically")
                     .font(.callout)
                     .foregroundStyle(.gray)
                 Spacer()
@@ -69,29 +69,29 @@ struct FishRepositorySettingView: View {
             .padding(.vertical, 2)
             Divider()
             // auto remove fish
-            HStack {
-                Text("Auto Remove Unmarked Fish")
-                    .font(.title3)
-                    .bold()
-                Spacer()
-                Toggle(isOn: $tempSetting.autoRemoveFishEnable) {}
-                    .padding(.horizontal, 5)
-                Text("If last update time has passed")
-                    .font(.title3)
-                NumberInputView(value: $tempSetting.autoRemoveFishPastHours, maxLength: 4)
-                    .frame(width: 40)
-                Text("hours")
-                    .font(.title3)
-            }
-            .padding(.vertical, 2)
-            HStack{
-                Text("if enabled, fish that not marked will be auto removed after the specified amount of time has elapsed since their last update (execute every hour)")
-                    .font(.callout)
-                    .foregroundStyle(.gray)
-                Spacer()
-            }
-            .padding(.vertical, 2)
-            Divider()
+//            HStack {
+//                Text("Auto Remove Unmarked Fish")
+//                    .font(.title3)
+//                    .bold()
+//                Spacer()
+//                Toggle(isOn: $tempSetting.autoRemoveFishEnable) {}
+//                    .padding(.horizontal, 5)
+//                Text("If last update time has passed")
+//                    .font(.title3)
+//                NumberInputView(value: $tempSetting.autoRemoveFishPastHours, maxLength: 4)
+//                    .frame(width: 40)
+//                Text("hours")
+//                    .font(.title3)
+//            }
+//            .padding(.vertical, 2)
+//            HStack{
+//                Text("if enabled, fish that not marked will be auto removed after the specified amount of time has elapsed since their last update (execute every hour)")
+//                    .font(.callout)
+//                    .foregroundStyle(.gray)
+//                Spacer()
+//            }
+//            .padding(.vertical, 2)
+//            Divider()
             // textFishDetailPreviewLength
             HStack {
                 Text("Max Preview Length of Text Fish")
@@ -103,7 +103,7 @@ struct FishRepositorySettingView: View {
             }
             .padding(.vertical, 2)
             HStack{
-                Text("the maximum number of characters displayed by text fish at the detail area (maximum: 2000)")
+                Text("the maximum number of characters displayed by text fish at the detail area")
                     .font(.callout)
                     .foregroundStyle(.gray)
                 Spacer()
