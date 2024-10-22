@@ -79,6 +79,7 @@ impl FishPreview {
 pub enum FishType {
     Text,
     Image,
+    Other,
 }
 
 impl FishType {

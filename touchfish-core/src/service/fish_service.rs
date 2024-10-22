@@ -91,6 +91,7 @@ impl<S> FishService<S> where S: FishStorage {
                 data_info.width = Some(w as usize);
                 data_info.height = Some(h as usize);
             },
+            _ => {},
         };
         self.storage.add_fish(
             identity, 1, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info,

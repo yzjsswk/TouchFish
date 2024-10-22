@@ -1,11 +1,13 @@
 use std::collections::HashMap;
+use std::time::Duration;
 
+use diesel::connection::SimpleConnection;
 use diesel::dsl::sql;
 use diesel::{prelude::*, sql_query};
 use diesel::result::Error;
 use diesel::sql_types::{Bool, Text};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
-use r2d2::Pool;
+use r2d2::{Pool, PooledConnection};
 use touchfish_core::{DataInfo, Fish, FishStorage, FishType, Statistics};
 use yfunc_rust::{prelude::*, Page, YBytes};
 
@@ -24,9 +26,22 @@ impl SqliteStorage {
         }
         let manager = ConnectionManager::<SqliteConnection>::new(db_url);
         let pool = r2d2::Pool::builder()
+            .max_size(8)
+            .connection_timeout(Duration::new(5, 0))
             .build(manager)
             .map_err(|err| err!(DataBaseError::"connect to sqlite": "build connection pool failed", db_url, err))?;
         Ok(SqliteStorage { pool })
+    }
+
+    pub fn get_conn(&self) -> YRes<PooledConnection<ConnectionManager<SqliteConnection>>> {
+        let mut conn = self.pool.get().map_err(|e|
+            err!(DataBaseError::"get connection from pool", e)
+        )?;
+        conn.batch_execute("PRAGMA busy_timeout = 5000;").map_err(|e|
+            err!(DataBaseError::"get connection from pool": "set timeout failed", e)
+        )?;
+        Ok(conn)
+
     }
 
     fn fish__insert(&self, conn: &mut SqliteConnection, inserter: &FishInserter) -> Result<FishModel, Error> {
@@ -286,9 +301,7 @@ impl FishStorage for SqliteStorage {
         &self, identity: String, count: i32, fish_type: FishType, fish_data: YBytes, data_info: DataInfo,
         desc: String, tags: Vec<String>, is_marked: bool, is_locked: bool, extra_info: String,
     ) -> YRes<Fish> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"add fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let fish = self.fish__insert(&mut conn, &FishInserter::new(
             identity, count, fish_type, fish_data, data_info, desc, tags, is_marked, is_locked, extra_info
         )?).map_err(|e| err!(DataBaseError::"add fish", e))?;
@@ -296,9 +309,7 @@ impl FishStorage for SqliteStorage {
     }
 
     fn expire_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"expire fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let to_expire_fish = self.fish__pick(&mut conn, identity).map_err(|e| 
             err!(DataBaseError::"expire fish": "query to delete fish failed", identity, e)
         )?;
@@ -324,9 +335,7 @@ impl FishStorage for SqliteStorage {
     fn modify_fish(
         &self, identity: &str, desc: Option<String>, tags: Option<Vec<String>>, extra_info: Option<String>,
     ) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"modify fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::new(
             None, None, None, None, None,
             desc, tags, None, None, extra_info,
@@ -335,9 +344,7 @@ impl FishStorage for SqliteStorage {
     }
 
     fn mark_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"mark fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::new(
             None, None, None, None, None,
             None, None, Some(true), None, None,
@@ -346,9 +353,7 @@ impl FishStorage for SqliteStorage {
     }
     
     fn unmark_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"unmark fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::new(
             None, None, None, None, None,
             None, None, Some(false), None, None,
@@ -357,9 +362,7 @@ impl FishStorage for SqliteStorage {
     }
     
     fn lock_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"lock fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::new(
             None, None, None, None, None,
             None, None, None, Some(true), None,
@@ -368,9 +371,7 @@ impl FishStorage for SqliteStorage {
     }
     
     fn unlock_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"unlock fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::new(
             None, None, None, None, None,
             None, None, None, Some(false), None,
@@ -379,18 +380,14 @@ impl FishStorage for SqliteStorage {
     }
     
     fn pin_fish(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"pin fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         self.fish__update(&mut conn, identity, &FishUpdater::empty())
             .map_err(|e| err!(DataBaseError::"pin fish", identity, e))?;
         Ok(())
     }
 
     fn increase_count(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"increase fish count": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         conn.transaction::<_, Error, _>(|conn| {
             self.fish__inc_cnt(conn, identity)?;
             self.fish__update(conn, identity, &FishUpdater::empty())?;
@@ -400,9 +397,7 @@ impl FishStorage for SqliteStorage {
     }
 
     fn decrease_count(&self, identity: &str) -> YRes<()> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"decrease fish count": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         conn.transaction::<_, Error, _>(|conn| {
             self.fish__dec_cnt(conn, identity)?;
             self.fish__update(conn, identity, &FishUpdater::empty())?;
@@ -412,9 +407,7 @@ impl FishStorage for SqliteStorage {
     }
     
     fn pick_fish(&self, identity: &str) -> YRes<Option<Fish>> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"pick fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let fish_list = self.fish__pick(&mut conn, identity).map_err(|e| 
             err!(DataBaseError::"pick fish", identity, e)
         )?;
@@ -434,9 +427,7 @@ impl FishStorage for SqliteStorage {
         tags: Option<Vec<String>>, is_marked: Option<bool>, is_locked: Option<bool>,
         page_num: i32, page_size: i32,
     ) -> YRes<Page<Fish>> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"page fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let mut selecter = FishSelecter::new(
             fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, Some((page_num, page_size),)
         )?;
@@ -457,9 +448,7 @@ impl FishStorage for SqliteStorage {
         fish_type: Option<Vec<FishType>>, desc: Option<String>, tags: Option<Vec<String>>, 
         is_marked: Option<bool>, is_locked: Option<bool>,
     ) -> YRes<Vec<String>> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"detect fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let selecter = FishSelecter::new(
             fuzzy, identity, count, fish_type, desc, tags, is_marked, is_locked, None,
         )?;
@@ -467,9 +456,7 @@ impl FishStorage for SqliteStorage {
     }
     
     fn count_fish(&self) -> YRes<Statistics> {
-        let mut conn = self.pool.get().map_err(
-            |e| err!(DataBaseError::"count fish": "fetch connection from pool failed", e),
-        )?;
+        let mut conn = self.get_conn()?;
         let mut selecter = FishSelecter::empty();
         let count__active = self.fish__count(& mut conn, &selecter).map_err(|e| 
             err!(DataBaseError::"count fish": "count active fish failed", e)
